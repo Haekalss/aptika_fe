@@ -13,6 +13,7 @@ import {
   CalendarCheck,
   Lock,
   FileCheck,
+  ClipboardCheck,
 } from "lucide-react";
 import ServiceRouteGuard from "@/components/auth/ServiceRouteGuard";
 import { useAuthStore } from "@/store/useAuthStore";
@@ -124,6 +125,30 @@ export default function SmkiPage() {
               </span>
             </div>
           </div>
+          {/* Card: Evaluasi Kepatuhan (FR-044) */}
+          <div
+            onClick={() => router.push("/smki/evaluasi-kepatuhan")}
+            className="group relative bg-white dark:bg-slate-900/90 rounded-2xl p-6 shadow-sm border border-slate-200/80 dark:border-slate-800 hover:border-sky-500/60 hover:shadow-md transition-all cursor-pointer flex flex-col justify-between"
+          >
+            <div>
+              <div className="w-12 h-12 rounded-xl bg-sky-50 dark:bg-sky-950/60 border border-sky-200 dark:border-sky-800/60 flex items-center justify-center text-sky-600 dark:text-sky-400 mb-4 group-hover:scale-105 transition-transform">
+                <ClipboardCheck size={24} />
+              </div>
+              <h3 className="text-base font-bold text-slate-800 dark:text-white mb-2 group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors">
+                Formulir Evaluasi Kepatuhan
+              </h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-medium mb-4">
+                Catat dan evaluasi kepatuhan terhadap regulasi dan aturan lain yang mendukung layanan utama, lengkap dengan status dan ekspor dokumen FR-044.
+              </p>
+            </div>
+            <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-start text-xs font-bold text-sky-600 dark:text-sky-400">
+              <span className="inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                <span>Buka Layanan</span>
+                <ArrowRight size={14} />
+              </span>
+            </div>
+          </div>
+
           {/* Card: Daftar Penyedia Barang/Jasa (FR-020) */}
           <div
             onClick={() => router.push("/smki/daftar-penyedia")}
