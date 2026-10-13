@@ -2524,10 +2524,81 @@ export const exportSmkiLaporanAuditDocx = async (id: number | string) => {
   return res.data;
 };
 
+// ─── SMKI: LAPORAN AUDIT TAHUNAN (FR-008) ───────────────
+export interface LaporanAuditTahunanTimItem {
+  id?: number;
+  nama_auditor: string;
+  unit_kerja: string;
+  peran: string;
+}
 
+export interface LaporanAuditTahunanKlausulItem {
+  id?: number;
+  klausul_annex: string;
+  uraian_klausul?: string;
+}
 
+export interface LaporanAuditTahunanJadwalItem {
+  id?: number;
+  bulan: number;
+}
 
+export interface LaporanAuditTahunanObjekItem {
+  id?: number;
+  kode_objek: string;
+  objek_audit: string;
+  ruang_lingkup: string;
+  unit_kerja: string;
+  klausul?: LaporanAuditTahunanKlausulItem[] | string[];
+  jadwal?: LaporanAuditTahunanJadwalItem[] | number[];
+}
 
+export interface LaporanAuditTahunanData {
+  id?: number;
+  tahun_smki: number | string;
+  no_dokumen: string;
+  no_revisi: string;
+  tanggal_berlaku: string;
+  kriteria_audit: string;
+  tujuan: string;
+  disusun_oleh?: string;
+  jabatan_penyusun?: string;
+  disahkan_oleh?: string;
+  jabatan_pengesah?: string;
+  status?: string;
+  tim_auditor?: LaporanAuditTahunanTimItem[];
+  objek_audit?: LaporanAuditTahunanObjekItem[];
+}
 
+export const getLaporanAuditTahunanList = async () => {
+  const res = await api.get("/smki/laporan-audit-tahunan");
+  return res.data;
+};
 
+export const getLaporanAuditTahunanById = async (id: number | string) => {
+  const res = await api.get(`/smki/laporan-audit-tahunan/${id}`);
+  return res.data;
+};
+
+export const saveLaporanAuditTahunan = async (payload: LaporanAuditTahunanData) => {
+  const res = await api.post("/smki/laporan-audit-tahunan/store-all", payload);
+  return res.data;
+};
+
+export const deleteLaporanAuditTahunan = async (id: number | string) => {
+  const res = await api.delete(`/smki/laporan-audit-tahunan/${id}`);
+  return res.data;
+};
+
+export const getLaporanAuditTahunanLookup = async () => {
+  const res = await api.get("/smki/laporan-audit-tahunan/lookup");
+  return res.data;
+};
+
+export const exportLaporanAuditTahunanDocx = async (id: number | string) => {
+  const res = await api.get(`/smki/laporan-audit-tahunan/${id}/export-docx`, {
+    responseType: "blob",
+  });
+  return res.data;
+};
 

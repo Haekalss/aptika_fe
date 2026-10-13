@@ -11,6 +11,7 @@ import {
   ArrowRight,
   FileText,
   CalendarCheck,
+  CalendarRange,
   Lock,
   FileCheck,
 } from "lucide-react";
@@ -261,6 +262,30 @@ export default function SmkiPage() {
               </p>
             </div>
             <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-start text-xs font-bold text-emerald-600 dark:text-emerald-400">
+              <span className="inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                <span>Buka Layanan</span>
+                <ArrowRight size={14} />
+              </span>
+            </div>
+          </div>
+
+          {/* Card: Program Tahunan Audit Internal (FR-008) */}
+          <div
+            onClick={() => router.push("/smki/laporan-audit-tahunan")}
+            className="group relative bg-white dark:bg-slate-900/90 rounded-2xl p-6 shadow-sm border border-slate-200/80 dark:border-slate-800 hover:border-teal-500/60 hover:shadow-md transition-all cursor-pointer flex flex-col justify-between"
+          >
+            <div>
+              <div className="w-12 h-12 rounded-xl bg-teal-50 dark:bg-teal-950/60 border border-teal-200 dark:border-teal-800/60 flex items-center justify-center text-teal-600 dark:text-teal-400 mb-4 group-hover:scale-105 transition-transform">
+                <CalendarRange size={24} />
+              </div>
+              <h3 className="text-base font-bold text-slate-800 dark:text-white mb-2 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors">
+                Program Tahunan Audit Internal
+              </h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-medium mb-4">
+                Kelola formulir program tahunan audit internal (FR-008), penugasan tim auditor, objek auditee, matriks klausul ISO 27001, jadwal 12 bulan, serta ekspor resmi Word (.docx).
+              </p>
+            </div>
+            <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-start text-xs font-bold text-teal-600 dark:text-teal-400">
               <span className="inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform">
                 <span>Buka Layanan</span>
                 <ArrowRight size={14} />
