@@ -15,6 +15,7 @@ import {
   Lock,
   FileCheck,
   ClipboardCheck,
+  ScrollText,
 } from "lucide-react";
 import ServiceRouteGuard from "@/components/auth/ServiceRouteGuard";
 import { useAuthStore } from "@/store/useAuthStore";
@@ -143,6 +144,30 @@ export default function SmkiPage() {
               </p>
             </div>
             <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-start text-xs font-bold text-sky-600 dark:text-sky-400">
+              <span className="inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                <span>Buka Layanan</span>
+                <ArrowRight size={14} />
+              </span>
+            </div>
+          </div>
+
+          {/* Card: Formulir Review Log (FR-040) */}
+          <div
+            onClick={() => router.push("/smki/review-log")}
+            className="group relative bg-white dark:bg-slate-900/90 rounded-2xl p-6 shadow-sm border border-slate-200/80 dark:border-slate-800 hover:border-orange-500/60 hover:shadow-md transition-all cursor-pointer flex flex-col justify-between"
+          >
+            <div>
+              <div className="w-12 h-12 rounded-xl bg-orange-50 dark:bg-orange-950/60 border border-orange-200 dark:border-orange-800/60 flex items-center justify-center text-orange-600 dark:text-orange-400 mb-4 group-hover:scale-105 transition-transform">
+                <ScrollText size={24} />
+              </div>
+              <h3 className="text-base font-bold text-slate-800 dark:text-white mb-2 group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors">
+                Formulir Review Log
+              </h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-medium mb-4">
+                Catat hasil review log akses dan aktivitas sistem (FR-040): obyek, periode, rincian user/IP/waktu/durasi, tindak lanjut, serta cetak formulir resmi.
+              </p>
+            </div>
+            <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-start text-xs font-bold text-orange-600 dark:text-orange-400">
               <span className="inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform">
                 <span>Buka Layanan</span>
                 <ArrowRight size={14} />
