@@ -14,6 +14,7 @@ import ReviewLogTable from "@/components/smki/review-log/ReviewLogTable";
 import ReviewLogDetailModal from "@/components/smki/review-log/ReviewLogDetailModal";
 import {
   deleteReviewLog,
+  downloadReviewLogDocx,
   fetchReviewLogList,
   formatTanggalIndo,
   reviewLogErrMsg,
@@ -62,6 +63,15 @@ export default function ReviewLogPage() {
     const t = setTimeout(() => loadData(), 300);
     return () => clearTimeout(t);
   }, [loadData]);
+
+  const handleDocx = async (id: number) => {
+    try {
+      await downloadReviewLogDocx(id);
+      toast.success("Dokumen FR-040 (.docx) berhasil diunduh.");
+    } catch {
+      toast.error("Gagal mengunduh dokumen FR-040.");
+    }
+  };
 
   const handleExecuteDelete = async () => {
     if (!itemToDelete) return;
@@ -121,6 +131,7 @@ export default function ReviewLogPage() {
                 onDetail={(id) => setDetailId(id)}
                 onEdit={(id) => router.push(`/smki/review-log/edit/${id}`)}
                 onPrint={(id) => router.push(`/smki/review-log/print/${id}`)}
+                onDocx={handleDocx}
                 onDelete={(item) => { setItemToDelete(item); setIsDeleteModalOpen(true); }}
               />
               <Pagination currentPage={meta.current_page} totalPages={meta.last_page} onPageChange={setPage} />
@@ -133,6 +144,7 @@ export default function ReviewLogPage() {
           onClose={() => setDetailId(null)}
           onEdit={(id) => { setDetailId(null); router.push(`/smki/review-log/edit/${id}`); }}
           onPrint={(id) => { setDetailId(null); router.push(`/smki/review-log/print/${id}`); }}
+          onDocx={handleDocx}
         />
         <ConfirmModal
           isOpen={isDeleteModalOpen}

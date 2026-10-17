@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertCircle, Eye, Pencil, Printer, Trash2 } from "lucide-react";
+import { AlertCircle, Eye, FileDown, Pencil, Printer, Trash2 } from "lucide-react";
 import { formatPeriode, formatTanggalIndo, type ReviewLog } from "@/services/smki/reviewLogService";
 
 /** Organism: tabel daftar review log + empty state. Pagination dirender parent (pola InsidenTable FR-016). */
@@ -11,6 +11,7 @@ export default function ReviewLogTable({
   onDetail,
   onEdit,
   onPrint,
+  onDocx,
   onDelete,
 }: {
   items: ReviewLog[];
@@ -19,6 +20,7 @@ export default function ReviewLogTable({
   onDetail: (id: number) => void;
   onEdit: (id: number) => void;
   onPrint: (id: number) => void;
+  onDocx: (id: number) => void;
   onDelete: (item: ReviewLog) => void;
 }) {
   return (
@@ -37,7 +39,7 @@ export default function ReviewLogTable({
               <th className="py-3 px-4 min-w-[200px]">PERIODE REVIEW</th>
               <th className="py-3 px-4 min-w-[160px]">PELAKSANA</th>
               <th className="py-3 px-4 min-w-[100px]">ENTRI LOG</th>
-              <th className="py-3 px-4 text-center w-32">AKSI</th>
+              <th className="py-3 px-4 text-center w-40">AKSI</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
@@ -87,6 +89,14 @@ export default function ReviewLogTable({
                         className="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 transition-all cursor-pointer"
                       >
                         <Eye size={13} />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => onDocx(item.id)}
+                        title="Unduh Word FR-040 (.docx)"
+                        className="p-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 border border-emerald-200 dark:border-emerald-800/60 transition-all cursor-pointer"
+                      >
+                        <FileDown size={13} />
                       </button>
                       <button
                         type="button"

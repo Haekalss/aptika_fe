@@ -2,13 +2,20 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { Printer, ChevronLeft, Loader2 } from "lucide-react";
+import { Printer, ChevronLeft, FileDown, Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
 import {
-  fetchReviewLogDetail, formatTanggalIndo, formatPeriode, formatWaktu, reviewLogErrMsg, ReviewLog,
+  fetchReviewLogDetail, downloadReviewLogDocx, formatTanggalIndo, formatPeriode,
+  formatTanggalRingkas, formatWaktu, reviewLogErrMsg, ReviewLog,
 } from "@/services/smki/reviewLogService";
 
+/** Jumlah baris log minimum pada tabel (sama dengan template .docx: 8 baris). */
 const MIN_ROWS = 8;
+
+// Format halaman, font, dan ukuran mengikuti template asli "FR-040 Formulir Review Log.docx"
+// (Legal 8,5x14 in, margin 0,5 in, Arial; kop 18 pt; isian 10-11 pt; meta kop 8 pt).
+const FONT = "Arial, 'Liberation Sans', Helvetica, sans-serif";
+const line = "1px solid #000";
 
 export default function PrintReviewLogPage() {
   const params = useParams();
@@ -31,6 +38,15 @@ export default function PrintReviewLogPage() {
     })();
   }, [id]);
 
+  const handleDocx = async () => {
+    try {
+      await downloadReviewLogDocx(id);
+      toast.success("Dokumen FR-040 (.docx) berhasil diunduh.");
+    } catch {
+      toast.error("Gagal mengunduh dokumen FR-040.");
+    }
+  };
+
   if (loading || !item) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-3">
@@ -42,16 +58,24 @@ export default function PrintReviewLogPage() {
 
   const rows = item.items || [];
   const blanks = Math.max(0, MIN_ROWS - rows.length);
-  const cell = "border border-black px-2 py-1 align-top";
+  const cell: React.CSSProperties = { border: line, padding: "1px 5px", verticalAlign: "top", fontSize: "10pt" };
+  const cellC: React.CSSProperties = { ...cell, textAlign: "center" };
+  const tanggalTtd = item.tanggal_ttd ? formatTanggalIndo(item.tanggal_ttd) : "……………………";
   const sign = [
     { judul: "Dibuat Oleh,", nama: item.dibuat_oleh_nama, nip: item.dibuat_oleh_nip },
     { judul: "Mengetahui,", nama: item.mengetahui_nama, nip: item.mengetahui_nip },
   ];
+  const identitas: [string, string][] = [
+    ["Tanggal Review", formatTanggalIndo(item.tanggal_review)],
+    ["Periode Review", item.periode_mulai || item.periode_selesai ? formatPeriode(item.periode_mulai, item.periode_selesai) : ""],
+    ["Obyek Review", item.obyek_review],
+    ["Pelaksana Review", item.pelaksana_review],
+  ];
 
   return (
-    <div className="min-h-screen bg-slate-100 py-6 px-4 print:bg-white print:p-0">
+    <div className="min-h-screen bg-slate-100 py-6 px-4 print:bg-white print:p-0 print:min-h-0">
       {/* Floating action bar - hidden on print */}
-      <div className="max-w-[210mm] mx-auto mb-6 flex items-center justify-between gap-4 print:hidden bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+      <div className="max-w-[8.5in] mx-auto mb-6 flex items-center justify-between gap-4 print:hidden bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
         <button
           onClick={() => router.push("/smki/review-log")}
           className="flex items-center gap-1.5 px-4 py-2 rounded-xl border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-semibold transition"
@@ -59,175 +83,165 @@ export default function PrintReviewLogPage() {
           <ChevronLeft className="w-4 h-4 text-slate-500" />
           <span>Kembali ke Daftar</span>
         </button>
-        <button
-          onClick={() => window.print()}
-          className="flex items-center gap-2 px-5 py-2 rounded-xl bg-[#065f46] hover:bg-[#047857] text-white text-xs font-semibold shadow-xs transition"
-        >
-          <Printer className="w-4 h-4" />
-          <span>Cetak Dokumen (Print / PDF)</span>
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleDocx}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 text-xs font-semibold transition"
+          >
+            <FileDown className="w-4 h-4" />
+            <span>Unduh Word (.docx)</span>
+          </button>
+          <button
+            onClick={() => window.print()}
+            className="flex items-center gap-2 px-5 py-2 rounded-xl bg-[#065f46] hover:bg-[#047857] text-white text-xs font-semibold shadow-xs transition"
+          >
+            <Printer className="w-4 h-4" />
+            <span>Cetak Dokumen (Print / PDF)</span>
+          </button>
+        </div>
       </div>
 
-      {/* A4 Paper */}
-      <div className="max-w-[210mm] mx-auto bg-white p-[20mm] shadow-lg print:shadow-none print:p-0 print:max-w-none text-slate-900 font-sans text-[11pt] leading-normal print:w-full space-y-5">
-        {/* Kop Surat */}
-        <div className="border border-black">
-          <table className="w-full border-collapse">
-            <tbody>
-              <tr>
-                <td className="w-28 p-2 border-r border-black text-center align-middle">
-                  <img
-                    src="/logo-fr047.png"
-                    alt="Logo Jabar"
-                    className="w-16 h-auto mx-auto object-contain"
-                    onError={(e) => {
-                      const t = e.currentTarget;
-                      t.onerror = null;
-                      t.src = "/logo.png";
-                    }}
-                  />
-                </td>
-                <td className="p-3 border-r border-black text-center align-middle">
-                  <h2 className="text-base font-bold tracking-wide uppercase text-slate-900">
-                    FORMULIR REVIEW LOG
-                  </h2>
-                </td>
-                <td className="w-56 p-2 text-[9pt] align-middle">
-                  <table className="w-full text-left">
-                    <tbody>
-                      <tr>
-                        <td className="font-semibold py-0.5 w-24">No.Dokumen</td>
-                        <td className="py-0.5">: FR-040/KOM.03.05/SANDIKAMI</td>
-                      </tr>
-                      <tr>
-                        <td className="font-semibold py-0.5">No.Revisi</td>
-                        <td className="py-0.5">: 1.0</td>
-                      </tr>
-                      <tr>
-                        <td className="font-semibold py-0.5">Tanggal Berlaku</td>
-                        <td className="py-0.5">: 07 Juli 2022</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        {/* Identitas Review */}
-        <div className="space-y-1.5">
-          <table className="w-full border border-black border-collapse text-[10pt]">
-            <tbody>
-              {[
-                ["Tanggal Review", formatTanggalIndo(item.tanggal_review)],
-                ["Periode Review", formatPeriode(item.periode_mulai, item.periode_selesai)],
-                ["Obyek Review", item.obyek_review],
-                ["Pelaksana Review", item.pelaksana_review],
-              ].map(([label, value], i) => (
-                <tr key={i} className={i > 0 ? "border-t border-black" : ""}>
-                  <td className="w-56 py-1 px-2 font-semibold border-r border-black bg-slate-50 print:bg-transparent">
-                    {label}
-                  </td>
-                  <td className="py-1 px-2">{value || "-"}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Tabel Log */}
-        <table className="w-full border border-black border-collapse text-[10pt]">
-          <thead>
-            <tr className="bg-slate-50 print:bg-transparent">
-              <th className={`${cell} w-10 text-center`}>No</th>
-              <th className={`${cell} text-left`}>User</th>
-              <th className={`${cell} text-left`}>IP</th>
-              <th className={`${cell} text-left`}>Tanggal</th>
-              <th className={`${cell} text-left`}>Waktu</th>
-              <th className={`${cell} text-left`}>Durasi</th>
-            </tr>
-          </thead>
+      {/* Kertas Legal (8,5 x 14 in), margin 0,5 in */}
+      <div
+        className="fr040-paper max-w-[8.5in] mx-auto bg-white shadow-lg text-black"
+        style={{ fontFamily: FONT, padding: "0.5in", minHeight: "14in", lineHeight: 1.15 }}
+      >
+        <table style={{ width: "100%", borderCollapse: "collapse", border: line, tableLayout: "fixed" }}>
+          <colgroup>
+            <col style={{ width: "10.3%" }} />
+            <col style={{ width: "53.4%" }} />
+            <col style={{ width: "12%" }} />
+            <col style={{ width: "1.4%" }} />
+            <col style={{ width: "22.9%" }} />
+          </colgroup>
           <tbody>
-            {rows.map((r, i) => (
-              <tr key={r.id ?? i} className="break-inside-avoid">
-                <td className={`${cell} text-center`}>{i + 1}</td>
-                <td className={cell}>{r.user_log}</td>
-                <td className={cell}>{r.ip_address}</td>
-                <td className={cell}>{formatTanggalIndo(r.tanggal)}</td>
-                <td className={cell}>{formatWaktu(r.waktu)}</td>
-                <td className={cell}>{r.durasi}</td>
-              </tr>
-            ))}
-            {Array.from({ length: blanks }).map((_, i) => (
-              <tr key={`b${i}`}>
-                <td className={`${cell} text-center`}>{rows.length + i + 1}</td>
-                <td className={`${cell} h-7`} />
-                <td className={cell} />
-                <td className={cell} />
-                <td className={cell} />
-                <td className={cell} />
-              </tr>
-            ))}
+            {/* Kop */}
+            <tr style={{ height: "0.31in" }}>
+              <td rowSpan={3} style={{ border: line, textAlign: "center", verticalAlign: "middle", padding: 2 }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/logo-fr040.png" alt="Logo Diskominfo Jabar" style={{ width: "0.68in", height: "auto", margin: "0 auto" }} />
+              </td>
+              <td rowSpan={3} style={{ border: line, textAlign: "center", verticalAlign: "middle", fontSize: "18pt", fontWeight: 700 }}>
+                FORMULIR REVIEW LOG
+              </td>
+              <td style={{ border: line, fontSize: "8pt", padding: "0 3px", whiteSpace: "nowrap", height: "0.31in" }}>No. Dokumen</td>
+              <td style={{ border: line, fontSize: "8pt", textAlign: "center" }}>:</td>
+              <td style={{ border: line, fontSize: "8pt", padding: "0 3px", whiteSpace: "nowrap", height: "0.31in" }}>FR-040/KOM.03.05/SANDIKAMI</td>
+            </tr>
+            <tr style={{ height: "0.31in" }}>
+              <td style={{ border: line, fontSize: "8pt", padding: "0 3px", whiteSpace: "nowrap", height: "0.31in" }}>No. Revisi</td>
+              <td style={{ border: line, fontSize: "8pt", textAlign: "center" }}>:</td>
+              <td style={{ border: line, fontSize: "8pt", padding: "0 3px", whiteSpace: "nowrap", height: "0.31in" }}>1.0</td>
+            </tr>
+            <tr style={{ height: "0.31in" }}>
+              <td style={{ border: line, fontSize: "8pt", padding: "0 3px", whiteSpace: "nowrap", height: "0.31in" }}>Tanggal Berlaku</td>
+              <td style={{ border: line, fontSize: "8pt", textAlign: "center" }}>:</td>
+              <td style={{ border: line, fontSize: "8pt", padding: "0 3px", whiteSpace: "nowrap", height: "0.31in" }}>07-Jul-2022</td>
+            </tr>
+
+            {/* Identitas review */}
+            <tr>
+              <td colSpan={5} style={{ border: line, borderBottom: "none", padding: "0 0 0 0.5in", height: "0.82in", verticalAlign: "top", fontSize: "11pt" }}>
+                {identitas.map(([label, value]) => (
+                  <div key={label}>
+                    {label} : {value}
+                  </div>
+                ))}
+              </td>
+            </tr>
+
+            {/* Tabel log */}
+            <tr>
+              <td colSpan={5} style={{ border: line, borderTop: "none", height: "2.04in", verticalAlign: "top", padding: "0.62in 0 0.2in 0.87in" }}>
+                <table style={{ width: "5.7in", borderCollapse: "collapse", tableLayout: "fixed" }}>
+                  <colgroup>
+                    <col style={{ width: "7.1%" }} />
+                    <col style={{ width: "20.5%" }} />
+                    <col style={{ width: "22.4%" }} />
+                    <col style={{ width: "22.4%" }} />
+                    <col style={{ width: "13.8%" }} />
+                    <col style={{ width: "13.8%" }} />
+                  </colgroup>
+                  <thead>
+                    <tr style={{ height: "0.41in" }}>
+                      {["No", "User", "IP", "Tanggal", "Waktu", "Durasi"].map((h) => (
+                        <th key={h} style={{ ...cellC, fontWeight: 400, verticalAlign: "middle" }}>{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {rows.map((r, i) => (
+                      <tr key={r.id ?? i} style={{ pageBreakInside: "avoid" }}>
+                        <td style={cellC}>{i + 1}</td>
+                        <td style={cell}>{r.user_log}</td>
+                        <td style={cell}>{r.ip_address}</td>
+                        <td style={cell}>{formatTanggalRingkas(r.tanggal)}</td>
+                        <td style={cell}>{formatWaktu(r.waktu)}</td>
+                        <td style={cell}>{r.durasi}</td>
+                      </tr>
+                    ))}
+                    {Array.from({ length: blanks }).map((_, i) => (
+                      <tr key={`b${i}`} style={{ height: "0.17in" }}>
+                        <td style={cell} /><td style={cell} /><td style={cell} /><td style={cell} /><td style={cell} /><td style={cell} />
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </td>
+            </tr>
+
+            {/* Tindak lanjut */}
+            <tr>
+              <td colSpan={5} style={{ border: line, padding: "0.2in 0 0.2in 1.05in", verticalAlign: "top" }}>
+                <div style={{ fontSize: "10pt" }}>Tindak lanjut</div>
+                <div style={{ width: "5.77in", minHeight: "1.1in", border: line, padding: "4px 6px", fontSize: "10pt", whiteSpace: "pre-line" }}>
+                  {item.tindak_lanjut || ""}
+                </div>
+              </td>
+            </tr>
+
+            {/* Tempat, tanggal & tanda tangan */}
+            <tr>
+              <td colSpan={5} style={{ padding: 0 }}>
+                <table style={{ width: "100%", borderCollapse: "collapse", tableLayout: "fixed" }}>
+                  <colgroup>
+                    <col style={{ width: "47.5%" }} />
+                    <col style={{ width: "52.5%" }} />
+                  </colgroup>
+                  <tbody>
+                    <tr>
+                      <td style={{ border: line, height: "0.23in" }} />
+                      <td style={{ border: line, textAlign: "center", fontSize: "10pt" }}>
+                        {item.ditandatangani_di || "Bandung"}, {tanggalTtd}
+                      </td>
+                    </tr>
+                    <tr>
+                      {sign.map((s) => (
+                        <td key={s.judul} style={{ border: line, textAlign: "center", verticalAlign: "top", fontSize: "10pt", padding: 0 }}>
+                          <div style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", minHeight: "1.55in", padding: "2px 0 4px" }}>
+                            <span>{s.judul}</span>
+                            <span>
+                              ({s.nama || "……………………………….."})
+                              {s.nip ? <div style={{ fontSize: "9pt" }}>NIP. {s.nip}</div> : null}
+                            </span>
+                          </div>
+                        </td>
+                      ))}
+                    </tr>
+                  </tbody>
+                </table>
+              </td>
+            </tr>
           </tbody>
         </table>
-
-        {/* Tindak Lanjut */}
-        <div className="space-y-1.5 text-[10pt] break-inside-avoid">
-          <table className="w-full border border-black border-collapse">
-            <tbody>
-              <tr>
-                <td className="py-1 px-2 font-semibold bg-slate-50 print:bg-transparent border-b border-black">Tindak lanjut</td>
-              </tr>
-              <tr>
-                <td className="py-1 px-2 h-24 align-top whitespace-pre-line">{item.tindak_lanjut || ""}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        {/* Tanda Tangan */}
-        <div className="pt-6 text-[10pt] break-inside-avoid">
-          <p className="text-right pb-3">
-            {item.ditandatangani_di || "Bandung"}, {item.tanggal_ttd ? formatTanggalIndo(item.tanggal_ttd) : "……………………"}
-          </p>
-          <table className="w-full border-collapse text-center">
-            <tbody>
-              <tr className="align-top">
-                {sign.map((s) => (
-                  <td key={s.judul} className="w-1/2 py-1">{s.judul}</td>
-                ))}
-              </tr>
-              <tr>
-                <td className="h-20" />
-                <td />
-              </tr>
-              <tr className="align-bottom">
-                {sign.map((s) => (
-                  <td key={s.judul} className="py-1">
-                    ({s.nama || "............................"})
-                    {s.nip && <div className="text-[9pt]">NIP. {s.nip}</div>}
-                  </td>
-                ))}
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        {/* Footer */}
-        <div className="pt-6 border-t border-slate-300 text-[8pt] text-slate-500 flex items-center justify-between">
-          <span>Klasifikasi : INTERNAL</span>
-          <span>Halaman 1 dari 1</span>
-        </div>
       </div>
 
-      {/* Print-specific style */}
+      {/* Print-specific style: ukuran halaman = template (Legal portrait, margin 0,5 in) */}
       <style jsx global>{`
         @media print {
           body {
             background-color: #ffffff !important;
             color: #000000 !important;
-            font-size: 10pt;
           }
           aside,
           header,
@@ -235,9 +249,16 @@ export default function PrintReviewLogPage() {
           .print\\:hidden {
             display: none !important;
           }
+          .fr040-paper {
+            box-shadow: none !important;
+            padding: 0 !important;
+            min-height: 0 !important;
+            max-width: none !important;
+            width: 100% !important;
+          }
           @page {
-            size: A4 portrait;
-            margin: 15mm 15mm 15mm 15mm;
+            size: 8.5in 14in;
+            margin: 0.5in;
           }
         }
       `}</style>

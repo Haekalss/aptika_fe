@@ -86,6 +86,31 @@ export const deleteReviewLog = async (id: number | string) => {
   return res.data;
 };
 
+/** Unduh formulir FR-040 (.docx) hasil pengisian template asli. */
+export const downloadReviewLogDocx = async (id: number | string): Promise<void> => {
+  const res = await api.get(`/smki/review-log/${id}/export-docx`, { responseType: "blob" });
+  const cd = res.headers?.["content-disposition"] as string | undefined;
+  const m = cd ? /filename\*=UTF-8''([^;]+)|filename="([^"]+)"/.exec(cd) : null;
+  const filename = m ? decodeURIComponent(m[1] ?? m[2]) : `FR-040_Review_Log_${id}.docx`;
+  const url = URL.createObjectURL(res.data);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 5000);
+};
+
+/** Tanggal ringkas gaya kop dokumen, mis. 07-Jul-2022 (sama dengan hasil ekspor .docx). */
+export const formatTanggalRingkas = (value?: string | null): string => {
+  if (!value) return "";
+  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(value);
+  if (!m) return value;
+  const bln = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
+  return `${m[3]}-${bln[Number(m[2]) - 1]}-${m[1]}`;
+};
+
 export const formatTanggalIndo = (value?: string | null): string => {
   if (!value) return "-";
   const d = new Date(value.length === 10 ? `${value}T00:00:00` : value);
