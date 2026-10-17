@@ -210,14 +210,14 @@ export default function PrintReviewLogPage() {
                   </colgroup>
                   <tbody>
                     <tr>
-                      <td style={{ border: line, height: "0.23in" }} />
-                      <td style={{ border: line, textAlign: "center", fontSize: "10pt" }}>
+                      <td style={{ border: line, borderTop: "none", borderLeft: "none", height: "0.23in" }} />
+                      <td style={{ border: line, borderTop: "none", borderRight: "none", textAlign: "center", fontSize: "10pt" }}>
                         {item.ditandatangani_di || "Bandung"}, {tanggalTtd}
                       </td>
                     </tr>
                     <tr>
-                      {sign.map((s) => (
-                        <td key={s.judul} style={{ border: line, textAlign: "center", verticalAlign: "top", fontSize: "10pt", padding: 0 }}>
+                      {sign.map((s, i) => (
+                        <td key={s.judul} style={{ border: line, borderBottom: "none", ...(i === 0 ? { borderLeft: "none" } : { borderRight: "none" }), textAlign: "center", verticalAlign: "top", fontSize: "10pt", padding: 0 }}>
                           <div style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", minHeight: "1.55in", padding: "2px 0 4px" }}>
                             <span>{s.judul}</span>
                             <span>
