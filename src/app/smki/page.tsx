@@ -15,6 +15,7 @@ import {
   Lock,
   FileCheck,
   ClipboardCheck,
+  MonitorSmartphone,
 } from "lucide-react";
 import ServiceRouteGuard from "@/components/auth/ServiceRouteGuard";
 import { useAuthStore } from "@/store/useAuthStore";
@@ -143,6 +144,30 @@ export default function SmkiPage() {
               </p>
             </div>
             <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-start text-xs font-bold text-sky-600 dark:text-sky-400">
+              <span className="inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                <span>Buka Layanan</span>
+                <ArrowRight size={14} />
+              </span>
+            </div>
+          </div>
+
+          {/* Card: Formulir BYOD / Perangkat Pribadi (FR-045) */}
+          <div
+            onClick={() => router.push("/smki/perangkat-pribadi")}
+            className="group relative bg-white dark:bg-slate-900/90 rounded-2xl p-6 shadow-sm border border-slate-200/80 dark:border-slate-800 hover:border-indigo-500/60 hover:shadow-md transition-all cursor-pointer flex flex-col justify-between"
+          >
+            <div>
+              <div className="w-12 h-12 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800/60 flex items-center justify-center text-indigo-600 dark:text-indigo-400 mb-4 group-hover:scale-105 transition-transform">
+                <MonitorSmartphone size={24} />
+              </div>
+              <h3 className="text-base font-bold text-slate-800 dark:text-white mb-2 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                Formulir BYOD (Perangkat Pribadi)
+              </h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-medium mb-4">
+                Kelola surat pernyataan penggunaan perangkat pribadi di unit kerja (FR-045): daftar laptop/PC/tab, merek, nomor seri, serta cetak formulir resmi.
+              </p>
+            </div>
+            <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-start text-xs font-bold text-indigo-600 dark:text-indigo-400">
               <span className="inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform">
                 <span>Buka Layanan</span>
                 <ArrowRight size={14} />
