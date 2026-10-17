@@ -88,17 +88,6 @@ export const formatTanggalIndo = (value?: string | null): string => {
   return d.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" });
 };
 
-export const jenisBadgeClass = (jenis: string): string => {
-  switch (jenis) {
-    case "Laptop":
-      return "bg-sky-50 text-sky-700 border-sky-200/80 dark:bg-sky-950/50 dark:text-sky-300 dark:border-sky-800";
-    case "PC":
-      return "bg-emerald-50 text-emerald-700 border-emerald-200/80 dark:bg-emerald-950/50 dark:text-emerald-300 dark:border-emerald-800";
-    default:
-      return "bg-amber-50 text-amber-700 border-amber-200/80 dark:bg-amber-950/50 dark:text-amber-300 dark:border-amber-800";
-  }
-};
-
 export const ringkasJenis = (f: PerangkatPribadi): string => {
   const parts = [
     f.laptop_count ? `${f.laptop_count} Laptop` : "",

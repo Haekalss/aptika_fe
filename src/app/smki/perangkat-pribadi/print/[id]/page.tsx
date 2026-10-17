@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Printer, ChevronLeft, Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
-import ServiceRouteGuard from "@/components/auth/ServiceRouteGuard";
 import { fetchPerangkatPribadiDetail, formatTanggalIndo, perangkatErrMsg, PerangkatPribadi } from "@/services/smki/perangkatPribadiService";
 
 const MIN_ROWS = 5;
@@ -41,75 +40,105 @@ export default function PrintPerangkatPribadiPage() {
 
   const rows = item.perangkat || [];
   const blanks = Math.max(0, MIN_ROWS - rows.length);
-  const cell = "border border-black px-2 py-1.5 align-top";
+  const cell = "border border-black px-2 py-1 align-top";
 
   return (
-    <ServiceRouteGuard requiredService="SMKI">
-      <div className="min-h-screen bg-slate-100 py-6 px-4 print:bg-white print:p-0">
-        <div className="max-w-[210mm] mx-auto mb-6 flex items-center justify-between gap-4 print:hidden bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
-          <button onClick={() => router.push(`/smki/perangkat-pribadi/detail/${item.id}`)} className="flex items-center gap-1.5 px-4 py-2 rounded-xl border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-semibold transition">
-            <ChevronLeft className="w-4 h-4 text-slate-500" />
-            <span>Kembali ke Detail</span>
-          </button>
-          <button onClick={() => window.print()} className="flex items-center gap-2 px-5 py-2 rounded-xl bg-[#065f46] hover:bg-[#047857] text-white text-xs font-semibold shadow-xs transition">
-            <Printer className="w-4 h-4" />
-            <span>Cetak Dokumen (Print / PDF)</span>
-          </button>
+    <div className="min-h-screen bg-slate-100 py-6 px-4 print:bg-white print:p-0">
+      {/* Floating action bar - hidden on print */}
+      <div className="max-w-[210mm] mx-auto mb-6 flex items-center justify-between gap-4 print:hidden bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+        <button
+          onClick={() => router.push("/smki/perangkat-pribadi")}
+          className="flex items-center gap-1.5 px-4 py-2 rounded-xl border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-semibold transition"
+        >
+          <ChevronLeft className="w-4 h-4 text-slate-500" />
+          <span>Kembali ke Daftar</span>
+        </button>
+        <button
+          onClick={() => window.print()}
+          className="flex items-center gap-2 px-5 py-2 rounded-xl bg-[#065f46] hover:bg-[#047857] text-white text-xs font-semibold shadow-xs transition"
+        >
+          <Printer className="w-4 h-4" />
+          <span>Cetak Dokumen (Print / PDF)</span>
+        </button>
+      </div>
+
+      {/* A4 Paper */}
+      <div className="max-w-[210mm] mx-auto bg-white p-[20mm] shadow-lg print:shadow-none print:p-0 print:max-w-none text-slate-900 font-sans text-[11pt] leading-normal print:w-full space-y-5">
+        {/* Kop Surat */}
+        <div className="border border-black">
+          <table className="w-full border-collapse">
+            <tbody>
+              <tr>
+                <td className="w-28 p-2 border-r border-black text-center align-middle">
+                  <img
+                    src="/logo-fr047.png"
+                    alt="Logo Jabar"
+                    className="w-16 h-auto mx-auto object-contain"
+                    onError={(e) => {
+                      const t = e.currentTarget;
+                      t.onerror = null;
+                      t.src = "/logo.png";
+                    }}
+                  />
+                </td>
+                <td className="p-3 border-r border-black text-center align-middle">
+                  <h2 className="text-base font-bold tracking-wide uppercase text-slate-900">
+                    FORMULIR<br />Bring Your Own Device (BYOD)
+                  </h2>
+                </td>
+                <td className="w-56 p-2 text-[9pt] align-middle">
+                  <table className="w-full text-left">
+                    <tbody>
+                      <tr>
+                        <td className="font-semibold py-0.5 w-24">No.Dokumen</td>
+                        <td className="py-0.5">: FR-045/KOM.03/05/SANDIKAMI</td>
+                      </tr>
+                      <tr>
+                        <td className="font-semibold py-0.5">No.Revisi</td>
+                        <td className="py-0.5">: 0.0</td>
+                      </tr>
+                      <tr>
+                        <td className="font-semibold py-0.5">Tanggal Berlaku</td>
+                        <td className="py-0.5">: 13 Juli 2023</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
 
-        {/* A4 Paper */}
-        <div className="max-w-[210mm] mx-auto bg-white p-[20mm] shadow-lg print:shadow-none print:p-[15mm] print:max-w-none text-slate-900 font-sans text-[11pt] leading-normal print:w-full space-y-5">
-          {/* Kop */}
-          <div className="border border-black">
-            <table className="w-full border-collapse">
-              <tbody>
-                <tr>
-                  <td className="w-28 p-2 border-r border-black text-center align-middle">
-                    <img
-                      src="/logo-fr047.png"
-                      alt="Logo Jabar"
-                      className="w-16 h-auto mx-auto object-contain"
-                      onError={(e) => { const t = e.currentTarget; t.onerror = null; t.src = "/logo.png"; }}
-                    />
-                  </td>
-                  <td className="p-3 border-r border-black text-center align-middle">
-                    <h2 className="text-base font-bold tracking-wide uppercase">FORMULIR<br />Bring Your Own Device (BYOD)</h2>
-                  </td>
-                  <td className="w-64 p-2 text-[9pt] align-middle">
-                    <table className="w-full text-left">
-                      <tbody>
-                        <tr><td className="font-semibold py-0.5 w-24">No. Dokumen</td><td className="py-0.5">: FR-045/KOM.03/05/ SANDIKAMI</td></tr>
-                        <tr><td className="font-semibold py-0.5">No. Revisi</td><td className="py-0.5">: 0.0</td></tr>
-                        <tr><td className="font-semibold py-0.5">Tanggal Berlaku</td><td className="py-0.5">: 13 Juli 2023</td></tr>
-                      </tbody>
-                    </table>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <p className="text-[10.5pt]">Yang bertanda tangan di bawah ini:</p>
-          <table className="w-full border-collapse border border-black text-[10.5pt]">
+        {/* Identitas */}
+        <div className="space-y-1.5">
+          <p className="text-[10pt]">Yang bertanda tangan di bawah ini:</p>
+          <table className="w-full border border-black border-collapse text-[10pt]">
             <tbody>
               {[
                 ["Nama", item.nama],
                 ["NIP", item.nip],
                 ["Jabatan", item.jabatan],
                 ["Unit Kerja", item.unit_kerja],
-              ].map(([l, v]) => (
-                <tr key={l}>
-                  <td className={`${cell} w-40`}>{l}</td>
-                  <td className={cell}>{v || ""}</td>
+              ].map(([label, value], i) => (
+                <tr key={i} className={i > 0 ? "border-t border-black" : ""}>
+                  <td className="w-56 py-1 px-2 font-semibold border-r border-black bg-slate-50 print:bg-transparent">
+                    {label}
+                  </td>
+                  <td className="py-1 px-2">{value || "-"}</td>
                 </tr>
               ))}
             </tbody>
           </table>
+        </div>
 
-          <p className="text-[10.5pt]">Menyatakan bahwa penggunaan perangkat pribadi di <strong>{item.unit_kerja}</strong> adalah sebagai berikut:</p>
-          <table className="w-full border-collapse border border-black text-[10pt]">
+        {/* Tabel Perangkat */}
+        <div className="space-y-1.5">
+          <p className="text-[10pt]">
+            Menyatakan bahwa penggunaan perangkat pribadi di <strong>{item.unit_kerja}</strong> adalah sebagai berikut:
+          </p>
+          <table className="w-full border border-black border-collapse text-[10pt]">
             <thead>
-              <tr className="bg-slate-100 print:bg-slate-100">
+              <tr className="bg-slate-50 print:bg-transparent">
                 <th className={`${cell} w-10 text-center`}>No</th>
                 <th className={`${cell} text-left`}>Nama</th>
                 <th className={`${cell} text-left`}>NIP</th>
@@ -132,35 +161,79 @@ export default function PrintPerangkatPribadiPage() {
               {Array.from({ length: blanks }).map((_, i) => (
                 <tr key={`b${i}`}>
                   <td className={`${cell} text-center`}>{rows.length + i + 1}</td>
-                  <td className={`${cell} h-7`} /><td className={cell} /><td className={cell} /><td className={cell} /><td className={cell} />
+                  <td className={`${cell} h-7`} />
+                  <td className={cell} />
+                  <td className={cell} />
+                  <td className={cell} />
+                  <td className={cell} />
                 </tr>
               ))}
             </tbody>
           </table>
+        </div>
 
-          <div className="text-[9.5pt]">
-            <p>Jenis Perangkat TI dapat diisi dengan:</p>
-            <p>*Laptop/PC/Tab</p>
-          </div>
+        <div className="text-[9pt]">
+          <p>Jenis Perangkat TI dapat diisi dengan:</p>
+          <p>*Laptop/PC/Tab</p>
+        </div>
 
-          <p className="text-[10.5pt] text-justify">
-            Jika dikemudian hari ditemukan pelanggaran berkaitan dengan penggunaan perangkat pribadi tersebut, maka akan dikenakan sanksi sesuai ketentuan yang berlaku.
+        <p className="text-[10pt] text-justify">
+          Jika dikemudian hari ditemukan pelanggaran berkaitan dengan penggunaan perangkat pribadi tersebut, maka akan dikenakan sanksi sesuai ketentuan yang berlaku.
+        </p>
+
+        {/* Tanda Tangan */}
+        <div className="pt-6 text-[10pt] break-inside-avoid">
+          <p className="text-right pb-3">
+            {item.ditandatangani_di || "Bandung"}, {item.tanggal_ttd ? formatTanggalIndo(item.tanggal_ttd) : "……………………"}
           </p>
+          <table className="w-full border-collapse text-center">
+            <tbody>
+              <tr>
+                <td className="w-1/2" />
+                <td className="w-1/2 py-1">Kepala {item.unit_kerja},</td>
+              </tr>
+              <tr>
+                <td />
+                <td className="h-20" />
+              </tr>
+              <tr className="align-bottom">
+                <td />
+                <td className="py-1">
+                  ({item.nama || "............................"})
+                  {item.nip && <div className="text-[9pt]">NIP. {item.nip}</div>}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
-          <div className="text-[10.5pt] flex justify-end break-inside-avoid">
-            <div className="text-center w-64">
-              <p>{item.ditandatangani_di || "Bandung"}, {item.tanggal_ttd ? formatTanggalIndo(item.tanggal_ttd) : "Tanggal Bulan Tahun"}</p>
-              <div className="h-24 flex items-center justify-center text-[9pt] text-slate-400 border border-dashed border-slate-300 my-2 rounded print:border-0">
-                <span className="print:hidden">Spesimen TTE Kepala Unit Kerja</span>
-              </div>
-              <p className="font-semibold">{item.nama}</p>
-              {item.nip && <p className="text-[9.5pt]">NIP. {item.nip}</p>}
-            </div>
-          </div>
-
-          <p className="text-[8.5pt] text-slate-500 pt-2">Klasifikasi : INTERNAL</p>
+        {/* Footer */}
+        <div className="pt-6 border-t border-slate-300 text-[8pt] text-slate-500 flex items-center justify-between">
+          <span>Klasifikasi : INTERNAL</span>
+          <span>Halaman 1 dari 1</span>
         </div>
       </div>
-    </ServiceRouteGuard>
+
+      {/* Print-specific style */}
+      <style jsx global>{`
+        @media print {
+          body {
+            background-color: #ffffff !important;
+            color: #000000 !important;
+            font-size: 10pt;
+          }
+          aside,
+          header,
+          nav,
+          .print\\:hidden {
+            display: none !important;
+          }
+          @page {
+            size: A4 portrait;
+            margin: 15mm 15mm 15mm 15mm;
+          }
+        }
+      `}</style>
+    </div>
   );
 }
