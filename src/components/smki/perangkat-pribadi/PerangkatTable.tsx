@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertCircle, Eye, Pencil, Printer, Trash2 } from "lucide-react";
+import { AlertCircle, Eye, FileDown, Pencil, Printer, Trash2 } from "lucide-react";
 import { formatTanggalIndo, ringkasJenis, type PerangkatPribadi } from "@/services/smki/perangkatPribadiService";
 
 /** Organism: tabel daftar formulir BYOD + empty state. Pagination dirender parent (pola InsidenTable FR-016). */
@@ -11,6 +11,7 @@ export default function PerangkatTable({
   onDetail,
   onEdit,
   onPrint,
+  onDocx,
   onDelete,
 }: {
   items: PerangkatPribadi[];
@@ -19,6 +20,7 @@ export default function PerangkatTable({
   onDetail: (id: number) => void;
   onEdit: (id: number) => void;
   onPrint: (id: number) => void;
+  onDocx: (id: number) => void;
   onDelete: (item: PerangkatPribadi) => void;
 }) {
   return (
@@ -40,7 +42,7 @@ export default function PerangkatTable({
               <th className="py-3 px-4 min-w-[120px]">PERANGKAT</th>
               <th className="py-3 px-4 min-w-[160px]">RINCIAN</th>
               <th className="py-3 px-4 min-w-[140px]">TANGGAL</th>
-              <th className="py-3 px-4 text-center w-32">AKSI</th>
+              <th className="py-3 px-4 text-center w-40">AKSI</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
@@ -92,6 +94,14 @@ export default function PerangkatTable({
                         className="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 transition-all cursor-pointer"
                       >
                         <Eye size={13} />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => onDocx(item.id)}
+                        title="Unduh Word FR-045 (.docx)"
+                        className="p-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 border border-emerald-200 dark:border-emerald-800/60 transition-all cursor-pointer"
+                      >
+                        <FileDown size={13} />
                       </button>
                       <button
                         type="button"

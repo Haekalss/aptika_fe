@@ -2,11 +2,19 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { Printer, ChevronLeft, Loader2 } from "lucide-react";
+import { Printer, ChevronLeft, FileDown, Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
-import { fetchPerangkatPribadiDetail, formatTanggalIndo, perangkatErrMsg, PerangkatPribadi } from "@/services/smki/perangkatPribadiService";
+import {
+  fetchPerangkatPribadiDetail, downloadPerangkatPribadiDocx, formatTanggalIndo, perangkatErrMsg, PerangkatPribadi,
+} from "@/services/smki/perangkatPribadiService";
 
+/** Jumlah baris minimum tabel perangkat (sama dengan template .docx: 5 baris). */
 const MIN_ROWS = 5;
+
+// Format halaman, font, dan ukuran mengikuti template asli "FR-045 Formulir BYOD.docx"
+// (Letter landscape, margin 1 in, Calibri 12 pt; kop 18 pt di header setiap halaman).
+const FONT = "Calibri, Carlito, 'Segoe UI', Arial, sans-serif";
+const line = "1px solid #000";
 
 export default function PrintPerangkatPribadiPage() {
   const params = useParams();
@@ -29,6 +37,15 @@ export default function PrintPerangkatPribadiPage() {
     })();
   }, [id]);
 
+  const handleDocx = async () => {
+    try {
+      await downloadPerangkatPribadiDocx(id);
+      toast.success("Dokumen FR-045 (.docx) berhasil diunduh.");
+    } catch {
+      toast.error("Gagal mengunduh dokumen FR-045.");
+    }
+  };
+
   if (loading || !item) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-3">
@@ -40,12 +57,19 @@ export default function PrintPerangkatPribadiPage() {
 
   const rows = item.perangkat || [];
   const blanks = Math.max(0, MIN_ROWS - rows.length);
-  const cell = "border border-black px-2 py-1 align-top";
+  const cell: React.CSSProperties = { border: line, padding: "0 4px", verticalAlign: "top" };
+  const unit = item.unit_kerja;
+  const kepala = /^Kepala (.+)$/.exec(item.jabatan || "");
+  const meta: [string, string, string, string][] = [
+    ["No. Dokumen", "FR-045/KOM.03/05/ SANDIKAMI", "8pt", "0.45in"],
+    ["No. Revisi", "0.0", "9pt", "0.37in"],
+    ["Tanggal Berlaku", "13 Juli 2023", "9pt", "0.52in"],
+  ];
 
   return (
-    <div className="min-h-screen bg-slate-100 py-6 px-4 print:bg-white print:p-0">
+    <div className="min-h-screen bg-slate-100 py-6 px-4 print:bg-white print:p-0 print:min-h-0">
       {/* Floating action bar - hidden on print */}
-      <div className="max-w-[210mm] mx-auto mb-6 flex items-center justify-between gap-4 print:hidden bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+      <div className="max-w-[11in] mx-auto mb-6 flex items-center justify-between gap-4 print:hidden bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
         <button
           onClick={() => router.push("/smki/perangkat-pribadi")}
           className="flex items-center gap-1.5 px-4 py-2 rounded-xl border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-semibold transition"
@@ -53,174 +77,200 @@ export default function PrintPerangkatPribadiPage() {
           <ChevronLeft className="w-4 h-4 text-slate-500" />
           <span>Kembali ke Daftar</span>
         </button>
-        <button
-          onClick={() => window.print()}
-          className="flex items-center gap-2 px-5 py-2 rounded-xl bg-[#065f46] hover:bg-[#047857] text-white text-xs font-semibold shadow-xs transition"
-        >
-          <Printer className="w-4 h-4" />
-          <span>Cetak Dokumen (Print / PDF)</span>
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleDocx}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 text-xs font-semibold transition"
+          >
+            <FileDown className="w-4 h-4" />
+            <span>Unduh Word (.docx)</span>
+          </button>
+          <button
+            onClick={() => window.print()}
+            className="flex items-center gap-2 px-5 py-2 rounded-xl bg-[#065f46] hover:bg-[#047857] text-white text-xs font-semibold shadow-xs transition"
+          >
+            <Printer className="w-4 h-4" />
+            <span>Cetak Dokumen (Print / PDF)</span>
+          </button>
+        </div>
       </div>
 
-      {/* A4 Paper */}
-      <div className="max-w-[210mm] mx-auto bg-white p-[20mm] shadow-lg print:shadow-none print:p-0 print:max-w-none text-slate-900 font-sans text-[11pt] leading-normal print:w-full space-y-5">
-        {/* Kop Surat */}
-        <div className="border border-black">
-          <table className="w-full border-collapse">
-            <tbody>
-              <tr>
-                <td className="w-28 p-2 border-r border-black text-center align-middle">
-                  <img
-                    src="/logo-fr047.png"
-                    alt="Logo Jabar"
-                    className="w-16 h-auto mx-auto object-contain"
-                    onError={(e) => {
-                      const t = e.currentTarget;
-                      t.onerror = null;
-                      t.src = "/logo.png";
+      {/* Kertas Letter landscape (11 x 8,5 in), margin 1 in */}
+      <div
+        className="fr045-paper max-w-[11in] mx-auto bg-white shadow-lg text-black"
+        style={{ fontFamily: FONT, fontSize: "12pt", lineHeight: 1.15, padding: "0.7in 1in 1in 0.4in", minHeight: "8.5in" }}
+      >
+        <table style={{ width: "100%", borderCollapse: "collapse" }}>
+          {/* Kop: header setiap halaman (template: header1.xml) */}
+          <thead style={{ display: "table-header-group" }}>
+            <tr>
+              <td style={{ padding: "0 0 0.28in" }}>
+                <table style={{ width: "7.78in", borderCollapse: "collapse", tableLayout: "fixed" }}>
+                  <colgroup>
+                    <col style={{ width: "15%" }} />
+                    <col style={{ width: "42%" }} />
+                    <col style={{ width: "17.7%" }} />
+                    <col style={{ width: "3.8%" }} />
+                    <col style={{ width: "21.5%" }} />
+                  </colgroup>
+                  <tbody>
+                    <tr>
+                      <td rowSpan={3} style={{ border: line, textAlign: "center", verticalAlign: "middle", padding: 4 }}>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src="/logo-fr045.png" alt="Logo Jabar" style={{ width: "0.95in", height: "auto", margin: "0 auto" }} />
+                      </td>
+                      <td rowSpan={3} style={{ border: line, textAlign: "center", verticalAlign: "middle", fontSize: "18pt", fontWeight: 700, lineHeight: 1.2 }}>
+                        FORMULIR
+                        <br />
+                        <i>Bring Your Own Device (BYOD)</i>
+                      </td>
+                      <td style={{ border: line, fontSize: "10pt", padding: "0 6px", height: meta[0][3], verticalAlign: "middle" }}>{meta[0][0]}</td>
+                      <td style={{ border: line, fontSize: "10pt", textAlign: "center" }}>:</td>
+                      <td style={{ border: line, fontSize: meta[0][2], padding: "0 6px" }}>{meta[0][1]}</td>
+                    </tr>
+                    {meta.slice(1).map(([l, v, fs, h]) => (
+                      <tr key={l}>
+                        <td style={{ border: line, fontSize: "10pt", padding: "0 6px", height: h, verticalAlign: "middle" }}>{l}</td>
+                        <td style={{ border: line, fontSize: "10pt", textAlign: "center" }}>:</td>
+                        <td style={{ border: line, fontSize: fs, padding: "0 6px", verticalAlign: "middle" }}>{v}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style={{ padding: "0 0 0 0.6in" }}>
+                <p style={{ textAlign: "justify", margin: 0 }}>Yang bertanda tangan di bawah ini:</p>
+
+                {/* Identitas */}
+                <table style={{ width: "6.1in", marginTop: "0.12in", borderCollapse: "collapse", tableLayout: "fixed" }}>
+                  <colgroup>
+                    <col style={{ width: "1.15in" }} />
+                    <col />
+                  </colgroup>
+                  <tbody>
+                    {[
+                      ["Nama", item.nama],
+                      ["NIP", item.nip],
+                    ].map(([l, v]) => (
+                      <tr key={l as string}>
+                        <td style={cell}>{l}</td>
+                        <td style={cell}>{v || ""}</td>
+                      </tr>
+                    ))}
+                    <tr>
+                      <td style={cell}>Jabatan</td>
+                      <td style={cell}>
+                        {kepala ? (
+                          <>
+                            Kepala <b>{kepala[1]}</b>
+                          </>
+                        ) : (
+                          item.jabatan
+                        )}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style={cell}>Unit Kerja</td>
+                      <td style={cell}>{unit || ""}</td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <p style={{ textAlign: "justify", margin: "0.2in 0 0.06in" }}>
+                  Menyatakan bahwa penggunaan perangkat pribadi di <b>{unit}</b> adalah sebagai berikut:
+                </p>
+
+                {/* Tabel perangkat */}
+                <table style={{ width: "9.19in", borderCollapse: "collapse", tableLayout: "fixed" }}>
+                  <colgroup>
+                    <col style={{ width: "4.1%" }} />
+                    <col style={{ width: "22.7%" }} />
+                    <col style={{ width: "20.5%" }} />
+                    <col style={{ width: "13.3%" }} />
+                    <col style={{ width: "17.9%" }} />
+                    <col style={{ width: "21.5%" }} />
+                  </colgroup>
+                  <thead>
+                    <tr>
+                      {["No", "Nama", "NIP", "Jenis perangkat TI", "Merek/ tipe", "Nomor Seri"].map((h) => (
+                        <th key={h} style={{ ...cell, textAlign: "center", fontWeight: 700 }}>{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {rows.map((p, i) => (
+                      <tr key={p.id ?? i} style={{ height: "0.31in", pageBreakInside: "avoid" }}>
+                        <td style={cell}>{i + 1}</td>
+                        <td style={cell}>{p.nama}</td>
+                        <td style={cell}>{p.nip}</td>
+                        <td style={cell}>{p.jenis_perangkat}</td>
+                        <td style={cell}>{p.merek_tipe}</td>
+                        <td style={cell}>{p.nomor_seri}</td>
+                      </tr>
+                    ))}
+                    {Array.from({ length: blanks }).map((_, i) => (
+                      <tr key={`b${i}`} style={{ height: "0.31in" }}>
+                        <td style={cell}>{rows.length + i + 1}</td>
+                        <td style={cell} /><td style={cell} /><td style={cell} /><td style={cell} /><td style={cell} />
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+
+                <div style={{ marginTop: "0.27in" }}>
+                  <p style={{ margin: 0 }}>Jenis Perangkat TI dapat diisi dengan:</p>
+                  <p style={{ margin: 0 }}>*Laptop/PC/Tab</p>
+                </div>
+
+                <p style={{ textAlign: "justify", margin: "0.55in 0 0" }}>
+                  Jika dikemudian hari ditemukan pelanggaran berkaitan dengan penggunaan perangkat pribadi tersebut, maka akan dikenakan sanksi sesuai ketentuan yang berlaku.
+                </p>
+
+                {/* Tempat/tanggal + spesimen TTE Kepala Unit Kerja */}
+                <div style={{ marginLeft: "5.5in", width: "2.65in", marginTop: "0.25in", textAlign: "center", pageBreakInside: "avoid", breakInside: "avoid" }}>
+                  <p style={{ margin: 0 }}>
+                    {item.ditandatangani_di || "Bandung"},{" "}
+                    {item.tanggal_ttd ? formatTanggalIndo(item.tanggal_ttd) : "Tanggal Bulan Tahun"}
+                  </p>
+                  <div
+                    style={{
+                      marginTop: "0.25in",
+                      height: "0.975in",
+                      border: "1.5px dashed #4472c4",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      padding: "0 0.3in",
                     }}
-                  />
-                </td>
-                <td className="p-3 border-r border-black text-center align-middle">
-                  <h2 className="text-base font-bold tracking-wide uppercase text-slate-900">
-                    FORMULIR<br />Bring Your Own Device (BYOD)
-                  </h2>
-                </td>
-                <td className="w-56 p-2 text-[9pt] align-middle">
-                  <table className="w-full text-left">
-                    <tbody>
-                      <tr>
-                        <td className="font-semibold py-0.5 w-24">No.Dokumen</td>
-                        <td className="py-0.5">: FR-045/KOM.03/05/SANDIKAMI</td>
-                      </tr>
-                      <tr>
-                        <td className="font-semibold py-0.5">No.Revisi</td>
-                        <td className="py-0.5">: 0.0</td>
-                      </tr>
-                      <tr>
-                        <td className="font-semibold py-0.5">Tanggal Berlaku</td>
-                        <td className="py-0.5">: 13 Juli 2023</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+                  >
+                    Spesimen TTE Kepala Unit Kerja
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
 
-        {/* Identitas */}
-        <div className="space-y-1.5">
-          <p className="text-[10pt]">Yang bertanda tangan di bawah ini:</p>
-          <table className="w-full border border-black border-collapse text-[10pt]">
-            <tbody>
-              {[
-                ["Nama", item.nama],
-                ["NIP", item.nip],
-                ["Jabatan", item.jabatan],
-                ["Unit Kerja", item.unit_kerja],
-              ].map(([label, value], i) => (
-                <tr key={i} className={i > 0 ? "border-t border-black" : ""}>
-                  <td className="w-56 py-1 px-2 font-semibold border-r border-black bg-slate-50 print:bg-transparent">
-                    {label}
-                  </td>
-                  <td className="py-1 px-2">{value || "-"}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Tabel Perangkat */}
-        <div className="space-y-1.5">
-          <p className="text-[10pt]">
-            Menyatakan bahwa penggunaan perangkat pribadi di <strong>{item.unit_kerja}</strong> adalah sebagai berikut:
-          </p>
-          <table className="w-full border border-black border-collapse text-[10pt]">
-            <thead>
-              <tr className="bg-slate-50 print:bg-transparent">
-                <th className={`${cell} w-10 text-center`}>No</th>
-                <th className={`${cell} text-left`}>Nama</th>
-                <th className={`${cell} text-left`}>NIP</th>
-                <th className={`${cell} text-left`}>Jenis perangkat TI</th>
-                <th className={`${cell} text-left`}>Merek/ tipe</th>
-                <th className={`${cell} text-left`}>Nomor Seri</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((p, i) => (
-                <tr key={p.id ?? i} className="break-inside-avoid">
-                  <td className={`${cell} text-center`}>{i + 1}</td>
-                  <td className={cell}>{p.nama}</td>
-                  <td className={cell}>{p.nip}</td>
-                  <td className={cell}>{p.jenis_perangkat}</td>
-                  <td className={cell}>{p.merek_tipe}</td>
-                  <td className={cell}>{p.nomor_seri}</td>
-                </tr>
-              ))}
-              {Array.from({ length: blanks }).map((_, i) => (
-                <tr key={`b${i}`}>
-                  <td className={`${cell} text-center`}>{rows.length + i + 1}</td>
-                  <td className={`${cell} h-7`} />
-                  <td className={cell} />
-                  <td className={cell} />
-                  <td className={cell} />
-                  <td className={cell} />
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        <div className="text-[9pt]">
-          <p>Jenis Perangkat TI dapat diisi dengan:</p>
-          <p>*Laptop/PC/Tab</p>
-        </div>
-
-        <p className="text-[10pt] text-justify">
-          Jika dikemudian hari ditemukan pelanggaran berkaitan dengan penggunaan perangkat pribadi tersebut, maka akan dikenakan sanksi sesuai ketentuan yang berlaku.
-        </p>
-
-        {/* Tanda Tangan */}
-        <div className="pt-6 text-[10pt] break-inside-avoid">
-          <p className="text-right pb-3">
-            {item.ditandatangani_di || "Bandung"}, {item.tanggal_ttd ? formatTanggalIndo(item.tanggal_ttd) : "……………………"}
-          </p>
-          <table className="w-full border-collapse text-center">
-            <tbody>
-              <tr>
-                <td className="w-1/2" />
-                <td className="w-1/2 py-1">Kepala {item.unit_kerja},</td>
-              </tr>
-              <tr>
-                <td />
-                <td className="h-20" />
-              </tr>
-              <tr className="align-bottom">
-                <td />
-                <td className="py-1">
-                  ({item.nama || "............................"})
-                  {item.nip && <div className="text-[9pt]">NIP. {item.nip}</div>}
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        {/* Footer */}
-        <div className="pt-6 border-t border-slate-300 text-[8pt] text-slate-500 flex items-center justify-between">
-          <span>Klasifikasi : INTERNAL</span>
-          <span>Halaman 1 dari 1</span>
+        {/* Footer (template: footer1.xml) - di layar; saat cetak memakai footer halaman */}
+        <div className="print:hidden" style={{ marginLeft: "0.6in", width: "6.27in", display: "flex", justifyContent: "space-between", fontSize: "10pt", marginTop: "0.4in" }}>
+          <span>
+            <i>Klasifikasi : </i>
+            <b><i>INTERNAL</i></b>
+          </span>
+          <span>Page 1 of 1</span>
         </div>
       </div>
 
-      {/* Print-specific style */}
+      {/* Print-specific style: ukuran halaman = template (Letter landscape, margin 1 in) */}
       <style jsx global>{`
         @media print {
           body {
             background-color: #ffffff !important;
             color: #000000 !important;
-            font-size: 10pt;
           }
           aside,
           header,
@@ -228,9 +278,35 @@ export default function PrintPerangkatPribadiPage() {
           .print\\:hidden {
             display: none !important;
           }
+          .fr045-paper {
+            box-shadow: none !important;
+            padding: 0 !important;
+            min-height: 0 !important;
+            max-width: none !important;
+            width: 100% !important;
+          }
           @page {
-            size: A4 portrait;
-            margin: 15mm 15mm 15mm 15mm;
+            size: 11in 8.5in;
+            margin: 0.7in 1in 1in 0.4in;
+            @bottom-left {
+              content: "Klasifikasi : INTERNAL";
+              font-family: ${FONT};
+              font-size: 10pt;
+              font-style: italic;
+              font-weight: 700;
+              padding-left: 0.6in;
+              vertical-align: top;
+              padding-top: 0.3in;
+              white-space: nowrap;
+            }
+            @bottom-right {
+              content: "Page " counter(page) " of " counter(pages);
+              font-family: ${FONT};
+              font-size: 10pt;
+              padding-right: 2.7in;
+              vertical-align: top;
+              padding-top: 0.3in;
+            }
           }
         }
       `}</style>

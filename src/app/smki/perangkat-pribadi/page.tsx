@@ -14,6 +14,7 @@ import PerangkatTable from "@/components/smki/perangkat-pribadi/PerangkatTable";
 import PerangkatDetailModal from "@/components/smki/perangkat-pribadi/PerangkatDetailModal";
 import {
   deletePerangkatPribadi,
+  downloadPerangkatPribadiDocx,
   fetchPerangkatPribadiList,
   perangkatErrMsg,
   JENIS_PERANGKAT_OPTIONS,
@@ -60,6 +61,15 @@ export default function PerangkatPribadiPage() {
     const t = setTimeout(() => loadData(), 300);
     return () => clearTimeout(t);
   }, [loadData]);
+
+  const handleDocx = async (id: number) => {
+    try {
+      await downloadPerangkatPribadiDocx(id);
+      toast.success("Dokumen FR-045 (.docx) berhasil diunduh.");
+    } catch {
+      toast.error("Gagal mengunduh dokumen FR-045.");
+    }
+  };
 
   const handleExecuteDelete = async () => {
     if (!itemToDelete) return;
@@ -118,6 +128,7 @@ export default function PerangkatPribadiPage() {
                 onDetail={(id) => setDetailId(id)}
                 onEdit={(id) => router.push(`/smki/perangkat-pribadi/edit/${id}`)}
                 onPrint={(id) => router.push(`/smki/perangkat-pribadi/print/${id}`)}
+                onDocx={handleDocx}
                 onDelete={(item) => { setItemToDelete(item); setIsDeleteModalOpen(true); }}
               />
               <Pagination currentPage={meta.current_page} totalPages={meta.last_page} onPageChange={setPage} />
@@ -130,6 +141,7 @@ export default function PerangkatPribadiPage() {
           onClose={() => setDetailId(null)}
           onEdit={(id) => { setDetailId(null); router.push(`/smki/perangkat-pribadi/edit/${id}`); }}
           onPrint={(id) => { setDetailId(null); router.push(`/smki/perangkat-pribadi/print/${id}`); }}
+          onDocx={handleDocx}
         />
         <ConfirmModal
           isOpen={isDeleteModalOpen}

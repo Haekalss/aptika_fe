@@ -81,6 +81,22 @@ export const deletePerangkatPribadi = async (id: number | string) => {
   return res.data;
 };
 
+/** Unduh formulir FR-045 (.docx) hasil pengisian template asli. */
+export const downloadPerangkatPribadiDocx = async (id: number | string): Promise<void> => {
+  const res = await api.get(`/smki/perangkat-pribadi/${id}/export-docx`, { responseType: "blob" });
+  const cd = res.headers?.["content-disposition"] as string | undefined;
+  const m = cd ? /filename\*=UTF-8''([^;]+)|filename="([^"]+)"/.exec(cd) : null;
+  const filename = m ? decodeURIComponent(m[1] ?? m[2]) : `FR-045_BYOD_${id}.docx`;
+  const url = URL.createObjectURL(res.data);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 5000);
+};
+
 export const formatTanggalIndo = (value?: string | null): string => {
   if (!value) return "-";
   const d = new Date(value.length === 10 ? `${value}T00:00:00` : value);

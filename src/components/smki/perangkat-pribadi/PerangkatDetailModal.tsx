@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Loader2, Printer } from "lucide-react";
+import { FileDown, Loader2, Printer } from "lucide-react";
 import Modal from "@/components/ui/Modal";
 import StatusBadge from "@/components/ui/StatusBadge";
 import {
@@ -32,11 +32,13 @@ export default function PerangkatDetailModal({
   onClose,
   onEdit,
   onPrint,
+  onDocx,
 }: {
   id: number | null;
   onClose: () => void;
   onEdit: (id: number) => void;
   onPrint: (id: number) => void;
+  onDocx: (id: number) => void;
 }) {
   const [row, setRow] = useState<PerangkatPribadi | null>(null);
   const [failed, setFailed] = useState(false);
@@ -75,6 +77,14 @@ export default function PerangkatDetailModal({
               className="px-4 py-2 text-xs font-bold rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all"
             >
               Tutup
+            </button>
+            <button
+              type="button"
+              onClick={() => onDocx(row.id)}
+              className="inline-flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 transition-all"
+            >
+              <FileDown size={13} />
+              Unduh .docx
             </button>
             <button
               type="button"
