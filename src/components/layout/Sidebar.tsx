@@ -28,6 +28,7 @@ import {
   FileCheck,
   ClipboardCheck,
   ScrollText,
+  MonitorSmartphone,
 } from "lucide-react";
 import Avatar from "@/components/ui/Avatar";
 import { useSidebarStore } from "@/store/useSidebarStore";
@@ -279,6 +280,12 @@ export default function Sidebar() {
                 key: "smki/review-log",
                 icon: ScrollText,
                 iconColor: "text-orange-600 bg-orange-50 border border-orange-200/60",
+              },
+              {
+                name: "Perangkat Pribadi (BYOD)",
+                key: "smki/perangkat-pribadi",
+                icon: MonitorSmartphone,
+                iconColor: "text-indigo-600 bg-indigo-50 border border-indigo-200/60",
               },
               {
                 name: "Daftar Aset TI",
