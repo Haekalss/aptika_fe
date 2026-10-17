@@ -27,6 +27,7 @@ import {
   CalendarCheck,
   FileCheck,
   ClipboardCheck,
+  ScrollText,
 } from "lucide-react";
 import Avatar from "@/components/ui/Avatar";
 import { useSidebarStore } from "@/store/useSidebarStore";
@@ -272,6 +273,12 @@ export default function Sidebar() {
                 key: "smki/evaluasi-kepatuhan",
                 icon: ClipboardCheck,
                 iconColor: "text-sky-600 bg-sky-50 border border-sky-200/60",
+              },
+              {
+                name: "Review Log",
+                key: "smki/review-log",
+                icon: ScrollText,
+                iconColor: "text-orange-600 bg-orange-50 border border-orange-200/60",
               },
               {
                 name: "Daftar Aset TI",
