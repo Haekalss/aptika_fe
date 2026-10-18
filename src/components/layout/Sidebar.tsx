@@ -27,6 +27,8 @@ import {
   CalendarCheck,
   FileCheck,
   ClipboardCheck,
+  Server,
+  ServerCog,
 } from "lucide-react";
 import Avatar from "@/components/ui/Avatar";
 import { useSidebarStore } from "@/store/useSidebarStore";
@@ -302,6 +304,12 @@ export default function Sidebar() {
                 key: "smki/laporan-audit-tahunan",
                 icon: FileText,
                 iconColor: "text-emerald-600 bg-emerald-50 border border-emerald-200/60",
+              },
+              {
+                name: "Laporan Kerusakan DC",
+                key: "smki/laporan-kerusakan",
+                icon: ServerCog,
+                iconColor: "text-red-600 bg-red-50 border border-red-200/60",
               },
             ],
           },
