@@ -29,6 +29,7 @@ import {
   ClipboardCheck,
   ScrollText,
   MonitorSmartphone,
+  Cctv,
 } from "lucide-react";
 import Avatar from "@/components/ui/Avatar";
 import { useSidebarStore } from "@/store/useSidebarStore";
@@ -286,6 +287,12 @@ export default function Sidebar() {
                 key: "smki/perangkat-pribadi",
                 icon: MonitorSmartphone,
                 iconColor: "text-indigo-600 bg-indigo-50 border border-indigo-200/60",
+              },
+              {
+                name: "Reviu CCTV",
+                key: "smki/reviu-cctv",
+                icon: Cctv,
+                iconColor: "text-rose-600 bg-rose-50 border border-rose-200/60",
               },
               {
                 name: "Daftar Aset TI",
