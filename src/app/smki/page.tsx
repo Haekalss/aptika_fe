@@ -17,6 +17,7 @@ import {
   ClipboardCheck,
   ScrollText,
   MonitorSmartphone,
+  DatabaseBackup,
 } from "lucide-react";
 import ServiceRouteGuard from "@/components/auth/ServiceRouteGuard";
 import { useAuthStore } from "@/store/useAuthStore";
@@ -193,6 +194,30 @@ export default function SmkiPage() {
               </p>
             </div>
             <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-start text-xs font-bold text-indigo-600 dark:text-indigo-400">
+              <span className="inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                <span>Buka Layanan</span>
+                <ArrowRight size={14} />
+              </span>
+            </div>
+          </div>
+
+          {/* Card: Evaluasi dan Pengujian DRP (FR-039) */}
+          <div
+            onClick={() => router.push("/smki/evaluasi-drp")}
+            className="group relative bg-white dark:bg-slate-900/90 rounded-2xl p-6 shadow-sm border border-slate-200/80 dark:border-slate-800 hover:border-violet-500/60 hover:shadow-md transition-all cursor-pointer flex flex-col justify-between"
+          >
+            <div>
+              <div className="w-12 h-12 rounded-xl bg-violet-50 dark:bg-violet-950/60 border border-violet-200 dark:border-violet-800/60 flex items-center justify-center text-violet-600 dark:text-violet-400 mb-4 group-hover:scale-105 transition-transform">
+                <DatabaseBackup size={24} />
+              </div>
+              <h3 className="text-base font-bold text-slate-800 dark:text-white mb-2 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">
+                Evaluasi dan Pengujian DRP
+              </h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-medium mb-4">
+                Laporkan evaluasi pengujian Disaster Recovery Plan (FR-039): persyaratan waktu (RTO), proses, team, check list BCP, serta cetak formulir resmi.
+              </p>
+            </div>
+            <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-start text-xs font-bold text-violet-600 dark:text-violet-400">
               <span className="inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform">
                 <span>Buka Layanan</span>
                 <ArrowRight size={14} />

@@ -29,6 +29,7 @@ import {
   ClipboardCheck,
   ScrollText,
   MonitorSmartphone,
+  DatabaseBackup,
 } from "lucide-react";
 import Avatar from "@/components/ui/Avatar";
 import { useSidebarStore } from "@/store/useSidebarStore";
@@ -286,6 +287,12 @@ export default function Sidebar() {
                 key: "smki/perangkat-pribadi",
                 icon: MonitorSmartphone,
                 iconColor: "text-indigo-600 bg-indigo-50 border border-indigo-200/60",
+              },
+              {
+                name: "Evaluasi DRP",
+                key: "smki/evaluasi-drp",
+                icon: DatabaseBackup,
+                iconColor: "text-violet-600 bg-violet-50 border border-violet-200/60",
               },
               {
                 name: "Daftar Aset TI",
