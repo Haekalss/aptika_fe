@@ -27,10 +27,6 @@ import {
   CalendarCheck,
   FileCheck,
   ClipboardCheck,
-  ScrollText,
-  MonitorSmartphone,
-  Cctv,
-  DatabaseBackup,
 } from "lucide-react";
 import Avatar from "@/components/ui/Avatar";
 import { useSidebarStore } from "@/store/useSidebarStore";
@@ -276,30 +272,6 @@ export default function Sidebar() {
                 key: "smki/evaluasi-kepatuhan",
                 icon: ClipboardCheck,
                 iconColor: "text-sky-600 bg-sky-50 border border-sky-200/60",
-              },
-              {
-                name: "Review Log",
-                key: "smki/review-log",
-                icon: ScrollText,
-                iconColor: "text-orange-600 bg-orange-50 border border-orange-200/60",
-              },
-              {
-                name: "Perangkat Pribadi (BYOD)",
-                key: "smki/perangkat-pribadi",
-                icon: MonitorSmartphone,
-                iconColor: "text-indigo-600 bg-indigo-50 border border-indigo-200/60",
-              },
-              {
-                name: "Reviu CCTV",
-                key: "smki/reviu-cctv",
-                icon: Cctv,
-                iconColor: "text-rose-600 bg-rose-50 border border-rose-200/60",
-              },
-              {
-                name: "Evaluasi DRP",
-                key: "smki/evaluasi-drp",
-                icon: DatabaseBackup,
-                iconColor: "text-violet-600 bg-violet-50 border border-violet-200/60",
               },
               {
                 name: "Daftar Aset TI",
