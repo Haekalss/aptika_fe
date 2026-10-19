@@ -1,0 +1,28 @@
+"use client";
+
+import { ArrowLeft, Pencil, FileDown, LockKeyhole, CheckCircle2, Paperclip, AlertCircle } from "lucide-react";
+import { type ChangeLog, formatTime, validateLog } from "../lib/model";
+import { Badge, Section, primary, secondary, exportButton, panel } from "./ui";
+
+interface Props { log: ChangeLog; onBack: () => void; onEdit: () => void; onFinalize: () => void; onExport: () => void; writable: boolean; finalizable?: boolean }
+function Value({ label, value }: { label: string; value: string }) {
+  return <div><dt className="text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1.5">{label}</dt><dd className="text-xs text-slate-700 dark:text-slate-200 leading-relaxed whitespace-pre-wrap break-words">{value || "Belum diisi"}</dd></div>;
+}
+export default function LogDetail({ log, onBack, onEdit, onFinalize, onExport, writable, finalizable = true }: Props) {
+  const missing = Object.keys(validateLog(log, true)).length;
+  return <div className="space-y-5 pb-8">
+    <button onClick={onBack} className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-emerald-600"><ArrowLeft size={15}/> Manajemen Log Perubahan</button>
+    <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+      <div><div className="flex flex-wrap items-center gap-2 mb-2"><span className="text-xs font-semibold text-emerald-600">{log.number}</span><Badge value={log.status}/></div><h1 className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">{log.title}</h1><p className="text-xs text-slate-400 mt-2">Rincian pencatatan dan hasil pelaksanaan perubahan TI.</p></div>
+      <div className="flex gap-2 flex-wrap"><button onClick={onExport} className={exportButton}><FileDown size={15}/> Ekspor (DOCX)</button>{log.status === "Draf" && writable && <button onClick={onEdit} className={secondary}><Pencil size={14}/> Edit Draf</button>}</div>
+    </div>
+    {log.status === "Final" ? <div className="flex items-center gap-3 p-4 rounded-xl border border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 text-xs"><LockKeyhole size={18} className="shrink-0"/><p>Dokumen telah difinalisasi pada {formatTime(log.finalizedAt)} WIB. Data terkunci untuk menjaga riwayat perubahan.</p></div>
+      : <div className="flex items-center gap-3 p-4 rounded-xl border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 text-xs"><AlertCircle size={18} className="shrink-0"/><p>{missing ? `${missing} bagian perlu dilengkapi atau diperbaiki sebelum finalisasi. Pilih Edit Draf untuk melanjutkan.` : "Data pelaksanaan sudah lengkap. Periksa kembali sebelum finalisasi."}</p></div>}
+    <Section number="01" title="Identitas Perubahan" description="Identitas log dan objek perubahan."><dl className="grid grid-cols-1 sm:grid-cols-2 gap-5"><Value label="Nomor Log" value={log.number}/><Value label="Nama Sistem / Aset" value={log.system}/><Value label="Unit Kerja" value={log.unit}/><Value label="Pencatat" value={log.references?.recorderName ?? "Belum tercatat pada data lama"}/></dl></Section>
+    <Section number="02" title="Pelaksanaan Perubahan" description="Identitas pelaksana dan waktu aktual kegiatan."><dl className="grid grid-cols-1 sm:grid-cols-3 gap-5"><Value label="Nama Pelaksana" value={log.executor}/><Value label="Waktu Mulai Aktual (WIB)" value={formatTime(log.startedAt)}/><Value label="Waktu Selesai Aktual (WIB)" value={formatTime(log.endedAt)}/></dl></Section>
+    <Section number="03" title="Rincian Perubahan" description="Kondisi sebelum dan sesudah tindakan."><dl className="space-y-5"><Value label="Kondisi Sebelum Perubahan" value={log.before}/><Value label="Tindakan yang Dilaksanakan" value={log.action}/><Value label="Kondisi Setelah Perubahan" value={log.after}/></dl></Section>
+    <Section number="04" title="Hasil dan Tindak Lanjut" description="Evaluasi pelaksanaan dan tindakan berikutnya."><dl className="space-y-5"><div><dt className="text-[11px] font-bold text-slate-500 mb-2">Hasil Pelaksanaan</dt><dd><Badge value={log.outcome}/></dd></div><Value label="Hasil Pengujian" value={log.testing}/><Value label="Kendala Pelaksanaan" value={log.obstacles}/><Value label="Perlu Tindak Lanjut" value={log.needsFollowUp ? "Ya" : "Tidak"}/><Value label="Rencana Tindak Lanjut" value={log.followUp}/><Value label="Catatan Pemulihan / Rollback" value={log.recovery}/></dl></Section>
+    <Section number="05" title="Bukti Pendukung" description="Lampiran dokumentasi pelaksanaan perubahan.">{!log.attachments.length ? <p className="text-xs text-slate-400">Belum ada lampiran pendukung.</p> : <ul className="space-y-2">{log.attachments.map(file => <li key={file.id}><a href={file.dataUrl} download={file.name} className="flex items-center gap-3 p-3 rounded-xl border border-slate-200 dark:border-slate-700 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/40"><Paperclip size={16} className="shrink-0"/><span className="text-xs font-semibold break-all">{file.name}</span><FileDown size={15} className="ml-auto shrink-0"/></a></li>)}</ul>}</Section>
+    <div className={`${panel} p-5 flex flex-col sm:flex-row gap-4 justify-between sm:items-center`}><div className="text-[10px] text-slate-400 space-y-1"><p>Dibuat: {formatTime(log.createdAt)} WIB</p><p>Terakhir diperbarui: {formatTime(log.updatedAt)} WIB</p></div>{log.status === "Draf" && writable && <button onClick={onFinalize} disabled={missing > 0 || !finalizable} className={primary}><CheckCircle2 size={15}/> Finalisasi Log</button>}</div>
+  </div>;
+}

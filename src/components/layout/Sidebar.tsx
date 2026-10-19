@@ -268,6 +268,12 @@ export default function Sidebar() {
                 iconColor: "text-purple-600 bg-purple-50 border border-purple-200/60",
               },
               {
+                name: "Log Perubahan",
+                key: "smki/log-perubahan",
+                icon: FileText,
+                iconColor: "text-emerald-600 bg-emerald-50 border border-emerald-200/60",
+              },
+              {
                 name: "Daftar Penyedia",
                 key: "smki/daftar-penyedia",
                 icon: Building2,
