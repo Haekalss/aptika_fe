@@ -258,6 +258,12 @@ export default function Sidebar() {
                 iconColor: "text-blue-600 bg-blue-50 border border-blue-200/60",
               },
               {
+                name: "Aset Sistem Info",
+                key: "smki/aset-sistem-informasi",
+                icon: Database,
+                iconColor: "text-cyan-600 bg-cyan-50 border border-cyan-200/60",
+              },
+              {
                 name: "Penghancuran Media",
                 key: "smki/berita-acara",
                 icon: FileText,
@@ -558,4 +564,4 @@ export default function Sidebar() {
       </aside>
     </>
   );
-}
+}
