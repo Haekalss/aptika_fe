@@ -1,14 +1,16 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
-import { Search, User, Sun, Moon, ShieldCog } from "lucide-react";
+import { useEffect } from "react";
+import { User, Sun, Moon, ShieldCog } from "lucide-react";
 import Avatar from "@/components/ui/Avatar";
 import Dropdown from "@/components/ui/Dropdown";
 import { useRouter } from "next/navigation";
 import { logout } from "@/services/api";
 import { useTaskStore } from "@/store/useTaskStore";
+import { useAuthStore } from "@/store/useAuthStore";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
 import { useTheme } from "@/components/providers/ThemeProvider";
+import { runGuardedNavigation } from "@/utils/guardedNavigation";
 
 export interface HeaderProps {
   title: string;
@@ -28,29 +30,30 @@ export default function Header({ title, subtitle, showBrand = false }: HeaderPro
   const userName = currentUser?.name || "User";
   const isAdmin = currentUser?.role === "admin";
 
-  const handleLogout = async () => {
+  const handleLogout = () => runGuardedNavigation(async () => {
     try { 
       await logout(); 
-      document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
     } catch {}
+    useAuthStore.getState().clearAuth();
+    document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     router.push("/");
-  };
+  });
 
   const profileMenuItems = [
     ...(isAdmin
       ? [
           {
             label: "Admin Panel",
-            onClick: () => router.push("/admin"),
+            onClick: () => runGuardedNavigation(() => router.push("/admin")),
             icon: <ShieldCog size={14} className="text-amber-500" />,
           },
         ]
       : []),
     {
       label: "Profil Saya",
-      onClick: () => router.push("/profile"),
+      onClick: () => runGuardedNavigation(() => router.push("/profile")),
       icon: <User size={14} />,
     },
     {
@@ -67,7 +70,7 @@ export default function Header({ title, subtitle, showBrand = false }: HeaderPro
       {showBrand ? (
         <div
           className="flex items-center gap-3 cursor-pointer group"
-          onClick={() => router.push("/dashboard")}
+          onClick={() => runGuardedNavigation(() => router.push("/dashboard"))}
           title="Kembali ke Beranda"
         >
           <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-[#0b2146] via-[#163868] to-[#1d4ed8] flex items-center justify-center text-white font-extrabold text-sm shadow-md group-hover:scale-105 transition-transform">
@@ -117,7 +120,7 @@ export default function Header({ title, subtitle, showBrand = false }: HeaderPro
         {isAdmin && (
           <button
             type="button"
-            onClick={() => router.push("/admin")}
+            onClick={() => runGuardedNavigation(() => router.push("/admin"))}
             className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-extrabold bg-amber-50 hover:bg-amber-100 text-amber-800 dark:bg-amber-950/80 dark:hover:bg-amber-900 dark:text-amber-300 transition-all border border-amber-200/90 dark:border-amber-700/80 shadow-2xs group"
             title="Masuk ke Halaman Khusus Admin Panel"
           >

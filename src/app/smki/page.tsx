@@ -294,6 +294,22 @@ export default function SmkiPage() {
             </div>
           </div>
 
+          {/* Card: Tindakan Perbaikan dan Pencegahan (FR-009) */}
+          <button
+            type="button"
+            onClick={() => router.push("/smki/tindakan-perbaikan")}
+            className="group relative bg-white dark:bg-slate-900/90 rounded-2xl p-6 shadow-sm border border-slate-200/80 dark:border-slate-800 hover:border-emerald-500/60 hover:shadow-md transition-all text-left flex flex-col justify-between"
+          >
+            <div>
+              <div className="w-12 h-12 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/60 flex items-center justify-center text-emerald-600 dark:text-emerald-400 mb-4">
+                <ClipboardCheck size={24} />
+              </div>
+              <h3 className="text-base font-bold text-slate-800 dark:text-white mb-2">Tindakan Perbaikan & Pencegahan</h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-medium mb-4">Kelola FR-009: sumber dan akar masalah, koreksi, tindakan korektif, verifikasi Open / Close, serta ekspor DOCX dan PDF.</p>
+            </div>
+            <span className="pt-4 border-t border-slate-100 dark:border-slate-800 text-xs font-bold text-emerald-600 dark:text-emerald-400 inline-flex items-center gap-1">Buka Layanan <ArrowRight size={14} /></span>
+          </button>
+
           {/* Card: Program Tahunan Audit Internal (FR-008) */}
           <div
             onClick={() => router.push("/smki/laporan-audit-tahunan")}

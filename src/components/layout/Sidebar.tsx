@@ -32,6 +32,7 @@ import Avatar from "@/components/ui/Avatar";
 import { useSidebarStore } from "@/store/useSidebarStore";
 import { useTaskStore } from "@/store/useTaskStore";
 import { useAuthStore } from "@/store/useAuthStore";
+import { runGuardedNavigation } from "@/utils/guardedNavigation";
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -303,6 +304,12 @@ export default function Sidebar() {
                 icon: FileText,
                 iconColor: "text-emerald-600 bg-emerald-50 border border-emerald-200/60",
               },
+              {
+                name: "Tindakan Perbaikan & Pencegahan",
+                key: "smki/tindakan-perbaikan",
+                icon: ClipboardCheck,
+                iconColor: "text-emerald-600 bg-emerald-50 border border-emerald-200/60",
+              },
             ],
           },
         ]
@@ -317,30 +324,30 @@ export default function Sidebar() {
   ];
 
   const handleTeamClick = (key: string) => {
-    setOpenMobile(false);
-    if (key === "dashboard") {
-      router.push("/dashboard");
-    } else if (key === "administrasisurat" || key === "manajementugasdigital" || key === "smki" || key === "daftar-aset-ti" || key === "master") {
-      router.push(`/${key}`);
-    } else if (key.includes("/")) {
-      router.push(`/${key}`);
-    } else {
-      router.push(`/${key}/dashboard`);
-    }
+    runGuardedNavigation(() => {
+      setOpenMobile(false);
+      if (key === "dashboard") {
+        router.push("/dashboard");
+      } else if (key === "administrasisurat" || key === "manajementugasdigital" || key === "smki" || key === "daftar-aset-ti" || key === "master" || key.includes("/")) {
+        router.push(`/${key}`);
+      } else {
+        router.push(`/${key}/dashboard`);
+      }
+    });
   };
 
-  const handleLogout = async () => {
+  const handleLogout = () => runGuardedNavigation(async () => {
     try {
       await logout();
-      useAuthStore.getState().clearAuth();
-      if (typeof document !== "undefined") {
-        document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
-      }
     } catch {}
+    useAuthStore.getState().clearAuth();
+    if (typeof document !== "undefined") {
+      document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+    }
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     router.push("/");
-  };
+  });
 
   return (
     <>
@@ -366,10 +373,10 @@ export default function Sidebar() {
       {/* Sidebar Navigation - Adaptive Light/Dark Theme */}
       <aside
         className={`
-        fixed inset-y-0 left-0 z-40 flex flex-col h-screen
+        fixed inset-y-0 left-0 z-40 flex flex-col h-dvh min-h-0
         bg-white text-[#0b2146] border-r border-slate-200 shadow-sm
         dark:bg-[#071733] dark:text-white dark:border-slate-800/80
-        transition-all duration-300 ease-in-out lg:translate-x-0 lg:sticky lg:top-0 lg:flex-shrink-0
+        transition-all duration-300 ease-in-out lg:translate-x-0 lg:sticky lg:top-0 lg:flex-shrink-0 lg:h-full
         print:hidden
         ${isCollapsed ? "w-[76px]" : "w-[260px]"}
         ${isOpenMobile ? "translate-x-0" : "-translate-x-full"}
@@ -394,7 +401,7 @@ export default function Sidebar() {
               <div className="flex items-center justify-between w-full">
                 <div
                   className="cursor-pointer flex-grow animate-in fade-in duration-200"
-                  onClick={() => router.push("/dashboard")}
+                  onClick={() => runGuardedNavigation(() => router.push("/dashboard"))}
                 >
                   <h1 className="text-[15px] font-extrabold tracking-wide uppercase text-[#0b2146] dark:text-white">
                     Aptika Tools
@@ -573,7 +580,7 @@ export default function Sidebar() {
         >
           <div
             className={`flex items-center gap-3 px-2 cursor-pointer group ${isCollapsed ? "justify-center" : ""}`}
-            onClick={() => router.push("/profile")}
+            onClick={() => runGuardedNavigation(() => router.push("/profile"))}
             title="Ke Profil Saya"
           >
             <Avatar name={userName} src={currentUser?.avatar_url || currentUser?.avatar} size="sm" />

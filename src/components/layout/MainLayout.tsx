@@ -3,6 +3,7 @@
 import * as React from "react";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
+import { runGuardedNavigation } from "@/utils/guardedNavigation";
 
 export interface MainLayoutProps {
   children: React.ReactNode;
@@ -42,7 +43,7 @@ export default function MainLayout({
     }
   }, []);
 
-  const handleStopImpersonation = () => {
+  const handleStopImpersonation = () => runGuardedNavigation(() => {
     const adminToken = localStorage.getItem("admin_token_backup");
     const adminUser = localStorage.getItem("admin_user_backup");
     if (adminToken) {
@@ -55,7 +56,7 @@ export default function MainLayout({
     localStorage.removeItem("admin_user_backup");
     localStorage.removeItem("impersonating_user_id");
     window.location.href = "/admin/users";
-  };
+  });
 
   if (isPrintPage) {
     return (
@@ -78,11 +79,12 @@ export default function MainLayout({
     );
   }
 
+  // Unlike hidden, clip prevents route focus from scrolling the dashboard shell.
   return (
-    <div className="relative min-h-screen w-full bg-[#f8fafc] text-slate-800 overflow-x-hidden print:bg-white print:min-h-0 print:overflow-visible">
+    <div className="relative flex h-dvh w-full flex-col bg-[#f8fafc] text-slate-800 overflow-clip print:block print:h-auto print:bg-white print:min-h-0 print:overflow-visible">
       {/* Impersonation Banner */}
       {isImpersonating && (
-        <div className="bg-gradient-to-r from-amber-600 to-orange-600 text-white px-4 py-2 text-xs font-bold flex items-center justify-between shadow-md relative z-50 animate-in slide-in-from-top duration-300">
+        <div className="bg-gradient-to-r from-amber-600 to-orange-600 text-white px-4 py-2 text-xs font-bold flex shrink-0 items-center justify-between shadow-md relative z-50 animate-in slide-in-from-top duration-300">
           <div className="flex items-center gap-2">
             <span className="bg-white text-amber-700 px-2 py-0.5 rounded-full text-[10px] uppercase tracking-wider font-extrabold shadow-xs">
               Mode Simulasi
@@ -110,12 +112,12 @@ export default function MainLayout({
       <div className="fixed inset-0 z-0 pointer-events-none bg-gradient-to-br from-slate-100/50 via-blue-50/30 to-slate-100/50 print:hidden" />
 
       {/* Main Content Layout Container */}
-      <div className="relative z-10 flex min-h-screen w-full print:block print:min-h-0 print:w-full print:static">
+      <div className="relative z-10 flex min-h-0 flex-1 w-full print:block print:min-h-0 print:w-full print:static">
         {/* Sidebar - only rendered if hideSidebar is false */}
         {!hideSidebar && <Sidebar />}
 
         {/* Main Content Area */}
-        <div className="flex-1 flex flex-col min-w-0 max-h-screen overflow-hidden print:block print:w-full print:max-h-none print:overflow-visible print:static">
+        <div className="flex-1 flex flex-col min-h-0 min-w-0 overflow-clip print:block print:w-full print:max-h-none print:overflow-visible print:static">
           {/* Header container */}
           {!hideHeader && (
             <div className="px-6 pt-6 pb-2 flex-shrink-0 print:hidden">
@@ -124,7 +126,7 @@ export default function MainLayout({
           )}
 
           {/* Scrollable content box */}
-          <main className="flex-grow overflow-y-auto px-6 pb-6 pt-2 scrollbar-hide print:block print:overflow-visible print:p-0 print:m-0">
+          <main className="flex-1 min-h-0 overflow-y-auto overscroll-y-contain px-6 pb-6 pt-2 scrollbar-hide print:block print:overflow-visible print:p-0 print:m-0">
             <div className="animate-in fade-in slide-in-from-bottom-2 duration-300 print:animate-none print:transform-none print:p-0 print:m-0">
               {children}
             </div>

@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { AlertTriangle, Trash2, X } from "lucide-react";
+import { useDialog } from "./useDialog";
 
 export interface ConfirmModalProps {
   isOpen: boolean;
@@ -26,16 +27,9 @@ export default function ConfirmModal({
   isDanger = true,
   loading = false,
 }: ConfirmModalProps) {
-  React.useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [isOpen]);
+  const dialogRef = useDialog(isOpen, onClose, loading);
+  const titleId = React.useId();
+  const messageId = React.useId();
 
   if (!isOpen) return null;
 
@@ -48,9 +42,10 @@ export default function ConfirmModal({
       />
 
       {/* Dialog Box */}
-      <div className="relative w-full max-w-md bg-white dark:bg-[#0d1d36] rounded-2xl shadow-xl border border-slate-100 dark:border-slate-800 p-6 z-10 animate-in fade-in zoom-in-95 duration-200">
+      <div ref={dialogRef} role="alertdialog" aria-modal="true" aria-labelledby={titleId} aria-describedby={messageId} tabIndex={-1} className="relative w-full max-w-md bg-white dark:bg-[#0d1d36] rounded-2xl shadow-xl border border-slate-100 dark:border-slate-800 p-6 z-10 animate-in fade-in zoom-in-95 duration-200">
         <button
           type="button"
+          aria-label="Tutup dialog"
           disabled={loading}
           onClick={onClose}
           className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-50"
@@ -64,8 +59,8 @@ export default function ConfirmModal({
           </div>
 
           <div className="space-y-1 pr-4">
-            <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">{title}</h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">{message}</p>
+            <h3 id={titleId} className="text-base font-bold text-slate-900 dark:text-slate-100">{title}</h3>
+            <p id={messageId} className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">{message}</p>
           </div>
         </div>
 

@@ -40,6 +40,7 @@ export const config = {
     "/dashboard",
     "/dashboard/:path*",
     "/spd/:path*",
+    "/smki/:path*",
     "/rekayasaaplikasi/:path*",
     "/integrasiinteroperabilitas/:path*",
     "/smartjabar/:path*",
