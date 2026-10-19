@@ -33,6 +33,7 @@ import {
   MonitorSmartphone,
   Cctv,
   DatabaseBackup,
+  Siren,
 } from "lucide-react";
 import Avatar from "@/components/ui/Avatar";
 import { useSidebarStore } from "@/store/useSidebarStore";
@@ -344,6 +345,12 @@ export default function Sidebar() {
                 key: "smki/laporan-kerusakan",
                 icon: ServerCog,
                 iconColor: "text-red-600 bg-red-50 border border-red-200/60",
+              },
+              {
+                name: "Pelaporan Insiden",
+                key: "smki/pelaporan-insiden",
+                icon: Siren,
+                iconColor: "text-orange-600 bg-orange-50 border border-orange-200/60",
               },
             ],
           },
