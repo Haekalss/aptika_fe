@@ -2602,3 +2602,144 @@ export const exportLaporanAuditTahunanDocx = async (id: number | string) => {
   return res.data;
 };
 
+// ========================================================
+// DATA CENTER: LAPORAN KERUSAKAN
+// ========================================================
+
+export interface DataCenterAssetItem {
+  id: number;
+  kode_aset: string;
+  nama_aset: string;
+  kategori?: string;
+  lokasi_rak?: string;
+  status_operasional?: string;
+  penanggung_jawab_default?: string;
+  penanggung_jawab_id?: number | null;
+}
+
+export interface LaporanKerusakanHistoryItem {
+  id: number;
+  laporan_id: number;
+  user_id?: number;
+  action: string;
+  status_from?: string;
+  status_to?: string;
+  catatan?: string;
+  created_at: string;
+  user?: {
+    id: number;
+    name: string;
+    email: string;
+  };
+}
+
+export interface LaporanKerusakanItem {
+  id?: number;
+  nomor_laporan?: string;
+  tanggal: string; // YYYY-MM-DD
+  jam: string; // "09.30 WIB"
+  aset_id: number;
+  nama_aset?: string;
+  kode_aset?: string;
+  lokasi_rak?: string;
+  jenis_kerusakan: string;
+  penyebab?: string;
+  uraian_tindakan?: string;
+  target_selesai?: string;
+  tanggal_selesai_aktual?: string;
+  pelapor_id?: number;
+  pelapor_nama?: string;
+  penanggung_jawab_id?: number | null;
+  penanggung_jawab_nama?: string;
+  supervisor_id?: number | null;
+  supervisor_nama?: string;
+  status: "Baru" | "Diproses" | "Selesai" | "Closed" | string;
+  catatan_validasi?: string;
+  validated_at?: string;
+  created_at?: string;
+  updated_at?: string;
+  asset?: DataCenterAssetItem;
+  histories?: LaporanKerusakanHistoryItem[];
+}
+
+export interface LaporanKerusakanStats {
+  total: number;
+  baru: number;
+  diproses: number;
+  selesai: number;
+}
+
+export const getLaporanKerusakanList = async (params?: {
+  status?: string;
+  search?: string;
+  tanggal?: string;
+  per_page?: number;
+  page?: number;
+}) => {
+  const res = await api.get("/smki/laporan-kerusakan", { params });
+  return res.data;
+};
+
+export const getLaporanKerusakanLookup = async () => {
+  const res = await api.get("/smki/laporan-kerusakan/lookup");
+  return res.data;
+};
+
+export const getLaporanKerusakanById = async (id: number | string) => {
+  const res = await api.get(`/smki/laporan-kerusakan/${id}`);
+  return res.data;
+};
+
+export const createLaporanKerusakan = async (payload: Partial<LaporanKerusakanItem>) => {
+  const res = await api.post("/smki/laporan-kerusakan", payload);
+  return res.data;
+};
+
+export const updateLaporanKerusakan = async (
+  id: number | string,
+  payload: Partial<LaporanKerusakanItem>
+) => {
+  const res = await api.put(`/smki/laporan-kerusakan/${id}`, payload);
+  return res.data;
+};
+
+export const assignTeknisiLaporanKerusakan = async (
+  id: number | string,
+  payload: { penanggung_jawab_id: number; target_selesai: string; catatan?: string }
+) => {
+  const res = await api.patch(`/smki/laporan-kerusakan/${id}/assign`, payload);
+  return res.data;
+};
+
+export const validateLaporanKerusakan = async (
+  id: number | string,
+  payload: { valid: boolean; catatan_validasi?: string }
+) => {
+  const res = await api.patch(`/smki/laporan-kerusakan/${id}/validate`, payload);
+  return res.data;
+};
+
+export const deleteLaporanKerusakan = async (id: number | string) => {
+  const res = await api.delete(`/smki/laporan-kerusakan/${id}`);
+  return res.data;
+};
+
+export const exportLaporanKerusakanDocx = async (id: number | string) => {
+  const res = await api.get(`/smki/laporan-kerusakan/${id}/export-docx`, {
+    responseType: "blob",
+  });
+  return res.data;
+};
+
+export const exportBatchLaporanKerusakanDocx = async (params?: {
+  status?: string;
+  search?: string;
+}) => {
+  const res = await api.get("/smki/laporan-kerusakan/export-docx", {
+    params,
+    responseType: "blob",
+  });
+  return res.data;
+};
+
+
