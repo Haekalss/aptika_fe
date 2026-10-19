@@ -27,6 +27,7 @@ import {
   CalendarCheck,
   FileCheck,
   ClipboardCheck,
+  GitPullRequest,
 } from "lucide-react";
 import Avatar from "@/components/ui/Avatar";
 import { useSidebarStore } from "@/store/useSidebarStore";
@@ -303,6 +304,19 @@ export default function Sidebar() {
                 icon: FileText,
                 iconColor: "text-emerald-600 bg-emerald-50 border border-emerald-200/60",
               },
+              {
+                name: "Daftar Aset SDM",
+                key: "smki/daftar-aset-sdm",
+                icon: Users,
+                iconColor: "text-indigo-600 bg-indigo-50 border border-indigo-200/60",
+              },
+              {
+                name: "Perubahan IT",
+                key: "smki/perubahan-it",
+                icon: GitPullRequest,
+                iconColor: "text-orange-600 bg-orange-50 border border-orange-200/60",
+              },
+
             ],
           },
         ]
