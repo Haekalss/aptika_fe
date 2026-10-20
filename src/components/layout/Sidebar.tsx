@@ -345,6 +345,12 @@ export default function Sidebar() {
                 icon: ServerCog,
                 iconColor: "text-red-600 bg-red-50 border border-red-200/60",
               },
+              {
+                name: "Screening Karyawan",
+                key: "smki/screening-karyawan",
+                icon: Users,
+                iconColor: "text-emerald-600 bg-emerald-50 border border-emerald-200/60",
+              },
             ],
           },
         ]
