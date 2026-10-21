@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { createStore, useStore } from "zustand";
-import { type ChangeLog, type LogInput, emptyInput, isLogReferences } from "../lib/model";
+import { type ChangeLog, type LogInput, isLogReferences, normalizeStoredLog } from "../lib/model";
 import { createChangeLog, deleteChangeLog, finalizeChangeLog, listChangeLogs, updateChangeLog } from "../lib/api";
 
 interface State {
@@ -14,17 +14,6 @@ interface State {
   save: (input: LogInput, previous?: ChangeLog) => Promise<ChangeLog>;
   finalize: (id: string) => Promise<ChangeLog>;
   remove: (id: string) => Promise<void>;
-}
-
-function isLog(value: unknown): value is ChangeLog {
-  if (!value || typeof value !== "object") return false;
-  const item = value as Record<string, unknown>;
-  return [...Object.keys(emptyInput).filter(key => key !== "attachments" && key !== "needsFollowUp"), "id", "number", "createdAt", "updatedAt", "finalizedAt"]
-    .every(key => typeof item[key] === "string") && ["Draf", "Final"].includes(String(item.status))
-    && (item.references === undefined || isLogReferences(item.references))
-    && typeof item.needsFollowUp === "boolean" && Array.isArray(item.attachments)
-    && item.attachments.every(file => file && typeof file.name === "string" && typeof file.id === "string"
-      && typeof file.size === "number" && typeof file.dataUrl === "string" && file.dataUrl.startsWith("data:"));
 }
 
 export function useChangeLogs(scope: string) {
@@ -48,8 +37,11 @@ export function useChangeLogs(scope: string) {
           const saved = localStorage.getItem(key) ?? localStorage.getItem(previousKey);
           if (saved !== null) {
             const parsed: unknown = JSON.parse(saved);
-            if (!Array.isArray(parsed) || !parsed.every(isLog)) throw new Error("Data lokal tidak valid.");
-            local = parsed;
+            if (!Array.isArray(parsed)) throw new Error("Data lokal tidak valid.");
+            const normalized = parsed.map(normalizeStoredLog);
+            if (normalized.some(log => log === null)) throw new Error("Data lokal tidak valid.");
+            local = normalized as ChangeLog[];
+            cleanImportedLocal(local);
           }
         } catch {
           set({ ready: true, storageError: "Data lama di browser tidak dapat dibaca. Data tersebut tetap disimpan untuk diperiksa." });

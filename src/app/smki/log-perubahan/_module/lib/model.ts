@@ -10,6 +10,7 @@ export interface LogReferences {
   objectId: number;
 }
 export interface ChangeLog {
+  documentNumber?: string; documentRevision?: string; documentEffectiveDate?: string;
   id: string; number: string; title: string; system: string;
   unit: string; executor: string; startedAt: string; endedAt: string;
   before: string; action: string; after: string; testing: string;
@@ -21,10 +22,33 @@ export interface ChangeLog {
 }
 export type LogInput = Omit<ChangeLog, "id" | "number" | "status" | "createdAt" | "updatedAt" | "finalizedAt">;
 export const emptyInput: LogInput = {
+  documentNumber: "", documentRevision: "", documentEffectiveDate: "",
   title: "", system: "", unit: "", executor: "", startedAt: "", endedAt: "",
   before: "", action: "", after: "", testing: "", outcome: "", obstacles: "", followUp: "",
   recovery: "", needsFollowUp: false, attachments: [],
 };
+export function normalizeStoredLog(value: unknown): ChangeLog | null {
+  if (!value || typeof value !== "object") return null;
+  const item = value as Record<string, unknown>;
+  const requiredText = [...Object.keys(emptyInput).filter(key => !["attachments", "needsFollowUp", "documentNumber", "documentRevision", "documentEffectiveDate"].includes(key)), "id", "number", "createdAt", "updatedAt", "finalizedAt"];
+  const valid = requiredText.every(key => typeof item[key] === "string")
+    && ["Draf", "Final"].includes(String(item.status))
+    && (item.references === undefined || isLogReferences(item.references))
+    && typeof item.needsFollowUp === "boolean" && Array.isArray(item.attachments)
+    && item.attachments.every(file => file && typeof file === "object"
+      && typeof (file as Record<string, unknown>).name === "string"
+      && typeof (file as Record<string, unknown>).id === "string"
+      && typeof (file as Record<string, unknown>).size === "number"
+      && typeof (file as Record<string, unknown>).dataUrl === "string"
+      && String((file as Record<string, unknown>).dataUrl).startsWith("data:"));
+  if (!valid) return null;
+  return {
+    ...(item as unknown as ChangeLog),
+    documentNumber: typeof item.documentNumber === "string" ? item.documentNumber : "",
+    documentRevision: typeof item.documentRevision === "string" ? item.documentRevision : "",
+    documentEffectiveDate: typeof item.documentEffectiveDate === "string" ? item.documentEffectiveDate : "",
+  };
+}
 export function isLogReferences(value: unknown): value is LogReferences {
   if (!value || typeof value !== "object") return false;
   const ref = value as Record<string, unknown>;

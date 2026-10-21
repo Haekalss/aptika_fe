@@ -50,7 +50,7 @@ export default function LogPerubahanScreen({ scope, unit, userId, bidangId, reco
     finally { setProcessing(false); }
   };
   return <>
-    <p className="text-[11px] text-slate-500 dark:text-slate-400 mb-5 px-1">{allBidang ? "Admin Aptika dapat melihat dan mengelola log FR-032 seluruh bidang." : "Log FR-032 tersimpan di server dan dapat dikelola bersama pengguna dalam bidang yang sama."}</p>
+    <p className="text-[11px] text-slate-500 dark:text-slate-400 mb-5 px-1">Semua pengguna dan admin dapat melihat dan mengelola log FR-032 seluruh bidang.</p>
     {!!localLogs.length && <p role="status" className="text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-xl p-4 mb-4">{localLogs.length} log lama masih tersimpan di browser. Pilih Edit Draf lalu simpan untuk memindahkan draf yang referensinya belum lengkap ke server. Dokumen Final lama tetap tersedia sebagai arsip lokal untuk dilihat dan diekspor.</p>}
     {storageError && <p role="alert" className="text-xs text-red-700 bg-red-50 border border-red-200 rounded-xl p-4 mb-4">{storageError}</p>}
     {!ready ? <div className="space-y-4 animate-pulse" aria-busy="true" aria-label="Memuat log perubahan"><div className="h-36 rounded-2xl bg-emerald-100 dark:bg-emerald-950"/><div className="h-64 rounded-2xl bg-slate-100 dark:bg-slate-800"/></div>

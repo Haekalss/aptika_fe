@@ -14,7 +14,7 @@ interface Props {
   onBidangChange: (id: number) => void;
 }
 export default function LogForm({ log, unit, recorderName, references, onBack, onSave, onBidangChange, saving = false }: Props) {
-  const [input, setInput] = useState<LogInput>(log ?? { ...emptyInput, unit });
+  const [input, setInput] = useState<LogInput>({ ...emptyInput, unit, ...log });
   const [objectValue, setObjectValue] = useState(log?.references ? `${log.references.objectKind}:${log.references.objectId}` : "");
   const [employeeValue, setEmployeeValue] = useState(log?.references?.executorId ? String(log.references.executorId) : "");
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -82,7 +82,17 @@ export default function LogForm({ log, unit, recorderName, references, onBack, o
       if (Object.keys(nextErrors).length) { document.getElementById(`log-${Object.keys(nextErrors)[0]}`)?.focus(); return; }
       onSave(next);
     }} className="space-y-5">
-      <Section number="01" title="Identitas Perubahan" description="Identitas log dan objek perubahan.">
+      <p className="text-[11px] text-slate-500 dark:text-slate-400">
+        <span className="font-bold text-red-500" aria-hidden="true">*</span> Wajib diisi sebelum log dapat difinalisasi.
+      </p>
+      <Section number="01" title="Detail Dokumen" description="Isi informasi yang akan ditampilkan pada kop dokumen Word.">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          {field("documentNumber", "No. Dokumen", { placeholder: "Contoh: FR-032/KOM.03.05/SANDIKAMI" })}
+          {field("documentRevision", "No. Revisi", { placeholder: "Contoh: 1.0" })}
+          {field("documentEffectiveDate", "Tanggal Berlaku", { type: "date" })}
+        </div>
+      </Section>
+      <Section number="02" title="Identitas Perubahan" description="Identitas log dan objek perubahan.">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {field("title", "Judul Perubahan", { required: true, placeholder: "Contoh: Peningkatan kapasitas server aplikasi" })}
           <div>
@@ -101,15 +111,15 @@ export default function LogForm({ log, unit, recorderName, references, onBack, o
             {data?.canAccessAllBidang && !log
               ? <select id="log-unit" value={data.bidang.id} disabled={saving} onChange={event => { setObjectValue(""); onBidangChange(Number(event.target.value)); }} className={control}>{data.bidangs.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}</select>
               : <input id="log-unit" readOnly value={data?.bidang.name ?? log?.unit ?? unit} className={`${control} cursor-default`}/>}
-            <p className="text-[10px] text-slate-400 mt-1.5">{log ? "Bidang pemilik log tetap dipertahankan." : data?.canAccessAllBidang ? "Admin Aptika dapat memilih bidang pemilik log. Pilihan aset mengikuti bidang ini." : "Otomatis mengikuti bidang akun yang login."}</p>
+            <p className="text-[10px] text-slate-400 mt-1.5">{log ? "Bidang pemilik log tetap dipertahankan." : "Pilih bidang pemilik log. Pilihan aset mengikuti bidang ini."}</p>
           </div>
           <div><label htmlFor="log-recorder" className="block text-[11px] font-bold text-slate-600 dark:text-slate-300 mb-1.5">Pencatat</label><input id="log-recorder" readOnly value={log?.references?.recorderName ?? data?.recorder.name ?? recorderName} className={`${control} cursor-default`}/><p className="text-[10px] text-slate-400 mt-1.5">Identitas akun yang pertama kali memasukkan log perubahan.</p></div>
         </div>
       </Section>
-      <Section number="02" title="Pelaksanaan Perubahan" description="Pelaksana dan waktu aktual kegiatan dalam WIB.">
+      <Section number="03" title="Pelaksanaan Perubahan" description="Pelaksana dan waktu aktual kegiatan dalam WIB.">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="sm:col-span-2">
-            <label htmlFor="log-executor" className="block text-[11px] font-bold text-slate-600 dark:text-slate-300 mb-1.5">Nama Pelaksana</label>
+            <label htmlFor="log-executor" className="block text-[11px] font-bold text-slate-600 dark:text-slate-300 mb-1.5">Nama Pelaksana <span className="text-red-500" aria-hidden="true">*</span><span className="sr-only"> wajib diisi sebelum finalisasi</span></label>
             <select id="log-executor" value={employeeValue} disabled={!data || references.loading} onChange={event => { setEmployeeValue(event.target.value); setErrors(previous => ({ ...previous, executor: "" })); }} className={control} aria-invalid={!!errors.executor || unavailableEmployee} aria-describedby="executor-hint">
               <option value="">Pilih pegawai pelaksana</option>
               {unavailableEmployee && <option value={employeeValue} disabled>Pelaksana lama tidak tersedia — pilih ulang</option>}
@@ -118,24 +128,24 @@ export default function LogForm({ log, unit, recorderName, references, onBack, o
             <p id="executor-hint" className="text-[10px] text-slate-400 mt-1.5">{data && !data.employees.length ? "Master pegawai belum tersedia. Hubungi pengelola master data." : "Pelaksana boleh berbeda dari pencatat. Wajib dipilih sebelum finalisasi."}</p>
             {(errors.executor || unavailableEmployee) && <p role="alert" className="text-[11px] text-red-600 mt-1">{errors.executor || "Pelaksana tidak lagi tersedia. Pilih ulang dari master pegawai."}</p>}
           </div>
-          {field("startedAt", "Waktu Mulai Aktual (WIB)", { type: "datetime-local" })}
-          {field("endedAt", "Waktu Selesai Aktual (WIB)", { type: "datetime-local" })}
+          {field("startedAt", "Waktu Mulai Aktual (WIB)", { type: "datetime-local", required: true })}
+          {field("endedAt", "Waktu Selesai Aktual (WIB)", { type: "datetime-local", required: true })}
         </div>
       </Section>
-      <Section number="03" title="Rincian Perubahan" description="Uraikan kondisi awal, tindakan, dan kondisi setelah pelaksanaan.">
-        <div className="space-y-4">{field("before", "Kondisi Sebelum Perubahan", { multiline: true })}{field("action", "Tindakan yang Dilaksanakan", { multiline: true })}{field("after", "Kondisi Setelah Perubahan", { multiline: true })}</div>
+      <Section number="04" title="Rincian Perubahan" description="Uraikan kondisi awal, tindakan, dan kondisi setelah pelaksanaan.">
+        <div className="space-y-4">{field("before", "Kondisi Sebelum Perubahan", { multiline: true, required: true })}{field("action", "Tindakan yang Dilaksanakan", { multiline: true, required: true })}{field("after", "Kondisi Setelah Perubahan", { multiline: true, required: true })}</div>
       </Section>
-      <Section number="04" title="Hasil dan Tindak Lanjut" description="Hasil pelaksanaan dibedakan dari status dokumen Draf atau Final.">
+      <Section number="05" title="Hasil dan Tindak Lanjut" description="Hasil pelaksanaan dibedakan dari status dokumen Draf atau Final.">
         <div className="space-y-4">
-          <div><label htmlFor="log-outcome" className="block text-[11px] font-bold text-slate-600 dark:text-slate-300 mb-1.5">Hasil Pelaksanaan</label><select id="log-outcome" value={input.outcome} onChange={event => update("outcome", event.target.value as LogInput["outcome"])} className={control}><option value="">Belum ditentukan</option>{outcomes.map(value => <option key={value}>{value}</option>)}</select></div>
-          {field("testing", "Hasil Pengujian", { multiline: true })}
+          <div><label htmlFor="log-outcome" className="block text-[11px] font-bold text-slate-600 dark:text-slate-300 mb-1.5">Hasil Pelaksanaan <span className="text-red-500" aria-hidden="true">*</span><span className="sr-only"> wajib diisi sebelum finalisasi</span></label><select id="log-outcome" value={input.outcome} onChange={event => update("outcome", event.target.value as LogInput["outcome"])} className={control}><option value="">Belum ditentukan</option>{outcomes.map(value => <option key={value}>{value}</option>)}</select></div>
+          {field("testing", "Hasil Pengujian", { multiline: true, required: true })}
           {field("obstacles", "Kendala Pelaksanaan", { multiline: true })}
           <label className="flex items-center gap-2 text-xs font-semibold text-slate-600 dark:text-slate-300"><input type="checkbox" checked={input.needsFollowUp} onChange={event => update("needsFollowUp", event.target.checked)} className="accent-emerald-600 w-4 h-4"/> Perubahan ini memerlukan tindak lanjut</label>
-          {field("followUp", "Rencana Tindak Lanjut", { multiline: true, hint: "Wajib saat finalisasi jika tindak lanjut diperlukan." })}
+          {field("followUp", "Rencana Tindak Lanjut", { multiline: true, required: input.needsFollowUp, hint: "Wajib saat finalisasi jika tindak lanjut diperlukan." })}
           {field("recovery", "Catatan Pemulihan / Rollback", { multiline: true })}
         </div>
       </Section>
-      <Section number="05" title="Bukti Pendukung" description="Lampirkan hasil pengujian, catatan teknis, atau dokumentasi perubahan.">
+      <Section number="06" title="Bukti Pendukung" description="Lampirkan hasil pengujian, catatan teknis, atau dokumentasi perubahan.">
         <input ref={fileInput} type="file" multiple accept=".pdf,.docx,.xlsx,.png,.jpg,.jpeg" className="sr-only" aria-label="Pilih lampiran pendukung" onChange={addAttachments}/>
         <div className="flex flex-col sm:flex-row gap-3 sm:items-center justify-between p-4 border border-dashed border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800/40">
           <div className="flex gap-3 items-center"><UploadCloud size={24} className="text-emerald-500"/><div><p className="text-xs font-bold text-slate-600 dark:text-slate-300">Unggah bukti perubahan</p><p className="text-[10px] text-slate-400 mt-1">PDF, DOCX, XLSX, PNG, JPG · Maks. 5 berkas / total 3 MB</p></div></div>
