@@ -217,7 +217,7 @@ export default function SmkiPage() {
             </div>
           </div>
 
-          {/* Card: Formulir Reviu CCTV (FR-038) */}
+          {/* Card: Formulir Review CCTV (FR-038) */}
           <div
             onClick={() => router.push("/smki/reviu-cctv")}
             className="group relative bg-white dark:bg-slate-900/90 rounded-2xl p-6 shadow-sm border border-slate-200/80 dark:border-slate-800 hover:border-rose-500/60 hover:shadow-md transition-all cursor-pointer flex flex-col justify-between"
@@ -227,10 +227,10 @@ export default function SmkiPage() {
                 <Cctv size={24} />
               </div>
               <h3 className="text-base font-bold text-slate-800 dark:text-white mb-2 group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors">
-                Formulir Reviu CCTV
+                Formulir Review CCTV
               </h3>
               <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-medium mb-4">
-                Catat reviu monitoring dan pemeliharaan CCTV (FR-038): obyek, periode, uraian reviu, tindak lanjut, target selesai, serta cetak formulir resmi.
+                Catat review monitoring dan pemeliharaan CCTV (FR-038): obyek, periode, uraian review, tindak lanjut, target selesai, serta cetak formulir resmi.
               </p>
             </div>
             <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-start text-xs font-bold text-rose-600 dark:text-rose-400">

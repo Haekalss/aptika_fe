@@ -93,15 +93,15 @@ export default function ReviuCctvPage() {
     <ServiceRouteGuard requiredService="SMKI">
       <div className="flex flex-col gap-6 pb-12">
         <HeroBanner
-          title="Daftar Reviu CCTV"
+          title="Daftar Review CCTV"
           subtitle="Formulir reviu monitoring dan pemeliharaan CCTV. Kelola hasil reviu, uraian, dan tindak lanjut di lingkungan Diskominfo Jawa Barat. (FR-038)"
           docNo="FR-038/KOM.03.05/SANDIKAMI"
         />
         <KpiGrid
           items={[
-            { label: "Total Reviu", value: stats.total_reviu, sub: "Jumlah seluruh formulir", icon: <Layers size={22} />, color: "blue" },
-            { label: "Uraian Reviu", value: stats.total_uraian, sub: "Baris uraian pada seluruh formulir", icon: <ClipboardList size={22} />, color: "blue" },
-            { label: "Reviu Bulan Ini", value: stats.reviu_bulan_ini, sub: "Formulir bulan berjalan", icon: <CalendarDays size={22} />, color: "emerald" },
+            { label: "Total Review", value: stats.total_reviu, sub: "Jumlah seluruh formulir", icon: <Layers size={22} />, color: "blue" },
+            { label: "Uraian Review", value: stats.total_uraian, sub: "Baris uraian pada seluruh formulir", icon: <ClipboardList size={22} />, color: "blue" },
+            { label: "Review Bulan Ini", value: stats.reviu_bulan_ini, sub: "Formulir bulan berjalan", icon: <CalendarDays size={22} />, color: "emerald" },
             { label: "Tindak Lanjut Aktif", value: stats.tindak_lanjut_aktif, sub: "Target selesai belum lewat", icon: <Timer size={22} />, color: "amber" },
           ]}
         />

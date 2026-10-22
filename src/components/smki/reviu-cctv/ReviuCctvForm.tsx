@@ -23,7 +23,7 @@ const inputCls =
 
 const emptyItem = (): ReviuCctvItem => ({ uraian_reviu: "", tindak_lanjut: "", target_selesai: "", keterangan: "" });
 
-/** Organism: form tambah/ubah Reviu CCTV FR-038 (pola halaman Tambah Laporan FR-016). */
+/** Organism: form tambah/ubah Review CCTV FR-038 (pola halaman Tambah Laporan FR-016). */
 export default function ReviuCctvForm({ mode, id }: Props) {
   const router = useRouter();
   const isEdit = mode === "edit";
@@ -32,11 +32,11 @@ export default function ReviuCctvForm({ mode, id }: Props) {
   const [loading, setLoading] = useState(isEdit);
   const [submitting, setSubmitting] = useState(false);
 
-  const [tanggalReviu, setTanggalReviu] = useState("");
+  const [tanggalReview, setTanggalReview] = useState("");
   const [periodeMulai, setPeriodeMulai] = useState("");
   const [periodeSelesai, setPeriodeSelesai] = useState("");
-  const [obyekReviu, setObyekReviu] = useState("");
-  const [pelaksanaReviu, setPelaksanaReviu] = useState("");
+  const [obyekReview, setObyekReview] = useState("");
+  const [pelaksanaReview, setPelaksanaReview] = useState("");
   const [items, setItems] = useState<ReviuCctvItem[]>([emptyItem()]);
   const [pengelolaNama, setPengelolaNama] = useState("");
   const [pengelolaNip, setPengelolaNip] = useState("");
@@ -48,11 +48,11 @@ export default function ReviuCctvForm({ mode, id }: Props) {
         const res = await fetchReviuCctvDetail(id);
         if (res?.success) {
           const d = res.data;
-          setTanggalReviu(d.tanggal_reviu || "");
+          setTanggalReview(d.tanggal_reviu || "");
           setPeriodeMulai(d.periode_mulai || "");
           setPeriodeSelesai(d.periode_selesai || "");
-          setObyekReviu(d.obyek_reviu || "");
-          setPelaksanaReviu(d.pelaksana_reviu || "");
+          setObyekReview(d.obyek_reviu || "");
+          setPelaksanaReview(d.pelaksana_reviu || "");
           setItems(
             d.items?.length
               ? d.items.map((i: ReviuCctvItem) => ({
@@ -82,7 +82,7 @@ export default function ReviuCctvForm({ mode, id }: Props) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!tanggalReviu || !obyekReviu.trim() || !pelaksanaReviu.trim()) {
+    if (!tanggalReview || !obyekReview.trim() || !pelaksanaReview.trim()) {
       toast.error("Tanggal reviu, obyek reviu, dan pelaksana reviu wajib diisi.");
       return;
     }
@@ -99,17 +99,17 @@ export default function ReviuCctvForm({ mode, id }: Props) {
     }
     for (let n = 0; n < filled.length; n++) {
       if (!filled[n].uraian_reviu.trim()) {
-        toast.error(`Baris ke-${n + 1}: Uraian Reviu wajib diisi.`);
+        toast.error(`Baris ke-${n + 1}: Uraian Review wajib diisi.`);
         return;
       }
     }
 
     const payload: ReviuCctvPayload = {
-      tanggal_reviu: tanggalReviu,
+      tanggal_reviu: tanggalReview,
       periode_mulai: periodeMulai || null,
       periode_selesai: periodeSelesai || null,
-      obyek_reviu: obyekReviu.trim(),
-      pelaksana_reviu: pelaksanaReviu.trim(),
+      obyek_reviu: obyekReview.trim(),
+      pelaksana_reviu: pelaksanaReview.trim(),
       pengelola_nama: pengelolaNama.trim() || null,
       pengelola_nip: pengelolaNip.trim() || null,
       items: filled.map((i) => ({
@@ -140,18 +140,18 @@ export default function ReviuCctvForm({ mode, id }: Props) {
   return (
     <div className="flex flex-col gap-6 pb-12">
       <HeroBanner
-        title={isEdit ? "Edit Reviu CCTV" : "Tambah Reviu CCTV"}
-        subtitle="FORMULIR REVIU MONITORING DAN PEMELIHARAAN CCTV (FR-038) - Lengkapi identitas reviu, uraian reviu, dan pengelola CCTV."
+        title={isEdit ? "Edit Review CCTV" : "Tambah Review CCTV"}
+        subtitle="FORMULIR REVIEW MONITORING DAN PEMELIHARAAN CCTV (FR-038) - Lengkapi identitas reviu, uraian reviu, dan pengelola CCTV."
         breadcrumb={[
-          { label: "Daftar Reviu CCTV", href: "/smki/reviu-cctv" },
-          { label: isEdit ? "Edit Reviu CCTV" : "Tambah Reviu CCTV" },
+          { label: "Daftar Review CCTV", href: "/smki/reviu-cctv" },
+          { label: isEdit ? "Edit Review CCTV" : "Tambah Review CCTV" },
         ]}
         docNo="FR-038/KOM.03.05/SANDIKAMI"
       />
       <div className="rounded-2xl bg-white dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 shadow-sm overflow-hidden">
         <div className="px-6 py-4 bg-slate-50/70 dark:bg-slate-800/40 border-b border-slate-100 dark:border-slate-800">
           <h2 className="text-sm font-bold text-slate-800 dark:text-white">
-            Formulir Reviu CCTV — Identitas, Uraian Reviu & Pengelola
+            Formulir Review CCTV — Identitas, Uraian Review & Pengelola
           </h2>
           <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
             Tanda * menunjukkan isian wajib.
@@ -167,22 +167,22 @@ export default function ReviuCctvForm({ mode, id }: Props) {
           <div className={submitting ? "pointer-events-none opacity-70" : ""}>
             <form className="p-6 sm:p-8 flex flex-col gap-8" onSubmit={handleSubmit}>
               <div className="flex flex-col gap-4">
-                <SectionTitle title="Identitas Reviu" />
+                <SectionTitle title="Identitas Review" />
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                  <FormField label="Tanggal Reviu" required>
-                    <input type="date" value={tanggalReviu} onChange={(e) => setTanggalReviu(e.target.value)} className={inputCls} />
+                  <FormField label="Tanggal Review" required>
+                    <input type="date" value={tanggalReview} onChange={(e) => setTanggalReview(e.target.value)} className={inputCls} />
                   </FormField>
-                  <FormField label="Periode Reviu (Mulai)">
+                  <FormField label="Periode Review (Mulai)">
                     <input type="date" value={periodeMulai} onChange={(e) => setPeriodeMulai(e.target.value)} className={inputCls} />
                   </FormField>
-                  <FormField label="Periode Reviu (Selesai)">
+                  <FormField label="Periode Review (Selesai)">
                     <input type="date" value={periodeSelesai} onChange={(e) => setPeriodeSelesai(e.target.value)} className={inputCls} />
                   </FormField>
-                  <FormField label="Obyek Reviu" required className="sm:col-span-2">
-                    <input type="text" value={obyekReviu} onChange={(e) => setObyekReviu(e.target.value)} placeholder="Contoh: CCTV Ruang Server Lantai 2" className={inputCls} />
+                  <FormField label="Obyek Review" required className="sm:col-span-2">
+                    <input type="text" value={obyekReview} onChange={(e) => setObyekReview(e.target.value)} placeholder="Contoh: CCTV Ruang Server Lantai 2" className={inputCls} />
                   </FormField>
-                  <FormField label="Pelaksana Reviu" required>
-                    <input type="text" value={pelaksanaReviu} onChange={(e) => setPelaksanaReviu(e.target.value)} placeholder="Nama pelaksana / tim reviu" className={inputCls} />
+                  <FormField label="Pelaksana Review" required>
+                    <input type="text" value={pelaksanaReview} onChange={(e) => setPelaksanaReview(e.target.value)} placeholder="Nama pelaksana / tim reviu" className={inputCls} />
                   </FormField>
                 </div>
               </div>
@@ -191,7 +191,7 @@ export default function ReviuCctvForm({ mode, id }: Props) {
 
               <div className="flex flex-col gap-4">
                 <div className="flex items-center justify-between">
-                  <SectionTitle title="Uraian Reviu" />
+                  <SectionTitle title="Uraian Review" />
                   <span className="text-xs text-slate-400">{items.length} baris</span>
                 </div>
                 <div className="flex flex-col gap-4">
@@ -200,7 +200,7 @@ export default function ReviuCctvForm({ mode, id }: Props) {
                       <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center gap-2">
                           <span className="w-6 h-6 rounded-full bg-emerald-600 text-white text-xs font-bold flex items-center justify-center">{idx + 1}</span>
-                          <span className="text-sm font-bold text-slate-700 dark:text-slate-200">Uraian Reviu</span>
+                          <span className="text-sm font-bold text-slate-700 dark:text-slate-200">Uraian Review</span>
                         </div>
                         {items.length > 1 && (
                           <button type="button" onClick={() => removeItem(idx)} className="inline-flex items-center gap-1 text-xs font-bold text-red-500 hover:text-red-700">
@@ -209,7 +209,7 @@ export default function ReviuCctvForm({ mode, id }: Props) {
                         )}
                       </div>
                       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
-                        <FormField label="Uraian Reviu" className="sm:col-span-2 md:col-span-4">
+                        <FormField label="Uraian Review" className="sm:col-span-2 md:col-span-4">
                           <textarea rows={2} value={it.uraian_reviu} onChange={(e) => updateItem(idx, { uraian_reviu: e.target.value })} placeholder="Hasil reviu monitoring / pemeliharaan CCTV" className={`${inputCls} resize-none`} />
                         </FormField>
                         <FormField label="Tindak Lanjut" className="sm:col-span-2">
@@ -229,7 +229,7 @@ export default function ReviuCctvForm({ mode, id }: Props) {
                     onClick={addItem}
                     className="inline-flex items-center justify-center gap-1.5 py-2.5 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 text-sm font-bold hover:border-emerald-400 hover:text-emerald-600 transition-colors"
                   >
-                    <Plus size={16} /> Tambah Uraian Reviu
+                    <Plus size={16} /> Tambah Uraian Review
                   </button>
                 </div>
               </div>
@@ -250,7 +250,7 @@ export default function ReviuCctvForm({ mode, id }: Props) {
 
               <FormActions
                 onCancel={back}
-                submitLabel={isEdit ? "Simpan Perubahan" : "Simpan Reviu CCTV"}
+                submitLabel={isEdit ? "Simpan Perubahan" : "Simpan Review CCTV"}
                 submitting={submitting}
                 note="Periksa kembali data sebelum menyimpan formulir reviu CCTV."
               />

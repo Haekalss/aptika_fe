@@ -44,20 +44,20 @@ export default function ReviuCctvFilterBar({
             className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md shadow-emerald-500/20 transition-all cursor-pointer"
           >
             <Plus size={15} />
-            <span>Tambah Reviu CCTV</span>
+            <span>Tambah Review CCTV</span>
           </button>
         </div>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 pt-3 border-t border-slate-100 dark:border-slate-800/80">
         <div>
           <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1">
-            Tanggal Reviu Dari:
+            Tanggal Review Dari:
           </label>
           <input type="date" value={dari} onChange={(e) => onDari(e.target.value)} className={inputCls} />
         </div>
         <div>
           <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1">
-            Tanggal Reviu Sampai:
+            Tanggal Review Sampai:
           </label>
           <input type="date" value={sampai} onChange={(e) => onSampai(e.target.value)} className={inputCls} />
         </div>

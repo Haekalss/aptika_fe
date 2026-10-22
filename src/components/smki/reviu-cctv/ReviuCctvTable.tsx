@@ -26,7 +26,7 @@ export default function ReviuCctvTable({
   return (
     <div className="rounded-2xl bg-white dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 shadow-sm overflow-hidden flex flex-col">
       <div className="px-5 py-3.5 bg-slate-50/70 dark:bg-slate-800/40 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between flex-wrap gap-2 text-xs">
-        <span className="font-bold text-slate-700 dark:text-slate-200">Formulir Reviu Monitoring dan Pemeliharaan CCTV FR-038</span>
+        <span className="font-bold text-slate-700 dark:text-slate-200">Formulir Review Monitoring dan Pemeliharaan CCTV FR-038</span>
         <span className="text-slate-500 dark:text-slate-400 font-medium">{totalLabel}</span>
       </div>
       <div className="overflow-x-auto">
@@ -34,11 +34,11 @@ export default function ReviuCctvTable({
           <thead className="bg-slate-100/70 dark:bg-slate-800/70 text-slate-700 dark:text-slate-200 font-bold border-b border-slate-200/80 dark:border-slate-800">
             <tr>
               <th className="py-3 px-4 w-12 text-center">NO</th>
-              <th className="py-3 px-4 min-w-[140px]">TANGGAL REVIU</th>
-              <th className="py-3 px-4 min-w-[200px]">OBYEK REVIU</th>
-              <th className="py-3 px-4 min-w-[200px]">PERIODE REVIU</th>
+              <th className="py-3 px-4 min-w-[140px]">TANGGAL REVIEW</th>
+              <th className="py-3 px-4 min-w-[200px]">OBYEK REVIEW</th>
+              <th className="py-3 px-4 min-w-[200px]">PERIODE REVIEW</th>
               <th className="py-3 px-4 min-w-[160px]">PELAKSANA</th>
-              <th className="py-3 px-4 min-w-[100px]">URAIAN REVIU</th>
+              <th className="py-3 px-4 min-w-[100px]">URAIAN REVIEW</th>
               <th className="py-3 px-4 text-center w-40">AKSI</th>
             </tr>
           </thead>
@@ -49,7 +49,7 @@ export default function ReviuCctvTable({
                   <div className="flex flex-col items-center justify-center gap-2 max-w-sm mx-auto">
                     <AlertCircle size={32} className="text-amber-500 mb-1" />
                     <span className="font-bold text-sm text-slate-700 dark:text-slate-200">
-                      Data Reviu CCTV Tidak Ditemukan
+                      Data Review CCTV Tidak Ditemukan
                     </span>
                     <p className="text-xs text-slate-400 text-center">
                       Tidak ada data reviu CCTV yang cocok dengan filter atau kata kunci saat ini.
@@ -85,7 +85,7 @@ export default function ReviuCctvTable({
                       <button
                         type="button"
                         onClick={() => onDetail(item.id)}
-                        title="Lihat Detail Reviu CCTV"
+                        title="Lihat Detail Review CCTV"
                         className="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 transition-all cursor-pointer"
                       >
                         <Eye size={13} />
@@ -109,7 +109,7 @@ export default function ReviuCctvTable({
                       <button
                         type="button"
                         onClick={() => onEdit(item.id)}
-                        title="Edit Reviu CCTV"
+                        title="Edit Review CCTV"
                         className="p-1.5 rounded-lg bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900 border border-blue-200/80 dark:border-blue-800/60 transition-all cursor-pointer"
                       >
                         <Pencil size={13} />
@@ -117,7 +117,7 @@ export default function ReviuCctvTable({
                       <button
                         type="button"
                         onClick={() => onDelete(item)}
-                        title="Hapus Reviu CCTV"
+                        title="Hapus Review CCTV"
                         className="p-1.5 rounded-lg bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-900 border border-rose-200/80 dark:border-rose-800/60 transition-all cursor-pointer"
                       >
                         <Trash2 size={13} />

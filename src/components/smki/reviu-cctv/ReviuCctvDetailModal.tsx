@@ -65,7 +65,7 @@ export default function ReviuCctvDetailModal({
     <Modal
       isOpen={id != null}
       onClose={onClose}
-      title={row ? `Detail Reviu CCTV #${row.id} — ${row.obyek_reviu}` : "Detail Reviu CCTV"}
+      title={row ? `Detail Review CCTV #${row.id} — ${row.obyek_reviu}` : "Detail Review CCTV"}
       size="xl"
       footer={
         row ? (
@@ -119,13 +119,13 @@ export default function ReviuCctvDetailModal({
         <div className="flex flex-col gap-5">
           <div>
             <h4 className="text-xs font-bold text-slate-700 dark:text-slate-200 uppercase tracking-widest mb-3">
-              Identitas Reviu
+              Identitas Review
             </h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              <Field label="Tanggal Reviu" value={formatTanggalIndo(row.tanggal_reviu)} />
-              <Field label="Periode Reviu" value={formatPeriode(row.periode_mulai, row.periode_selesai)} />
-              <Field label="Obyek Reviu" value={row.obyek_reviu} />
-              <Field label="Pelaksana Reviu" value={row.pelaksana_reviu} />
+              <Field label="Tanggal Review" value={formatTanggalIndo(row.tanggal_reviu)} />
+              <Field label="Periode Review" value={formatPeriode(row.periode_mulai, row.periode_selesai)} />
+              <Field label="Obyek Review" value={row.obyek_reviu} />
+              <Field label="Pelaksana Review" value={row.pelaksana_reviu} />
             </div>
           </div>
 
@@ -133,14 +133,14 @@ export default function ReviuCctvDetailModal({
 
           <div>
             <h4 className="text-xs font-bold text-slate-700 dark:text-slate-200 uppercase tracking-widest mb-3">
-              Uraian Reviu ({row.items?.length ?? 0})
+              Uraian Review ({row.items?.length ?? 0})
             </h4>
             <div className="rounded-xl border border-slate-200 dark:border-slate-700 overflow-x-auto">
               <table className="w-full text-left text-xs text-slate-600 dark:text-slate-300">
                 <thead className="bg-slate-100/70 dark:bg-slate-800/70 text-slate-700 dark:text-slate-200 font-bold border-b border-slate-200/80 dark:border-slate-800">
                   <tr>
                     <th className="py-2.5 px-3 w-12 text-center">NO</th>
-                    <th className="py-2.5 px-3 min-w-[200px]">URAIAN REVIU</th>
+                    <th className="py-2.5 px-3 min-w-[200px]">URAIAN REVIEW</th>
                     <th className="py-2.5 px-3 min-w-[160px]">TINDAK LANJUT</th>
                     <th className="py-2.5 px-3 min-w-[110px]">TARGET SELESAI</th>
                     <th className="py-2.5 px-3 min-w-[120px]">KETERANGAN</th>

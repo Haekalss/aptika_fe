@@ -298,7 +298,7 @@ export default function Sidebar() {
                 iconColor: "text-indigo-600 bg-indigo-50 border border-indigo-200/60",
               },
               {
-                name: "Reviu CCTV",
+                name: "Review CCTV",
                 key: "smki/reviu-cctv",
                 icon: Cctv,
                 iconColor: "text-rose-600 bg-rose-50 border border-rose-200/60",

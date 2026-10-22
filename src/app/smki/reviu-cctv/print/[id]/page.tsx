@@ -12,7 +12,7 @@ import {
 /** Jumlah baris minimum pada tabel (sama dengan template .docx: 3 baris). */
 const MIN_ROWS = 3;
 
-// Format halaman, font, dan ukuran mengikuti template asli "FR-038 Formulir Reviu CCTV.docx"
+// Format halaman, font, dan ukuran mengikuti template asli "FR-038 Formulir Review CCTV.docx"
 // (13 x 8,5 in landscape, margin 1 in, Arial; judul 14 pt; isian 11 pt; meta kop 8-9 pt).
 const FONT = "Arial, 'Liberation Sans', Helvetica, sans-serif";
 const line = "1px solid #000";
@@ -63,10 +63,10 @@ export default function PrintReviuCctvPage() {
   const cellC: React.CSSProperties = { ...cell, textAlign: "center" };
   const meta: React.CSSProperties = { border: line, padding: "2px 5px", verticalAlign: "middle" };
   const identitas: [string, string][] = [
-    ["Tanggal Reviu", formatTanggalIndo(item.tanggal_reviu)],
-    ["Periode Reviu", item.periode_mulai || item.periode_selesai ? formatPeriode(item.periode_mulai, item.periode_selesai) : ""],
-    ["Obyek Reviu", item.obyek_reviu],
-    ["Pelaksana Reviu", item.pelaksana_reviu],
+    ["Tanggal Review", formatTanggalIndo(item.tanggal_reviu)],
+    ["Periode Review", item.periode_mulai || item.periode_selesai ? formatPeriode(item.periode_mulai, item.periode_selesai) : ""],
+    ["Obyek Review", item.obyek_reviu],
+    ["Pelaksana Review", item.pelaksana_reviu],
   ];
 
   return (
@@ -123,7 +123,7 @@ export default function PrintReviuCctvPage() {
                 <img src="/logo-fr038.png" alt="Logo Diskominfo Jabar" style={{ width: "0.66in", height: "auto", margin: "0 auto" }} />
               </td>
               <td colSpan={2} rowSpan={3} style={{ border: line, textAlign: "center", verticalAlign: "middle", fontSize: "14pt", fontWeight: 700, padding: "0 10px" }}>
-                FORMULIR REVIU <i>MONITORING</i> DAN PEMELIHARAAN CCTV
+                FORMULIR REVIEW <i>MONITORING</i> DAN PEMELIHARAAN CCTV
               </td>
               <td style={{ ...meta, fontSize: "8pt", whiteSpace: "nowrap" }}>No. Dokumen</td>
               <td colSpan={2} style={{ ...meta, fontSize: "9pt", textAlign: "center" }}>:</td>
@@ -152,7 +152,7 @@ export default function PrintReviuCctvPage() {
             {/* Judul kolom */}
             <tr>
               <td style={cellC}>No</td>
-              <td colSpan={3} style={cellC}>Uraian Reviu</td>
+              <td colSpan={3} style={cellC}>Uraian Review</td>
               <td style={cellC}>Tindak Lanjut</td>
               <td colSpan={2} style={cellC}>Target Selesai</td>
               <td colSpan={2} style={cellC}>Keterangan</td>
