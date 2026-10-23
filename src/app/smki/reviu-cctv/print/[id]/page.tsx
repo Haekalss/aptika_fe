@@ -8,6 +8,8 @@ import {
   fetchReviuCctvDetail, downloadReviuCctvDocx, formatTanggalIndo, formatPeriode,
   formatTanggalRingkas, reviuCctvErrMsg, ReviuCctv,
 } from "@/services/smki/reviuCctvService";
+import { getTtePegawai, TtePegawai } from "@/services/tteService";
+import TteSpecimen from "@/components/smki/TteSpecimen";
 
 /** Jumlah baris minimum pada tabel (sama dengan template .docx: 3 baris). */
 const MIN_ROWS = 3;
@@ -24,6 +26,13 @@ export default function PrintReviuCctvPage() {
   const id = params?.id as string;
   const [item, setItem] = useState<ReviuCctv | null>(null);
   const [loading, setLoading] = useState(true);
+  const [pegawaiList, setPegawaiList] = useState<TtePegawai[]>([]);
+
+  useEffect(() => {
+    getTtePegawai()
+      .then(setPegawaiList)
+      .catch(() => setPegawaiList([]));
+  }, []);
 
   useEffect(() => {
     if (!id) return;
@@ -59,6 +68,14 @@ export default function PrintReviuCctvPage() {
 
   const rows = item.items || [];
   const total = Math.max(MIN_ROWS, rows.length);
+
+  // Cocokkan pengelola dengan master pegawai (berdasarkan NIP, fallback nama)
+  const penandatangan = pegawaiList.find(
+    (p) =>
+      (item.pengelola_nip && p.nip === item.pengelola_nip) ||
+      (item.pengelola_nama &&
+        p.nama.trim().toLowerCase() === item.pengelola_nama.trim().toLowerCase())
+  );
   const cell: React.CSSProperties = { border: thick, borderLeft: line, borderRight: line, padding: "5px 5px", verticalAlign: "middle", fontSize: "11pt" };
   const cellC: React.CSSProperties = { ...cell, textAlign: "center" };
   const meta: React.CSSProperties = { border: line, padding: "2px 5px", verticalAlign: "middle" };
@@ -175,7 +192,13 @@ export default function PrintReviuCctvPage() {
         {/* Tanda tangan pengelola CCTV */}
         <div style={{ marginTop: "0.4in", fontSize: "10pt", pageBreakInside: "avoid", breakInside: "avoid" }}>
           <div style={{ paddingLeft: "0.4in" }}>Pengelola CCTV,</div>
-          <div style={{ height: "1.1in" }} />
+          {penandatangan ? (
+            <div style={{ paddingLeft: "0.4in", margin: "6px 0 4px" }}>
+              <TteSpecimen pegawaiId={penandatangan.id} width={300} />
+            </div>
+          ) : (
+            <div style={{ height: "1.1in" }} />
+          )}
           <div>
             ({item.pengelola_nama || "……………………………….."})
             {item.pengelola_nip ? <div>NIP. {item.pengelola_nip}</div> : null}
