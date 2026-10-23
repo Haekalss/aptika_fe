@@ -56,6 +56,23 @@ export const getTtePegawai = async (): Promise<TtePegawai[]> => {
   return res.data?.data ?? [];
 };
 
+/** Pilihan penanda tangan untuk dropdown saat cetak/unduh. */
+export interface TteOption {
+  key: string;
+  source: "master" | "pegawai";
+  id: number;
+  nama: string;
+  nip: string | null;
+  jabatan: string | null;
+  unit: string | null;
+  label: string;
+}
+
+export const getTteOptions = async (): Promise<TteOption[]> => {
+  const res = await api.get("/tte/options");
+  return res.data?.data ?? [];
+};
+
 export const getTteData = async (
   pegawaiId: number | string,
   unit?: string
