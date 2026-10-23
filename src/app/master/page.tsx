@@ -14,6 +14,10 @@ import {
   Loader2,
   Database,
   AlertCircle,
+  PenTool,
+  CheckCircle2,
+  XCircle,
+  Eye,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { Modal } from "@/components/ui/Modal";
@@ -35,8 +39,19 @@ import {
   updateMasterNda,
   deleteMasterNda,
 } from "@/services/api";
+import {
+  getTteSpesimenList,
+  createTteSpesimen,
+  updateTteSpesimen,
+  deleteTteSpesimen,
+  fetchTteSpesimenImage,
+  previewTteSpesimen,
+  getTtePegawai,
+  TteSpesimenItem,
+  TtePegawai,
+} from "@/services/tteService";
 
-type TabType = "rekening" | "angkutan" | "pegawai" | "nda";
+type TabType = "rekening" | "angkutan" | "pegawai" | "nda" | "tte";
 
 export default function MasterDataPage() {
   const [activeTab, setActiveTab] = useState<TabType>("rekening");
@@ -48,6 +63,11 @@ export default function MasterDataPage() {
   const [angkutanList, setAngkutanList] = useState<any[]>([]);
   const [pegawaiList, setPegawaiList] = useState<any[]>([]);
   const [ndaList, setNdaList] = useState<any[]>([]);
+  const [tteList, setTteList] = useState<TteSpesimenItem[]>([]);
+  const [ttePegawai, setTtePegawai] = useState<TtePegawai[]>([]);
+  const [ttePreview, setTtePreview] = useState<string | null>(null);
+  const [tteImages, setTteImages] = useState<Record<number, string>>({});
+  const [isPreviewing, setIsPreviewing] = useState(false);
 
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -87,15 +107,29 @@ export default function MasterDataPage() {
     is_active: true,
   });
 
+  const [formTte, setFormTte] = useState({
+    pegawai_id: null as number | null,
+    nama: "",
+    nip: "",
+    jabatan: "",
+    pangkat: "",
+    golongan: "",
+    unit: "DINAS KOMUNIKASI DAN INFORMATIKA",
+    kalimat: "Ditandatangani secara elektronik oleh:",
+    is_active: true,
+  });
+
   // Fetch All Data
   const fetchAllData = async () => {
     try {
       setLoading(true);
-      const [rekRes, angRes, pegRes, ndaRes] = await Promise.allSettled([
+      const [rekRes, angRes, pegRes, ndaRes, tteRes, ttePegRes] = await Promise.allSettled([
         getRekeningList(),
         getAlatAngkutanList(),
         getPegawaiList(),
         getMasterNdaList(),
+        getTteSpesimenList(),
+        getTtePegawai(),
       ]);
 
       if (rekRes.status === "fulfilled" && rekRes.value?.data) {
@@ -109,6 +143,12 @@ export default function MasterDataPage() {
       }
       if (ndaRes.status === "fulfilled" && ndaRes.value?.data) {
         setNdaList(ndaRes.value.data);
+      }
+      if (tteRes.status === "fulfilled" && tteRes.value?.data) {
+        setTteList(tteRes.value.data);
+      }
+      if (ttePegRes.status === "fulfilled") {
+        setTtePegawai(ttePegRes.value ?? []);
       }
     } catch (err) {
       console.error(err);
@@ -168,6 +208,18 @@ export default function MasterDataPage() {
     );
   }, [ndaList, search]);
 
+  const filteredTte = useMemo(() => {
+    const q = search.toLowerCase().trim();
+    if (!q) return tteList;
+    return tteList.filter(
+      (item) =>
+        item.nama?.toLowerCase().includes(q) ||
+        item.nip?.toLowerCase().includes(q) ||
+        item.jabatan?.toLowerCase().includes(q) ||
+        item.unit?.toLowerCase().includes(q)
+    );
+  }, [tteList, search]);
+
   // Open Create Modal
   const handleOpenCreate = () => {
     setEditingItem(null);
@@ -194,6 +246,19 @@ export default function MasterDataPage() {
         klausul_perjanjian: "",
         is_active: true,
       });
+    } else if (activeTab === "tte") {
+      setFormTte({
+        pegawai_id: null,
+        nama: "",
+        nip: "",
+        jabatan: "",
+        pangkat: "",
+        golongan: "",
+        unit: "DINAS KOMUNIKASI DAN INFORMATIKA",
+        kalimat: "Ditandatangani secara elektronik oleh:",
+        is_active: true,
+      });
+      setTtePreview(null);
     }
     setIsModalOpen(true);
   };
@@ -231,6 +296,19 @@ export default function MasterDataPage() {
         klausul_perjanjian: item.klausul_perjanjian || "",
         is_active: item.is_active ?? true,
       });
+    } else if (activeTab === "tte") {
+      setFormTte({
+        pegawai_id: item.pegawai_id ?? null,
+        nama: item.nama || "",
+        nip: item.nip || "",
+        jabatan: item.jabatan || "",
+        pangkat: item.pangkat || "",
+        golongan: item.golongan || "",
+        unit: item.unit || "DINAS KOMUNIKASI DAN INFORMATIKA",
+        kalimat: item.kalimat || "Ditandatangani secara elektronik oleh:",
+        is_active: item.is_active ?? true,
+      });
+      setTtePreview(null);
     }
     setIsModalOpen(true);
   };
@@ -293,6 +371,28 @@ export default function MasterDataPage() {
           await createMasterNda(formNda);
           toast.success("Master NDA baru berhasil ditambahkan.");
         }
+      } else if (activeTab === "tte") {
+        if (!formTte.nama.trim()) {
+          toast.error("Nama penanda tangan wajib diisi.");
+          setIsSubmitting(false);
+          return;
+        }
+        const payload = {
+          ...formTte,
+          nip: formTte.nip || undefined,
+          jabatan: formTte.jabatan || undefined,
+          pangkat: formTte.pangkat || undefined,
+          golongan: formTte.golongan || undefined,
+        };
+        if (editingItem) {
+          await updateTteSpesimen(editingItem.id, payload);
+          toast.success("Spesimen TTE berhasil diperbarui.");
+        } else {
+          await createTteSpesimen(payload);
+          toast.success("Spesimen TTE baru berhasil ditambahkan.");
+        }
+        // gambar lama di-cache, paksa muat ulang
+        setTteImages({});
       }
 
       setIsModalOpen(false);
@@ -309,6 +409,64 @@ export default function MasterDataPage() {
   const handleOpenDelete = (item: any) => {
     setDeletingItem(item);
     setIsDeleteModalOpen(true);
+  };
+
+  // ─── Spesimen TTE ────────────────────────────────────────────
+
+  /** Isi form dari master pegawai yang dipilih. */
+  const handlePickPegawai = (id: string) => {
+    if (!id) {
+      setFormTte((prev) => ({ ...prev, pegawai_id: null }));
+      return;
+    }
+    const p = ttePegawai.find((x) => String(x.id) === id);
+    if (!p) return;
+    const [pangkat, golongan] = (p.pangkat || "").split("/").map((s) => s.trim());
+    setFormTte((prev) => ({
+      ...prev,
+      pegawai_id: p.id,
+      nama: p.nama || "",
+      nip: p.nip || "",
+      jabatan: p.jabatan || "",
+      pangkat: pangkat || "",
+      golongan: golongan || "",
+    }));
+    setTtePreview(null);
+  };
+
+  /** Minta backend menggambar preview dari isi form. */
+  const handlePreviewTte = async () => {
+    if (!formTte.nama.trim()) {
+      toast.error("Isi nama penanda tangan dulu.");
+      return;
+    }
+    setIsPreviewing(true);
+    try {
+      if (ttePreview) URL.revokeObjectURL(ttePreview);
+      const url = await previewTteSpesimen({
+        ...formTte,
+        nip: formTte.nip || undefined,
+        jabatan: formTte.jabatan || undefined,
+        pangkat: formTte.pangkat || undefined,
+        golongan: formTte.golongan || undefined,
+      });
+      setTtePreview(url);
+    } catch {
+      toast.error("Gagal membuat preview spesimen.");
+    } finally {
+      setIsPreviewing(false);
+    }
+  };
+
+  /** Muat gambar spesimen tersimpan untuk ditampilkan di tabel. */
+  const loadTteImage = async (id: number) => {
+    if (tteImages[id]) return;
+    try {
+      const url = await fetchTteSpesimenImage(id);
+      setTteImages((prev) => ({ ...prev, [id]: url }));
+    } catch {
+      /* abaikan, tabel tetap tampil tanpa gambar */
+    }
   };
 
   // Confirm Delete Handler
@@ -328,6 +486,10 @@ export default function MasterDataPage() {
       } else if (activeTab === "nda") {
         await deleteMasterNda(deletingItem.id);
         toast.success("Master NDA berhasil dihapus.");
+      } else if (activeTab === "tte") {
+        await deleteTteSpesimen(deletingItem.id);
+        toast.success("Spesimen TTE berhasil dihapus.");
+        setTteImages({});
       }
       setIsDeleteModalOpen(false);
       fetchAllData();
@@ -367,6 +529,13 @@ export default function MasterDataPage() {
       count: ndaList.length,
       icon: FileSignature,
       usage: "Digunakan sebagai Pejabat Penandatangan & Template Dokumen NDA Magang / Pihak Ketiga",
+    },
+    {
+      id: "tte" as TabType,
+      label: "Spesimen TTE",
+      count: tteList.length,
+      icon: PenTool,
+      usage: "Blok tanda tangan elektronik otomatis pada cetak formulir & dokumen",
     },
   ];
 
@@ -417,7 +586,7 @@ export default function MasterDataPage() {
                   ? "bg-white dark:bg-slate-800/90 border-blue-500 shadow-md ring-2 ring-blue-500/20"
                   : "bg-white/70 dark:bg-slate-900/60 border-slate-200 dark:border-slate-800 hover:border-slate-300 hover:bg-white dark:hover:bg-slate-800 shadow-xs"
               }`}
-            >
+              >
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                   {t.label}
@@ -430,6 +599,8 @@ export default function MasterDataPage() {
                       ? "bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 border border-emerald-200/60"
                       : t.id === "pegawai"
                       ? "bg-purple-50 dark:bg-purple-950/60 text-purple-600 border border-purple-200/60"
+                      : t.id === "tte"
+                      ? "bg-rose-50 dark:bg-rose-950/60 text-rose-600 border border-rose-200/60"
                       : "bg-amber-50 dark:bg-amber-950/60 text-amber-600 border border-amber-200/60"
                   }`}
                 >
@@ -814,6 +985,117 @@ export default function MasterDataPage() {
                   </div>
                 </div>
               )}
+              {/* TAB 5: SPESIMEN TTE */}
+              {activeTab === "tte" && (
+                <div className="space-y-4">
+                  <div className="flex items-start gap-2.5 p-3.5 rounded-xl bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900/60 text-[11px] text-rose-800 dark:text-rose-200 font-medium">
+                    <PenTool size={16} className="flex-shrink-0 mt-0.5" />
+                    <p>
+                      Spesimen di sini dipakai untuk mencetak blok tanda tangan elektronik pada dokumen.
+                      Gambar dibuat otomatis dari data di bawah, jadi setiap perubahan langsung terpakai.
+                    </p>
+                  </div>
+
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse">
+                      <thead>
+                        <tr className="border-b border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/50 text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                          <th className="py-3.5 px-4 w-12 text-center">No</th>
+                          <th className="py-3.5 px-4 w-64">Preview Spesimen</th>
+                          <th className="py-3.5 px-4">Penanda Tangan</th>
+                          <th className="py-3.5 px-4">Jabatan & Unit</th>
+                          <th className="py-3.5 px-4 text-center">Status</th>
+                          <th className="py-3.5 px-4 text-center w-28">Aksi</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-xs">
+                        {filteredTte.length === 0 ? (
+                          <tr>
+                            <td colSpan={6} className="py-12 text-center text-slate-400 font-medium">
+                              {search
+                                ? "Tidak ada spesimen TTE yang sesuai pencarian."
+                                : "Belum ada spesimen TTE. Klik \"Tambah Spesimen TTE\" untuk membuat."}
+                            </td>
+                          </tr>
+                        ) : (
+                          filteredTte.map((item, idx) => (
+                            <tr
+                              key={item.id}
+                              className="hover:bg-rose-50/40 dark:hover:bg-slate-800/40 transition-colors"
+                              onMouseEnter={() => loadTteImage(item.id)}
+                            >
+                              <td className="py-3.5 px-4 text-center text-slate-400 font-bold">{idx + 1}</td>
+                              <td className="py-3.5 px-4">
+                                {tteImages[item.id] ? (
+                                  // eslint-disable-next-line @next/next/no-img-element
+                                  <img
+                                    src={tteImages[item.id]}
+                                    alt={`Spesimen ${item.nama}`}
+                                    className="w-56 h-auto rounded-lg border border-slate-200 dark:border-slate-700"
+                                  />
+                                ) : (
+                                  <div className="w-56 h-[86px] rounded-lg border border-dashed border-slate-300 dark:border-slate-700 flex items-center justify-center text-[10px] text-slate-400 gap-1.5">
+                                    <Eye size={12} /> memuat…
+                                  </div>
+                                )}
+                              </td>
+                              <td className="py-3.5 px-4">
+                                <div className="font-bold text-slate-900 dark:text-white">{item.nama}</div>
+                                <div className="font-mono text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                                  {item.nip ? `NIP. ${item.nip}` : "NIP belum diisi"}
+                                </div>
+                                {item.pangkat && (
+                                  <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                                    {item.pangkat}
+                                    {item.golongan ? ` / ${item.golongan}` : ""}
+                                  </div>
+                                )}
+                              </td>
+                              <td className="py-3.5 px-4">
+                                <div className="font-medium text-slate-800 dark:text-slate-200">
+                                  {item.jabatan || "-"}
+                                </div>
+                                <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                                  {item.unit}
+                                </div>
+                              </td>
+                              <td className="py-3.5 px-4 text-center">
+                                {item.is_active ? (
+                                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10.5px] font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900">
+                                    <CheckCircle2 size={11} /> Aktif
+                                  </span>
+                                ) : (
+                                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10.5px] font-bold bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                                    <XCircle size={11} /> Nonaktif
+                                  </span>
+                                )}
+                              </td>
+                              <td className="py-3.5 px-4 text-center">
+                                <div className="flex items-center justify-center gap-1.5">
+                                  <button
+                                    onClick={() => handleOpenEdit(item)}
+                                    className="p-1.5 rounded-lg text-slate-600 hover:text-rose-600 hover:bg-rose-50 dark:text-slate-300 dark:hover:bg-rose-950/40 transition-colors"
+                                    title="Edit Spesimen"
+                                  >
+                                    <Pencil size={15} />
+                                  </button>
+                                  <button
+                                    onClick={() => handleOpenDelete(item)}
+                                    className="p-1.5 rounded-lg text-slate-600 hover:text-red-600 hover:bg-red-50 dark:text-slate-300 dark:hover:bg-red-950/40 transition-colors"
+                                    title="Hapus Spesimen"
+                                  >
+                                    <Trash2 size={15} />
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          ))
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
             </>
           )}
         </div>
@@ -1116,6 +1398,170 @@ export default function MasterDataPage() {
                 <label htmlFor="nda_is_active" className="text-xs font-semibold text-slate-700 dark:text-slate-300">
                   Jadikan Template Aktif
                 </label>
+              </div>
+            </>
+          )}
+
+          {/* FORM: SPESIMEN TTE */}
+          {activeTab === "tte" && (
+            <>
+              <div>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-200 mb-1">
+                  Ambil dari Daftar Pegawai (opsional)
+                </label>
+                <select
+                  value={formTte.pegawai_id ?? ""}
+                  onChange={(e) => handlePickPegawai(e.target.value)}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-semibold focus:ring-2 focus:ring-rose-500 focus:outline-none dark:text-white"
+                >
+                  <option value="">-- Isi manual / pilih pegawai --</option>
+                  {ttePegawai.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.nama} {p.nip ? `— ${p.nip}` : ""}
+                    </option>
+                  ))}
+                </select>
+                <p className="mt-1 text-[11px] text-slate-400">
+                  Memilih pegawai akan mengisi nama, NIP, jabatan, dan pangkat otomatis.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-200 mb-1">
+                    Nama Lengkap & Gelar <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Misal: Dian Istanti, S.Sos., M.A.P."
+                    value={formTte.nama}
+                    onChange={(e) => setFormTte({ ...formTte, nama: e.target.value })}
+                    required
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-semibold focus:ring-2 focus:ring-rose-500 focus:outline-none dark:text-white"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-200 mb-1">
+                    NIP
+                  </label>
+                  <input
+                    type="text"
+                    maxLength={30}
+                    placeholder="198712122010011001"
+                    value={formTte.nip}
+                    onChange={(e) => setFormTte({ ...formTte, nip: e.target.value })}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-mono focus:ring-2 focus:ring-rose-500 focus:outline-none dark:text-white"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-200 mb-1">
+                  Jabatan
+                </label>
+                <input
+                  type="text"
+                  placeholder="Misal: Kepala Bidang Aplikasi Informatika"
+                  value={formTte.jabatan}
+                  onChange={(e) => setFormTte({ ...formTte, jabatan: e.target.value })}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs focus:ring-2 focus:ring-rose-500 focus:outline-none dark:text-white"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-200 mb-1">
+                    Pangkat
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Misal: Pembina"
+                    value={formTte.pangkat}
+                    onChange={(e) => setFormTte({ ...formTte, pangkat: e.target.value })}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs focus:ring-2 focus:ring-rose-500 focus:outline-none dark:text-white"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-200 mb-1">
+                    Golongan
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Misal: IVa"
+                    value={formTte.golongan}
+                    onChange={(e) => setFormTte({ ...formTte, golongan: e.target.value })}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs focus:ring-2 focus:ring-rose-500 focus:outline-none dark:text-white"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-200 mb-1">
+                  Unit / Dinas
+                </label>
+                <input
+                  type="text"
+                  value={formTte.unit}
+                  onChange={(e) => setFormTte({ ...formTte, unit: e.target.value })}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs focus:ring-2 focus:ring-rose-500 focus:outline-none dark:text-white"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-200 mb-1">
+                  Kalimat Pembuka
+                </label>
+                <input
+                  type="text"
+                  value={formTte.kalimat}
+                  onChange={(e) => setFormTte({ ...formTte, kalimat: e.target.value })}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs focus:ring-2 focus:ring-rose-500 focus:outline-none dark:text-white"
+                />
+              </div>
+
+              <div className="flex items-center gap-2 pt-1">
+                <input
+                  type="checkbox"
+                  id="tte_is_active"
+                  checked={formTte.is_active}
+                  onChange={(e) => setFormTte({ ...formTte, is_active: e.target.checked })}
+                  className="w-4 h-4 rounded text-rose-600 focus:ring-rose-500 border-slate-300"
+                />
+                <label htmlFor="tte_is_active" className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                  Spesimen aktif (dipakai saat mencetak dokumen)
+                </label>
+              </div>
+
+              {/* Preview */}
+              <div className="pt-2 border-t border-slate-100 dark:border-slate-800">
+                <div className="flex items-center justify-between mb-2">
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-200">
+                    Pratinjau Spesimen
+                  </label>
+                  <button
+                    type="button"
+                    onClick={handlePreviewTte}
+                    disabled={isPreviewing}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold bg-rose-600 hover:bg-rose-500 text-white disabled:opacity-60 transition-colors"
+                  >
+                    {isPreviewing ? <Loader2 size={12} className="animate-spin" /> : <Eye size={12} />}
+                    <span>{isPreviewing ? "Membuat…" : "Perbarui Pratinjau"}</span>
+                  </button>
+                </div>
+                {ttePreview ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={ttePreview}
+                    alt="Pratinjau spesimen TTE"
+                    className="w-full max-w-md rounded-xl border border-slate-200 dark:border-slate-700 bg-white"
+                  />
+                ) : (
+                  <div className="w-full max-w-md h-[150px] rounded-xl border border-dashed border-slate-300 dark:border-slate-700 flex items-center justify-center text-[11px] text-slate-400">
+                    Klik &quot;Perbarui Pratinjau&quot; untuk melihat hasilnya
+                  </div>
+                )}
               </div>
             </>
           )}
