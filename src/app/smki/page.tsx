@@ -23,6 +23,7 @@ import {
   DatabaseBackup,
 } from "lucide-react";
 import ServiceRouteGuard from "@/components/auth/ServiceRouteGuard";
+import { Fr025DashboardCard } from "@/components/smki/removable-media/organisms/Fr025DashboardCard";
 import { useAuthStore } from "@/store/useAuthStore";
 
 export default function SmkiPage() {
@@ -299,6 +300,8 @@ export default function SmkiPage() {
               </span>
             </div>
           </div>
+
+          <Fr025DashboardCard />
 
           {/* Card: Aset Sistem Informasi (FR-036) */}
           <div

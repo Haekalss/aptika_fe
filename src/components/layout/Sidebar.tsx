@@ -33,6 +33,7 @@ import {
   MonitorSmartphone,
   Cctv,
   DatabaseBackup,
+  Usb,
 } from "lucide-react";
 import Avatar from "@/components/ui/Avatar";
 import { useSidebarStore } from "@/store/useSidebarStore";
@@ -308,6 +309,12 @@ export default function Sidebar() {
                 key: "daftar-aset-ti",
                 icon: Box,
                 iconColor: "text-blue-600 bg-blue-50 border border-blue-200/60",
+              },
+              {
+                name: "Daftar Removable Media",
+                key: "smki/removable-media",
+                icon: Usb,
+                iconColor: "text-emerald-600 bg-emerald-50 border border-emerald-200/60",
               },
               {
                 name: "Aset Sistem Info",
