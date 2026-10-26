@@ -222,7 +222,7 @@ export default function PrintReviewLogPage() {
                           <div style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", minHeight: "1.55in", padding: "2px 0 4px" }}>
                             <span>{s.judul}</span>
                             <div style={{ display: "flex", justifyContent: "center", margin: "4px 0" }}>
-                              <TteSpecimen nip={s.nip} nama={s.nama} width={210} />
+                              <TteSpecimen nip={s.nip} nama={s.nama} width={175} />
                             </div>
                             <span>
                               ({s.nama || "……………………………….."})
