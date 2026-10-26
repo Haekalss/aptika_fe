@@ -204,108 +204,106 @@ export default function SmkiPage() {
               </div>
             </div>
 
-            {/* Right: Vector SVG Illustration (Laptop + Perisai Check + Dokumen Gembok + Daun) */}
-            <div className="hidden md:flex items-center justify-end flex-shrink-0 pr-1 select-none pointer-events-none">
-              <svg width="350" height="120" viewBox="0 0 350 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+            {/* Right: Ilustrasi Khusus SMKI (Security Operations, ISO 27001 Audit & Server Vault) */}
+            <div className="hidden md:flex items-center justify-end flex-shrink-0 pr-2 select-none pointer-events-none">
+              <svg width="360" height="122" viewBox="0 0 360 122" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <defs>
-                  <linearGradient id="smkiScreenGrad" x1="110" y1="16" x2="240" y2="96" gradientUnits="userSpaceOnUse">
-                    <stop offset="0%" stopColor="#1d6ae0" />
-                    <stop offset="55%" stopColor="#358ef5" />
-                    <stop offset="100%" stopColor="#6dc2ff" />
+                  <linearGradient id="smkiVaultGrad" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stopColor="#0f2952" stopOpacity="0.92" />
+                    <stop offset="100%" stopColor="#1e40af" stopOpacity="0.88" />
                   </linearGradient>
-                  <linearGradient id="smkiDocGrad" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0%" stopColor="#ffffff" stopOpacity="0.96" />
-                    <stop offset="100%" stopColor="#e8f3ff" stopOpacity="0.92" />
+                  <linearGradient id="smkiShieldGlow" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#38bdf8" />
+                    <stop offset="100%" stopColor="#2563eb" />
                   </linearGradient>
                 </defs>
 
-                {/* Soft glow behind laptop */}
-                <ellipse cx="176" cy="66" rx="125" ry="48" fill="white" opacity="0.12" />
+                {/* Outer Radar / Cyber Rings on Left */}
+                <circle cx="72" cy="61" r="46" stroke="white" strokeOpacity="0.14" strokeWidth="1.2" strokeDasharray="4 4" />
+                <circle cx="72" cy="61" r="34" stroke="#7dd3fc" strokeOpacity="0.28" strokeWidth="1.5" />
+                <circle cx="72" cy="61" r="24" fill="white" fillOpacity="0.12" />
 
-                {/* Left tropical leaves */}
-                <g opacity="0.92">
-                  <path d="M56 108 C32 98, 20 78, 22 56 C40 62, 54 80, 56 108 Z" fill="#0d9488" opacity="0.75" />
-                  <path d="M66 110 C40 90, 34 64, 44 42 C60 54, 68 80, 66 110 Z" fill="#14b8a6" opacity="0.88" />
-                  <path d="M44 42 L62 106" stroke="#99f6e4" strokeWidth="1.3" strokeLinecap="round" opacity="0.7" />
-                  <path d="M74 108 C56 94, 54 72, 66 54 C76 66, 78 88, 74 108 Z" fill="#38bdf8" opacity="0.65" />
+                {/* 3D Security Shield Core */}
+                <g transform="translate(72, 61)">
+                  <path
+                    d="M0,-24 L20,-16 V-2 C20,13 11,22 0,26 C-11,22 -20,13 -20,-2 V-16 L0,-24 Z"
+                    fill="url(#smkiShieldGlow)"
+                    stroke="white"
+                    strokeWidth="2"
+                  />
+                  <path
+                    d="M-6,0 L-1.5,4.5 L7.5,-4.5"
+                    stroke="white"
+                    strokeWidth="3"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
                 </g>
 
-                {/* Right tropical leaves */}
-                <g opacity="0.92">
-                  <path d="M298 108 C322 98, 334 78, 332 56 C314 62, 300 80, 298 108 Z" fill="#0d9488" opacity="0.75" />
-                  <path d="M288 110 C314 90, 320 64, 310 42 C294 54, 286 80, 288 110 Z" fill="#14b8a6" opacity="0.88" />
-                  <path d="M310 42 L292 106" stroke="#99f6e4" strokeWidth="1.3" strokeLinecap="round" opacity="0.7" />
-                </g>
+                {/* Floating ISO 27001 Pill above Shield */}
+                <rect x="44" y="8" width="56" height="15" rx="7.5" fill="#0f2952" fillOpacity="0.8" stroke="#7dd3fc" strokeWidth="1" />
+                <circle cx="53" cy="15.5" r="3" fill="#34d399" />
+                <text x="60" y="18" fontSize="7" fontWeight="700" fill="white" letterSpacing="0.4">ISO 27001</text>
 
-                {/* Left Floating Clipboard Card (User & Security Profile) */}
-                <g transform="rotate(-8 82 66)">
-                  <rect x="50" y="24" width="58" height="80" rx="9" fill="url(#smkiDocGrad)" stroke="white" strokeWidth="1.5" />
-                  <rect x="68" y="19" width="22" height="8" rx="3" fill="#60a5fa" />
-                  {/* User icon badge */}
-                  <circle cx="67" cy="43" r="8" fill="#dbeafe" />
-                  <circle cx="67" cy="41" r="3" fill="#2563eb" />
-                  <path d="M61 48 C62.5 45, 71.5 45, 73 48" stroke="#2563eb" strokeWidth="1.8" strokeLinecap="round" />
-                  <rect x="79" y="38" width="21" height="4" rx="2" fill="#3b82f6" opacity="0.85" />
-                  <rect x="79" y="45" width="14" height="3.5" rx="1.75" fill="#93c5fd" />
-                  {/* Checklist rows */}
-                  <rect x="59" y="58" width="40" height="4" rx="2" fill="#bfdbfe" />
-                  <rect x="59" y="67" width="34" height="4" rx="2" fill="#bfdbfe" />
-                  <rect x="59" y="76" width="38" height="4" rx="2" fill="#bfdbfe" />
-                  <rect x="59" y="85" width="25" height="4" rx="2" fill="#93c5fd" />
-                </g>
+                {/* Connection Line from Shield to Audit Board */}
+                <path d="M118 61 H134" stroke="#7dd3fc" strokeWidth="1.8" strokeDasharray="3 3" />
+                <circle cx="126" cy="61" r="3" fill="#38bdf8" />
 
-                {/* Right Floating Clipboard Card (with Padlock) */}
-                <g transform="rotate(8 268 64)">
-                  <rect x="240" y="20" width="60" height="84" rx="9" fill="url(#smkiDocGrad)" stroke="white" strokeWidth="1.5" />
-                  <rect x="259" y="15" width="22" height="8" rx="3" fill="#38bdf8" />
-                  <rect x="250" y="30" width="38" height="4" rx="2" fill="#93c5fd" />
-                  <rect x="250" y="38" width="30" height="4" rx="2" fill="#bfdbfe" />
-                  <rect x="250" y="46" width="34" height="4" rx="2" fill="#bfdbfe" />
-                  {/* Padlock icon on card */}
-                  <g transform="translate(270, 74)">
-                    <path d="M-8,-4 V-9 C-8,-14 8,-14 8,-9 V-4" stroke="#1d4ed8" strokeWidth="3" fill="none" strokeLinecap="round" />
-                    <rect x="-13" y="-4" width="26" height="20" rx="5" fill="#1e64d8" />
-                    <circle cx="0" cy="4" r="2.5" fill="white" />
-                    <rect x="-1.2" y="5" width="2.4" height="5" rx="1" fill="white" />
-                  </g>
-                </g>
+                {/* Main Security & Compliance Dashboard Board */}
+                <rect x="134" y="10" width="208" height="102" rx="12" fill="url(#smkiVaultGrad)" stroke="white" strokeOpacity="0.35" strokeWidth="1.5" />
 
-                {/* Centerpiece Laptop */}
-                <g>
-                  <rect x="110" y="16" width="130" height="84" rx="9" fill="#0f2952" stroke="#93c5fd" strokeWidth="1.5" />
-                  <rect x="116" y="22" width="118" height="72" rx="5" fill="url(#smkiScreenGrad)" />
-                  <circle cx="220" cy="34" r="18" fill="white" opacity="0.1" />
-                  <circle cx="132" cy="82" r="22" fill="white" opacity="0.08" />
+                {/* Top Window Bar */}
+                <circle cx="147" cy="21" r="2.8" fill="#f87171" />
+                <circle cx="156" cy="21" r="2.8" fill="#fbbf24" />
+                <circle cx="165" cy="21" r="2.8" fill="#34d399" />
+                <text x="176" y="23.5" fontSize="7" fontWeight="700" fill="#bae6fd" letterSpacing="0.5">SMKI SECURITY AUDIT</text>
+                <rect x="292" y="16" width="38" height="11" rx="5.5" fill="#10b981" fillOpacity="0.25" stroke="#34d399" strokeWidth="0.8" />
+                <text x="299" y="23.5" fontSize="6.5" fontWeight="700" fill="#6ee7b7">SECURE</text>
+                <line x1="134" y1="30" x2="342" y2="30" stroke="white" strokeOpacity="0.12" />
 
-                  {/* Shield with Checkmark on Laptop Screen */}
-                  <g transform="translate(175, 57)">
-                    <path
-                      d="M0,-23 L20,-15 V-2 C20,12 11,21 0,25 C-11,21 -20,12 -20,-2 V-15 L0,-23 Z"
-                      fill="white"
-                      opacity="0.96"
-                    />
-                    <path
-                      d="M0,-18 L15,-12 V-2 C15,9 8,16 0,19.5 C-8,16 -15,9 -15,-2 V-12 L0,-18 Z"
-                      fill="#2575e8"
-                      opacity="0.2"
-                    />
-                    <path
-                      d="M-7,0 L-2,5 L8,-5"
-                      stroke="#1d63d2"
-                      strokeWidth="3.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </g>
+                {/* Left Sub-panel: Server Rack / Hardening Nodes */}
+                <rect x="144" y="37" width="82" height="20" rx="5" fill="white" fillOpacity="0.1" stroke="white" strokeOpacity="0.15" />
+                <circle cx="154" cy="47" r="3.5" fill="#34d399" />
+                <rect x="162" y="43" width="38" height="3.5" rx="1.75" fill="white" fillOpacity="0.85" />
+                <rect x="162" y="49" width="24" height="3" rx="1.5" fill="#93c5fd" fillOpacity="0.7" />
+                <rect x="208" y="44" width="12" height="6" rx="3" fill="#38bdf8" fillOpacity="0.4" />
 
-                  {/* Laptop Keyboard Base */}
-                  <path d="M94 99 H256 L248 107 C246 109 243 110 239 110 H111 C107 110 104 109 102 107 L94 99 Z" fill="#e2e8f0" />
-                  <path d="M94 99 H256 L253 103 H97 L94 99 Z" fill="#f8fafc" />
-                  <rect x="161" y="99" width="28" height="3" rx="1.5" fill="#94a3b8" />
-                </g>
+                <rect x="144" y="61" width="82" height="20" rx="5" fill="white" fillOpacity="0.1" stroke="white" strokeOpacity="0.15" />
+                <circle cx="154" cy="71" r="3.5" fill="#38bdf8" />
+                <rect x="162" y="67" width="42" height="3.5" rx="1.75" fill="white" fillOpacity="0.85" />
+                <rect x="162" y="73" width="28" height="3" rx="1.5" fill="#93c5fd" fillOpacity="0.7" />
+                <rect x="208" y="68" width="12" height="6" rx="3" fill="#34d399" fillOpacity="0.4" />
+
+                <rect x="144" y="85" width="82" height="19" rx="5" fill="white" fillOpacity="0.1" stroke="white" strokeOpacity="0.15" />
+                <circle cx="154" cy="94.5" r="3.5" fill="#a78bfa" />
+                <rect x="162" y="90.5" width="34" height="3.5" rx="1.75" fill="white" fillOpacity="0.85" />
+                <rect x="162" y="96.5" width="22" height="3" rx="1.5" fill="#93c5fd" fillOpacity="0.7" />
+                <rect x="208" y="91.5" width="12" height="6" rx="3" fill="#a78bfa" fillOpacity="0.4" />
+
+                {/* Right Sub-panel: Encryption Lock & Compliance Meter */}
+                <rect x="234" y="37" width="98" height="67" rx="7" fill="white" fillOpacity="0.08" stroke="white" strokeOpacity="0.15" />
+
+                {/* Padlock Badge inside Right Sub-panel */}
+                <circle cx="256" cy="57" r="13" fill="#1d4ed8" stroke="#60a5fa" strokeWidth="1.2" />
+                <path d="M252 55 V52 C252 49.5 260 49.5 260 52 V55" stroke="white" strokeWidth="1.8" fill="none" strokeLinecap="round" />
+                <rect x="250" y="55" width="12" height="9" rx="2.5" fill="#fbbf24" />
+                <circle cx="256" cy="59.5" r="1.3" fill="#0f2952" />
+
+                {/* Compliance Score Text & Progress Bars */}
+                <text x="274" y="53" fontSize="11" fontWeight="800" fill="white">99.4%</text>
+                <text x="274" y="62" fontSize="6" fontWeight="600" fill="#93c5fd">KEPATUHAN</text>
+
+                {/* Progress Bar 1 */}
+                <text x="242" y="77" fontSize="6" fontWeight="600" fill="#e0f2fe">Hardening Aset</text>
+                <rect x="242" y="80" width="82" height="4.5" rx="2.25" fill="white" fillOpacity="0.15" />
+                <rect x="242" y="80" width="74" height="4.5" rx="2.25" fill="#34d399" />
+
+                {/* Progress Bar 2 */}
+                <text x="242" y="92" fontSize="6" fontWeight="600" fill="#e0f2fe">Audit &amp; Rekaman</text>
+                <rect x="242" y="95" width="82" height="4.5" rx="2.25" fill="white" fillOpacity="0.15" />
+                <rect x="242" y="95" width="68" height="4.5" rx="2.25" fill="#38bdf8" />
               </svg>
-            </div>
-          </div>
+            </div>          </div>
         </div>
 
         {/* ── GRID KARTU LAYANAN SMKI (Sesuai Desain Gambar) ── */}
