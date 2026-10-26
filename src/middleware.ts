@@ -48,5 +48,7 @@ export const config = {
     "/pengelolaanaplikasi/:path*",
     "/manajementugasdigital/:path*",
     "/admin/:path*",
+    "/smki/:path*",
+    "/daftar-aset-ti/:path*",
   ],
 };

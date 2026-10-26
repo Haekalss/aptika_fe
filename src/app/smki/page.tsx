@@ -11,10 +11,9 @@ import {
   ArrowRight,
   FileText,
   CalendarCheck,
-  CalendarRange,
   Lock,
   FileCheck,
-  ClipboardCheck,
+  MessageSquare,
 } from "lucide-react";
 import ServiceRouteGuard from "@/components/auth/ServiceRouteGuard";
 import { useAuthStore } from "@/store/useAuthStore";
@@ -126,30 +125,6 @@ export default function SmkiPage() {
               </span>
             </div>
           </div>
-          {/* Card: Evaluasi Kepatuhan (FR-044) */}
-          <div
-            onClick={() => router.push("/smki/evaluasi-kepatuhan")}
-            className="group relative bg-white dark:bg-slate-900/90 rounded-2xl p-6 shadow-sm border border-slate-200/80 dark:border-slate-800 hover:border-sky-500/60 hover:shadow-md transition-all cursor-pointer flex flex-col justify-between"
-          >
-            <div>
-              <div className="w-12 h-12 rounded-xl bg-sky-50 dark:bg-sky-950/60 border border-sky-200 dark:border-sky-800/60 flex items-center justify-center text-sky-600 dark:text-sky-400 mb-4 group-hover:scale-105 transition-transform">
-                <ClipboardCheck size={24} />
-              </div>
-              <h3 className="text-base font-bold text-slate-800 dark:text-white mb-2 group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors">
-                Formulir Evaluasi Kepatuhan
-              </h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-medium mb-4">
-                Catat dan evaluasi kepatuhan terhadap regulasi dan aturan lain yang mendukung layanan utama, lengkap dengan status dan ekspor dokumen FR-044.
-              </p>
-            </div>
-            <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-start text-xs font-bold text-sky-600 dark:text-sky-400">
-              <span className="inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-                <span>Buka Layanan</span>
-                <ArrowRight size={14} />
-              </span>
-            </div>
-          </div>
-
           {/* Card: Daftar Penyedia Barang/Jasa (FR-020) */}
           <div
             onClick={() => router.push("/smki/daftar-penyedia")}
@@ -294,23 +269,23 @@ export default function SmkiPage() {
             </div>
           </div>
 
-          {/* Card: Program Tahunan Audit Internal (FR-008) */}
+          {/* Card: Komunikasi Internal & Eksternal (FR-010) */}
           <div
-            onClick={() => router.push("/smki/laporan-audit-tahunan")}
-            className="group relative bg-white dark:bg-slate-900/90 rounded-2xl p-6 shadow-sm border border-slate-200/80 dark:border-slate-800 hover:border-teal-500/60 hover:shadow-md transition-all cursor-pointer flex flex-col justify-between"
+            onClick={() => router.push("/smki/komunikasi")}
+            className="group relative bg-white dark:bg-slate-900/90 rounded-2xl p-6 shadow-sm border border-slate-200/80 dark:border-slate-800 hover:border-emerald-500/60 hover:shadow-md transition-all cursor-pointer flex flex-col justify-between"
           >
             <div>
-              <div className="w-12 h-12 rounded-xl bg-teal-50 dark:bg-teal-950/60 border border-teal-200 dark:border-teal-800/60 flex items-center justify-center text-teal-600 dark:text-teal-400 mb-4 group-hover:scale-105 transition-transform">
-                <CalendarRange size={24} />
+              <div className="w-12 h-12 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/60 flex items-center justify-center text-emerald-600 dark:text-emerald-400 mb-4 group-hover:scale-105 transition-transform">
+                <MessageSquare size={24} />
               </div>
-              <h3 className="text-base font-bold text-slate-800 dark:text-white mb-2 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors">
-                Program Tahunan Audit Internal
+              <h3 className="text-base font-bold text-slate-800 dark:text-white mb-2 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+                Komunikasi Internal &amp; Eksternal
               </h3>
               <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-medium mb-4">
-                Kelola formulir program tahunan audit internal (FR-008), penugasan tim auditor, objek auditee, matriks klausul ISO 27001, jadwal 12 bulan, serta ekspor resmi Word (.docx).
+                Pencatatan matriks komunikasi internal &amp; eksternal SMKI (FR-010), klasifikasi informasi, pengirim, penerima, frekuensi, metode, serta ekspor PDF dan Excel.
               </p>
             </div>
-            <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-start text-xs font-bold text-teal-600 dark:text-teal-400">
+            <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-start text-xs font-bold text-emerald-600 dark:text-emerald-400">
               <span className="inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform">
                 <span>Buka Layanan</span>
                 <ArrowRight size={14} />

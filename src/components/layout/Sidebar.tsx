@@ -26,7 +26,7 @@ import {
   Building2,
   CalendarCheck,
   FileCheck,
-  ClipboardCheck,
+  MessageSquare,
 } from "lucide-react";
 import Avatar from "@/components/ui/Avatar";
 import { useSidebarStore } from "@/store/useSidebarStore";
@@ -262,16 +262,16 @@ export default function Sidebar() {
                 iconColor: "text-purple-600 bg-purple-50 border border-purple-200/60",
               },
               {
+                name: "Komunikasi",
+                key: "smki/komunikasi",
+                icon: MessageSquare,
+                iconColor: "text-emerald-600 bg-emerald-50 border border-emerald-200/60",
+              },
+              {
                 name: "Daftar Penyedia",
                 key: "smki/daftar-penyedia",
                 icon: Building2,
                 iconColor: "text-emerald-600 bg-emerald-50 border border-emerald-200/60",
-              },
-              {
-                name: "Evaluasi Kepatuhan",
-                key: "smki/evaluasi-kepatuhan",
-                icon: ClipboardCheck,
-                iconColor: "text-sky-600 bg-sky-50 border border-sky-200/60",
               },
               {
                 name: "Daftar Aset TI",
@@ -295,12 +295,6 @@ export default function Sidebar() {
                 name: "Laporan Audit",
                 key: "smki/laporan-audit",
                 icon: FileCheck,
-                iconColor: "text-emerald-600 bg-emerald-50 border border-emerald-200/60",
-              },
-              {
-                name: "Formulir Tahunan",
-                key: "smki/laporan-audit-tahunan",
-                icon: FileText,
                 iconColor: "text-emerald-600 bg-emerald-50 border border-emerald-200/60",
               },
             ],
