@@ -409,9 +409,6 @@ export default function Homepage() {
               </p>
             </div>
           </div>
-          <button className="text-xs sm:text-sm font-bold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1.5 flex-shrink-0">
-            Lihat Semua <ArrowRight size={15} />
-          </button>
         </div>
 
         {/* Module Cards: Logo sejajar vertikal dengan teks, Deskripsi diperbesar, posisi diturunkan sedikit */}
@@ -469,9 +466,6 @@ export default function Homepage() {
                   <p className="text-xs text-slate-500 dark:text-slate-400">Pembaruan sistem & log pekerjaan pengguna</p>
                 </div>
               </div>
-              <button className="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1">
-                Lihat Semua <ArrowRight size={13} />
-              </button>
             </div>
 
             <div className="flex flex-col gap-3">
@@ -516,9 +510,6 @@ export default function Homepage() {
                   <p className="text-xs text-slate-500 dark:text-slate-400">Informasi resmi & agenda pemeliharaan</p>
                 </div>
               </div>
-              <button className="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1">
-                Lihat Semua <ArrowRight size={13} />
-              </button>
             </div>
 
             <div className="flex flex-col gap-3.5">
