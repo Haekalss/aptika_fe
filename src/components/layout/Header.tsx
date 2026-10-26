@@ -53,14 +53,6 @@ export default function Header({ title, subtitle, showBrand = false }: HeaderPro
     { label: "SMKI", path: "/smki", icon: <ShieldCheck size={15} /> },
   ];
 
-  const dashboardNavItems = [
-    { label: "Dashboard", path: "/dashboard", active: true },
-    { label: "Modul Service", path: "/dashboard" },
-    { label: "Data & Statistik", path: "/dashboard" },
-    { label: "Laporan", path: "/dashboard" },
-    { label: "Pengaturan", path: "/admin" },
-  ];
-
   const profileMenuItems = [
     ...(isAdmin
       ? [
@@ -116,40 +108,26 @@ export default function Header({ title, subtitle, showBrand = false }: HeaderPro
         </div>
       )}
 
-      {/* Center Nav Links — Berpindah otomatis antara Navigasi Modul atau Navigasi Dashboard */}
-      {showBrand && (
+      {/* Center Nav Links — Hanya ditampilkan di halaman modul (navbar dashboard dihapus) */}
+      {showBrand && isModulePage && (
         <nav className="hidden lg:flex items-center gap-1.5 flex-1 justify-center">
-          {isModulePage
-            ? moduleNavItems.map((item) => {
-                const isActive = pathname.startsWith(item.path);
-                return (
-                  <button
-                    key={item.label}
-                    onClick={() => router.push(item.path)}
-                    className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all ${
-                      isActive
-                        ? "bg-blue-50 text-blue-600 border border-blue-200/70 font-bold dark:bg-blue-950/60 dark:text-blue-400 dark:border-blue-900 shadow-2xs"
-                        : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900"
-                    }`}
-                  >
-                    {item.icon}
-                    <span>{item.label}</span>
-                  </button>
-                );
-              })
-            : dashboardNavItems.map((item) => (
-                <button
-                  key={item.label}
-                  onClick={() => router.push(item.path)}
-                  className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-[12.5px] font-semibold transition-all ${
-                    item.active
-                      ? "bg-blue-600 text-white shadow-sm"
-                      : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
-                  }`}
-                >
-                  {item.label}
-                </button>
-              ))}
+          {moduleNavItems.map((item) => {
+            const isActive = pathname.startsWith(item.path);
+            return (
+              <button
+                key={item.label}
+                onClick={() => router.push(item.path)}
+                className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all ${
+                  isActive
+                    ? "bg-blue-50 text-blue-600 border border-blue-200/70 font-bold dark:bg-blue-950/60 dark:text-blue-400 dark:border-blue-900 shadow-2xs"
+                    : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900"
+                }`}
+              >
+                {item.icon}
+                <span>{item.label}</span>
+              </button>
+            );
+          })}
         </nav>
       )}
 
