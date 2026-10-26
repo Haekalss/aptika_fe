@@ -1,6 +1,6 @@
 "use client";
 
-import MainLayout from "@/components/layout/MainLayout";
+import IkiReportLayout from "@/components/layout/IkiReportLayout";
 
 export default function RekayasaAplikasiLayout({
   children,
@@ -8,11 +8,11 @@ export default function RekayasaAplikasiLayout({
   children: React.ReactNode;
 }) {
   return (
-    <MainLayout
+    <IkiReportLayout
       title="Rekayasa Aplikasi"
       subtitle="Layanan perancangan, pengembangan, dan rekayasa perangkat lunak"
     >
       {children}
-    </MainLayout>
+    </IkiReportLayout>
   );
 }

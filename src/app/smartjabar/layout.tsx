@@ -1,6 +1,6 @@
 "use client";
 
-import MainLayout from "@/components/layout/MainLayout";
+import IkiReportLayout from "@/components/layout/IkiReportLayout";
 
 export default function SmartJabarLayout({
   children,
@@ -8,11 +8,11 @@ export default function SmartJabarLayout({
   children: React.ReactNode;
 }) {
   return (
-    <MainLayout
+    <IkiReportLayout
       title="Smart Jabar"
       subtitle="Dashboard monitoring platform Smart Jabar"
     >
       {children}
-    </MainLayout>
+    </IkiReportLayout>
   );
 }

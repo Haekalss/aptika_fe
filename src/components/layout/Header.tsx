@@ -39,11 +39,19 @@ export default function Header({ title, subtitle, showBrand = false }: HeaderPro
     router.push("/");
   };
 
+  const isIkiPage = pathname.startsWith("/integrasiinteroperabilitas") ||
+                    pathname.startsWith("/pengelolaanaplikasi") ||
+                    pathname.startsWith("/rekayasaaplikasi") ||
+                    pathname.startsWith("/sidebarjabar") ||
+                    pathname.startsWith("/smartjabar") ||
+                    pathname.startsWith("/sadajabar");
+
   const isModulePage = pathname.startsWith("/manajementugasdigital") || 
                        pathname.startsWith("/administrasisurat") || 
                        pathname.startsWith("/magang") || 
                        pathname.startsWith("/smki") || 
-                       pathname.startsWith("/integrasiinteroperabilitas");
+                       pathname.startsWith("/daftar-aset-ti") ||
+                       isIkiPage;
 
   const moduleNavItems = [
     { label: "Administrasi Surat", path: "/administrasisurat", icon: <FileText size={15} /> },
@@ -112,8 +120,10 @@ export default function Header({ title, subtitle, showBrand = false }: HeaderPro
       {showBrand && isModulePage && (
         <nav className="hidden lg:flex items-center gap-1.5 flex-1 justify-center">
           {moduleNavItems.map((item) => {
-            const isActive = item.path === "/dashboard"
-              ? pathname === "/dashboard" || pathname.startsWith("/dashboard/")
+            const isActive = item.label === "IKI Report"
+              ? isIkiPage
+              : item.label === "SMKI"
+              ? pathname.startsWith("/smki") || pathname.startsWith("/daftar-aset-ti")
               : pathname.startsWith(item.path);
             return (
               <button
