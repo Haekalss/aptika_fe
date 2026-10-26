@@ -243,9 +243,9 @@ export default function Homepage() {
       title: "Magang",
       desc: "Pengelolaan data peserta magang, presensi, dan administrasi.",
       icon: <Users size={22} className="text-white" />,
-      iconBg: "bg-purple-500",
-      cardBorder: "border-slate-100 hover:border-purple-300 dark:border-slate-800",
-      arrowBg: "bg-purple-500 hover:bg-purple-600",
+      iconBg: "bg-amber-500",
+      cardBorder: "border-slate-100 hover:border-amber-300 dark:border-slate-800",
+      arrowBg: "bg-amber-500 hover:bg-amber-600",
       path: "/magang/dashboard",
     },
     {

@@ -1156,7 +1156,7 @@ export default function MagangDashboard() {
       <div
         className="relative overflow-hidden rounded-3xl shadow-lg"
         style={{
-          background: "linear-gradient(135deg, #581c87 0%, #6b21a8 38%, #7e22ce 72%, #a855f7 100%)",
+          background: "linear-gradient(135deg, #b45309 0%, #d97706 38%, #f59e0b 74%, #fbbf24 100%)",
         }}
       >
         {/* Decorative background circles */}
@@ -1174,7 +1174,7 @@ export default function MagangDashboard() {
               <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight drop-shadow-sm">
                 Magang
               </h1>
-              <p className="text-sm text-purple-100/95 mt-1.5 font-normal">
+              <p className="text-sm text-amber-50/95 mt-1.5 font-normal">
                 Dashboard monitoring dan pendataan Magang
               </p>
             </div>
@@ -1185,9 +1185,9 @@ export default function MagangDashboard() {
             <svg width="360" height="118" viewBox="0 0 360 118" fill="none" xmlns="http://www.w3.org/2000/svg">
               <defs>
                 <linearGradient id="magangScreenGrad" x1="115" y1="16" x2="245" y2="96" gradientUnits="userSpaceOnUse">
-                  <stop offset="0%" stopColor="#6b21a8" />
-                  <stop offset="55%" stopColor="#9333ea" />
-                  <stop offset="100%" stopColor="#c084fc" />
+                  <stop offset="0%" stopColor="#b45309" />
+                  <stop offset="55%" stopColor="#d97706" />
+                  <stop offset="100%" stopColor="#fbbf24" />
                 </linearGradient>
                 <linearGradient id="magangDocGrad" x1="0" y1="0" x2="1" y2="1">
                   <stop offset="0%" stopColor="#ffffff" stopOpacity="0.96" />
@@ -1294,7 +1294,7 @@ export default function MagangDashboard() {
       {/* ── STATISTIC CARDS ── */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="bg-white/60 dark:bg-[#071733]/80 backdrop-blur-md rounded-3xl px-6 py-5 shadow-sm border border-white/70 dark:border-slate-800 flex items-center gap-5">
-          <div className="w-12 h-12 rounded-2xl bg-blue-100 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center flex-shrink-0 shadow-sm">
+          <div className="w-12 h-12 rounded-2xl bg-amber-100 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center flex-shrink-0 shadow-sm">
             <Users size={22} />
           </div>
           <div>
@@ -1319,7 +1319,7 @@ export default function MagangDashboard() {
         {/* Header Card */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200/70 dark:border-slate-800">
           <div className="flex items-center gap-3.5">
-            <div className="w-11 h-11 rounded-2xl bg-blue-100 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center flex-shrink-0 shadow-sm">
+            <div className="w-11 h-11 rounded-2xl bg-amber-100 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center flex-shrink-0 shadow-sm">
               <ClipboardList size={20} />
             </div>
             <div>
@@ -1332,7 +1332,7 @@ export default function MagangDashboard() {
           </div>
           <button
             onClick={() => handleOpenModal("add")}
-            className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-xl text-[13px] font-semibold shadow-sm transition-all whitespace-nowrap"
+            className="flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-600 text-white px-4 py-2.5 rounded-xl text-[13px] font-semibold shadow-sm transition-all whitespace-nowrap"
           >
             <Plus size={16} />
             Tambah Data Magang

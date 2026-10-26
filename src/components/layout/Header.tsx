@@ -46,8 +46,12 @@ export default function Header({ title, subtitle, showBrand = false }: HeaderPro
                     pathname.startsWith("/smartjabar") ||
                     pathname.startsWith("/sadajabar");
 
+  const isSuratPage = pathname.startsWith("/administrasisurat") ||
+                      pathname.startsWith("/spd") ||
+                      pathname.startsWith("/perubahan-it");
+
   const isModulePage = pathname.startsWith("/manajementugasdigital") || 
-                       pathname.startsWith("/administrasisurat") || 
+                       isSuratPage || 
                        pathname.startsWith("/magang") || 
                        pathname.startsWith("/smki") || 
                        pathname.startsWith("/daftar-aset-ti") ||
@@ -120,7 +124,9 @@ export default function Header({ title, subtitle, showBrand = false }: HeaderPro
       {showBrand && isModulePage && (
         <nav className="hidden lg:flex items-center gap-1.5 flex-1 justify-center">
           {moduleNavItems.map((item) => {
-            const isActive = item.label === "IKI Report"
+            const isActive = item.label === "Administrasi Surat"
+              ? isSuratPage
+              : item.label === "IKI Report"
               ? isIkiPage
               : item.label === "SMKI"
               ? pathname.startsWith("/smki") || pathname.startsWith("/daftar-aset-ti")
