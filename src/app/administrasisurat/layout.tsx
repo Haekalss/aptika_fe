@@ -11,6 +11,7 @@ export default function AdministrasiSuratLayout({
     <MainLayout
       title="Administrasi Surat"
       subtitle="Silakan pilih kategori surat yang ingin Anda kelola untuk memulai proses administrasi."
+      hideSidebar={true}
     >
       {children}
     </MainLayout>

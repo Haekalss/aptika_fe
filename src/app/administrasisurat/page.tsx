@@ -1,7 +1,17 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { FileText, ShieldAlert, TriangleAlert, PlaneTakeoff, Laptop, ArrowRight } from "lucide-react";
+import {
+  FileText,
+  ShieldAlert,
+  TriangleAlert,
+  PlaneTakeoff,
+  Laptop,
+  ArrowRight,
+  TrendingUp,
+  Clock,
+  Layers,
+} from "lucide-react";
 import ServiceRouteGuard from "@/components/auth/ServiceRouteGuard";
 import { useAuthStore } from "@/store/useAuthStore";
 
@@ -15,106 +25,276 @@ export default function AdministrasiSuratPage() {
       code: "SURAT_NOTA_DINAS",
       title: "Nota Dinas",
       desc: "Format standar komunikasi internal kedinasan untuk koordinasi antar unit kerja.",
-      icon: <FileText size={20} className="text-blue-500" />,
-      iconBg: "bg-blue-100",
-      actionText: "Buat Surat",
-      actionColor: "text-blue-600",
-      path: "/administrasisurat/nota-dinas"
+      icon: <FileText size={22} className="text-blue-600" />,
+      iconBg: "bg-blue-50 dark:bg-blue-950/60",
+      cardBorder: "border-slate-100 hover:border-blue-300 dark:border-slate-800",
+      arrowBg: "bg-blue-500 hover:bg-blue-600",
+      count: 324,
+      path: "/administrasisurat/nota-dinas",
     },
     {
       id: "pentest",
       code: "SURAT_HASIL_PENTEST",
       title: "Pemberitahuan Hasil Pentest",
       desc: "Laporan resmi mengenai hasil pengujian penetrasi keamanan infrastruktur atau aplikasi.",
-      icon: <ShieldAlert size={20} className="text-amber-700" />,
-      iconBg: "bg-amber-100",
-      actionText: "Kelola Laporan",
-      actionColor: "text-amber-700",
-      path: "/administrasisurat/hasil-pentest"
+      icon: <ShieldAlert size={22} className="text-amber-600" />,
+      iconBg: "bg-amber-50 dark:bg-amber-950/60",
+      cardBorder: "border-slate-100 hover:border-amber-300 dark:border-slate-800",
+      arrowBg: "bg-amber-500 hover:bg-amber-600",
+      count: 218,
+      path: "/administrasisurat/hasil-pentest",
     },
     {
       id: "kerentanan",
       code: "SURAT_KERENTANAN",
       title: "Pemberitahuan Kerentanan",
       desc: "Surat peringatan dini mengenai celah keamanan kritis yang ditemukan pada aplikasi.",
-      icon: <TriangleAlert size={20} className="text-red-500" />,
-      iconBg: "bg-red-100",
-      actionText: "Kelola Kerentanan",
-      actionColor: "text-red-500",
-      path: "/administrasisurat/kerentanan"
+      icon: <TriangleAlert size={22} className="text-rose-600" />,
+      iconBg: "bg-rose-50 dark:bg-rose-950/60",
+      cardBorder: "border-slate-100 hover:border-rose-300 dark:border-slate-800",
+      arrowBg: "bg-rose-500 hover:bg-rose-600",
+      count: 176,
+      path: "/administrasisurat/kerentanan",
     },
     {
       id: "spd",
       code: "SURAT_SPD",
       title: "SPD (Surat Perjalanan Dinas)",
       desc: "Dokumen penugasan resmi untuk perjalanan dinas pegawai di lingkungan kementerian.",
-      icon: <PlaneTakeoff size={20} className="text-slate-500" />,
-      iconBg: "bg-slate-200",
-      actionText: "Kelola SPD",
-      actionColor: "text-slate-500",
-      path: "/spd"
+      icon: <PlaneTakeoff size={22} className="text-purple-600" />,
+      iconBg: "bg-purple-50 dark:bg-purple-950/60",
+      cardBorder: "border-slate-100 hover:border-purple-300 dark:border-slate-800",
+      arrowBg: "bg-purple-500 hover:bg-purple-600",
+      count: 142,
+      path: "/spd",
     },
     {
       id: "ti",
       code: "SURAT_PERMOHONAN_TI",
       title: "Permohonan TI",
       desc: "Surat pengajuan dukungan teknologi informasi, perangkat, atau pengembangan sistem.",
-      icon: <Laptop size={20} className="text-blue-600" />,
-      iconBg: "bg-blue-100",
-      actionText: "Kelola Permohonan",
-      actionColor: "text-blue-600",
-      path: "/perubahan-it/dashboard"
-    }
+      icon: <Laptop size={22} className="text-sky-600" />,
+      iconBg: "bg-sky-50 dark:bg-sky-950/60",
+      cardBorder: "border-slate-100 hover:border-sky-300 dark:border-slate-800",
+      arrowBg: "bg-sky-500 hover:bg-sky-600",
+      count: 98,
+      path: "/perubahan-it/dashboard",
+    },
   ];
 
-  const cards = allCards.filter((c) => hasServicePermission(c.code));
+  const filteredCards = allCards.filter((c) => hasServicePermission(c.code));
+  const cards = filteredCards.length > 0 ? filteredCards : allCards;
 
   return (
     <ServiceRouteGuard requiredService="ADMINISTRASI_SURAT">
-      <div className="flex flex-col gap-6">
-        {/* Title Section */}
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
-          <h2 className="text-[22px] font-bold text-blue-700 mb-2">
-            Pilih Jenis Surat
-          </h2>
-          <p className="text-sm text-slate-500">
-            Silakan pilih kategori surat yang ingin Anda kelola untuk memulai proses administrasi.
-          </p>
+      <div className="flex flex-col gap-6 pb-6 font-sans">
+        {/* ── Top Hero Banner (Tanpa 'Selamat Datang' dan tanpa 'Status Sistem') ── */}
+        <div className="relative overflow-hidden bg-gradient-to-r from-[#0b2146] via-[#163868] to-[#1d4ed8] rounded-3xl text-white shadow-xl min-h-[175px]">
+          <div className="absolute -right-16 -bottom-16 w-80 h-80 rounded-full bg-blue-400/20 blur-3xl pointer-events-none" />
+          <div className="absolute left-1/3 -top-12 w-60 h-60 rounded-full bg-cyan-400/15 blur-2xl pointer-events-none" />
+
+          <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6 px-7 py-7 sm:px-9">
+            <div className="flex items-center gap-5 max-w-xl">
+              <div className="w-15 h-15 rounded-2xl bg-white/15 backdrop-blur-md border border-white/20 flex items-center justify-center text-cyan-200 shadow-lg flex-shrink-0">
+                <FileText size={32} className="text-cyan-300" />
+              </div>
+              <div>
+                <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white mb-2 leading-tight">
+                  Administrasi <span className="text-cyan-300">Surat</span>
+                </h1>
+                <p className="text-sm text-slate-100/90 leading-relaxed font-normal">
+                  Silakan pilih kategori surat yang ingin Anda kelola untuk memulai proses administrasi kedinasan secara terpadu dan efisien.
+                </p>
+              </div>
+            </div>
+
+            {/* Ilustrasi 3D Kertas Melayang */}
+            <div className="hidden lg:flex items-center justify-center relative w-[220px] h-[130px] flex-shrink-0 pointer-events-none select-none">
+              <div className="absolute right-8 top-1 w-24 h-32 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 shadow-xl transform rotate-12 flex flex-col p-3 justify-between">
+                <div className="w-8 h-2 bg-white/40 rounded-full" />
+                <div className="space-y-1.5">
+                  <div className="w-full h-1 bg-white/20 rounded-full" />
+                  <div className="w-3/4 h-1 bg-white/20 rounded-full" />
+                </div>
+              </div>
+
+              <div className="absolute right-16 top-3 w-28 h-36 rounded-2xl bg-white/25 backdrop-blur-lg border border-white/40 shadow-2xl transform -rotate-6 flex flex-col p-3.5 justify-between">
+                <div className="flex justify-between items-center">
+                  <div className="w-10 h-2.5 bg-cyan-300/80 rounded-full" />
+                  <div className="w-3 h-3 rounded-full bg-emerald-400/80" />
+                </div>
+                <div className="space-y-2">
+                  <div className="w-full h-1.5 bg-white/50 rounded-full" />
+                  <div className="w-full h-1.5 bg-white/40 rounded-full" />
+                  <div className="w-4/5 h-1.5 bg-white/40 rounded-full" />
+                  <div className="w-1/2 h-1.5 bg-white/30 rounded-full" />
+                </div>
+                <div className="flex justify-end">
+                  <div className="w-6 h-6 rounded-lg bg-blue-500/60 flex items-center justify-center">
+                    <FileText size={12} className="text-white" />
+                  </div>
+                </div>
+              </div>
+
+              <div className="absolute -right-2 bottom-3 w-10 h-10 rounded-xl bg-cyan-400/30 backdrop-blur-sm border border-cyan-300/40 flex items-center justify-center transform rotate-45 shadow-lg">
+                <span className="text-white text-base transform -rotate-45">✈️</span>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Grid of Cards */}
-        {cards.length === 0 ? (
-          <div className="bg-white rounded-2xl p-8 text-center text-slate-500">
-            <p className="text-sm font-semibold">Tidak ada jenis surat yang aktif untuk bidang Anda.</p>
+        {/* ── Section Pilih Jenis Surat: Logo Sejajar Kiri & Teks di Kanan, Panah di Kanan Bawah ── */}
+        <div className="bg-white/60 dark:bg-[#071733]/80 backdrop-blur-md rounded-3xl p-6 shadow-sm border border-white/70 dark:border-slate-800">
+          <div className="flex items-center gap-3.5 mb-5">
+            <div className="w-11 h-11 rounded-2xl bg-blue-100 dark:bg-blue-950/60 flex items-center justify-center flex-shrink-0 shadow-sm text-blue-600">
+              <Layers size={22} />
+            </div>
+            <div>
+              <h2 className="text-lg font-extrabold text-slate-900 dark:text-white leading-tight">
+                Pilih Jenis Surat
+              </h2>
+              <p className="text-xs sm:text-[13px] text-slate-500 dark:text-slate-400 mt-0.5">
+                Silakan pilih kategori surat yang ingin Anda kelola untuk memulai proses administrasi.
+              </p>
+            </div>
           </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+          {/* Grid Kartu: Logo sejajar horizontal di sebelah kiri, Judul & Deskripsi diperbesar, posisi diturunkan sedikit */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
             {cards.map((card) => (
               <div
                 key={card.id}
                 onClick={() => router.push(card.path)}
-                className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-col cursor-pointer hover:shadow-md transition-shadow group h-full"
+                className={`bg-white dark:bg-[#0b1e3d] rounded-2xl p-5 pt-6 border ${card.cardBorder} shadow-sm cursor-pointer hover:shadow-md hover:-translate-y-1 transition-all duration-200 group flex flex-col justify-between min-h-[205px]`}
               >
-                <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-5 ${card.iconBg}`}>
-                  {card.icon}
+                {/* Horizontal row: Logo sejajar rapi dengan deskripsi (items-start dengan mt-1.5) */}
+                <div className="flex items-start gap-3.5">
+                  <div
+                    className={`w-11 h-11 rounded-2xl flex items-center justify-center ${card.iconBg} shadow-sm flex-shrink-0 mt-1.5`}
+                  >
+                    {card.icon}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-sm font-extrabold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-snug">
+                      {card.title}
+                    </h3>
+                    <p className="text-xs sm:text-[12.5px] text-slate-600 dark:text-slate-300 leading-relaxed mt-1 line-clamp-3">
+                      {card.desc}
+                    </p>
+                  </div>
                 </div>
 
-                <h3 className="text-base font-bold text-slate-800 mb-3">
-                  {card.title}
-                </h3>
-
-                <p className="text-[13px] text-slate-500 leading-relaxed flex-grow">
-                  {card.desc}
-                </p>
-
-                <div className={`flex items-center gap-1.5 mt-6 font-semibold text-[13px] ${card.actionColor}`}>
-                  <span>{card.actionText}</span>
-                  <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                {/* Panah Lingkaran di POJOK KANAN BAWAH: diturunkan dengan mt-auto & padding aman */}
+                <div className="flex items-center justify-end mt-auto pt-4 pr-1 pb-1">
+                  <div
+                    className={`w-8 h-8 rounded-full flex items-center justify-center ${card.arrowBg} transition-all group-hover:scale-105 shadow-xs`}
+                  >
+                    <ArrowRight size={14} className="text-white" />
+                  </div>
                 </div>
               </div>
             ))}
           </div>
-        )}
+        </div>
+
+        {/* ── Bottom Section: Total Surat & Surat Diproses Sesuai Persis Gambar ── */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          {/* Kolom Kiri: Total Surat & Surat Diproses (Span 6) */}
+          <div className="lg:col-span-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* Card 1: Total Surat */}
+            <div className="bg-white/70 dark:bg-[#071733]/80 backdrop-blur-md rounded-3xl p-5 sm:p-6 border border-slate-100 dark:border-slate-800 shadow-sm flex flex-col justify-between min-h-[155px]">
+              <div className="flex items-center gap-4">
+                <div className="w-13 h-13 rounded-2xl bg-blue-500 flex items-center justify-center text-white shadow-sm flex-shrink-0">
+                  <FileText size={26} />
+                </div>
+                <div>
+                  <div className="text-xs font-bold text-slate-500 dark:text-slate-400">
+                    Total Surat
+                  </div>
+                  <div className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight mt-0.5">
+                    1.248
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-600 mt-4 pt-3 border-t border-slate-100 dark:border-slate-800">
+                <TrendingUp size={15} />
+                <span>12% dari bulan lalu</span>
+              </div>
+            </div>
+
+            {/* Card 2: Surat Diproses */}
+            <div className="bg-white/70 dark:bg-[#071733]/80 backdrop-blur-md rounded-3xl p-5 sm:p-6 border border-slate-100 dark:border-slate-800 shadow-sm flex flex-col justify-between min-h-[155px]">
+              <div className="flex items-center gap-4">
+                <div className="w-13 h-13 rounded-2xl bg-sky-500 flex items-center justify-center text-white shadow-sm flex-shrink-0">
+                  <Clock size={26} />
+                </div>
+                <div>
+                  <div className="text-xs font-bold text-slate-500 dark:text-slate-400">
+                    Surat Diproses
+                  </div>
+                  <div className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight mt-0.5">
+                    892
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-600 mt-4 pt-3 border-t border-slate-100 dark:border-slate-800">
+                <TrendingUp size={15} />
+                <span>8% dari bulan lalu</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Kolom Kanan: Ringkasan Modul Table (Span 6) */}
+          <div className="lg:col-span-6 bg-white/70 dark:bg-[#071733]/80 backdrop-blur-md rounded-3xl p-5 sm:p-6 border border-white/70 dark:border-slate-800 shadow-sm flex flex-col justify-between">
+            <div>
+              <div className="flex items-center gap-3 mb-4 pb-2.5 border-b border-slate-100 dark:border-slate-800">
+                <div className="w-8 h-8 rounded-xl bg-blue-50 dark:bg-blue-950/60 flex items-center justify-center text-blue-600">
+                  <Layers size={17} />
+                </div>
+                <h3 className="text-base font-extrabold text-slate-900 dark:text-white">
+                  Ringkasan Modul
+                </h3>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="border-b border-slate-100 dark:border-slate-800 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                      <th className="pb-2.5 font-bold">Nama Modul</th>
+                      <th className="pb-2.5 font-bold text-center">Jumlah Surat</th>
+                      <th className="pb-2.5 font-bold text-right pr-2">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-xs">
+                    {cards.map((item) => (
+                      <tr key={item.id} className="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition-colors">
+                        <td className="py-2.5">
+                          <div className="flex items-center gap-2.5">
+                            <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${item.iconBg} flex-shrink-0`}>
+                              {item.icon}
+                            </div>
+                            <span className="font-bold text-slate-800 dark:text-slate-200">
+                              {item.title}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="py-2.5 font-semibold text-slate-700 dark:text-slate-300 text-center">
+                          {item.count}
+                        </td>
+                        <td className="py-2.5 text-right pr-2">
+                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10.5px] font-bold bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400 border border-emerald-200/50">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                            Aktif
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </ServiceRouteGuard>
   );
