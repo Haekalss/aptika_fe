@@ -371,32 +371,101 @@ export default function MasterDataPage() {
   ];
 
   return (
-    <div className="p-6 md:p-8 space-y-6 max-w-7xl mx-auto">
-      {/* Banner / Header */}
-      <div className="bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 rounded-2xl p-6 md:p-8 text-white shadow-xl relative overflow-hidden">
-        <div className="absolute right-0 top-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-          <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-xs font-semibold text-blue-200">
-              <Database size={14} />
-              <span>Sentral Referensi & Master Data</span>
+    <div className="flex flex-col gap-6 pb-8 font-sans">
+      {/* ── Hero Banner Data Master (Cyan Theme) ── */}
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#083344] via-[#0e7490] to-[#06b6d4] p-7 sm:p-8 text-white shadow-xl min-h-[195px] flex items-center">
+        <div
+          className="absolute inset-0 opacity-20 pointer-events-none"
+          style={{
+            backgroundImage: "radial-gradient(rgba(255,255,255,0.3) 1px, transparent 1px)",
+            backgroundSize: "20px 20px",
+          }}
+        />
+        <div className="absolute -right-16 -bottom-16 w-72 h-72 rounded-full bg-cyan-200/20 blur-3xl pointer-events-none" />
+        <div className="absolute left-1/3 -top-14 w-56 h-56 rounded-full bg-teal-300/15 blur-2xl pointer-events-none" />
+
+        <div className="relative z-10 w-full flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+          {/* Left: Icon Box + Title & Subtitle */}
+          <div className="flex items-start gap-4 sm:gap-5 max-w-2xl">
+            <div className="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-lg flex-shrink-0 mt-0.5">
+              <Database size={30} className="text-white" />
             </div>
-            <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-white">
-              Manajemen Data Master
-            </h1>
-            <p className="text-sm md:text-base text-slate-100/90 max-w-2xl leading-relaxed">
-              Pusat referensi data sistem untuk mengisi formulir SPD, Surat Dinas, Penugasan, dan Cetak NDA.
-              Data yang Anda tambahkan di sini akan langsung tersedia di seluruh modul aplikasi.
-            </p>
+            <div>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 border border-white/25 text-[11px] font-bold tracking-wider uppercase text-cyan-50 mb-2">
+                <span>SENTRAL REFERENSI • MASTER DATA</span>
+              </div>
+              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white leading-tight">
+                Manajemen Data Master
+              </h1>
+              <p className="text-sm sm:text-[15px] text-cyan-50/90 mt-1.5 leading-relaxed">
+                Pusat referensi data sistem untuk mengisi formulir SPD, Surat Dinas, Penugasan, dan Cetak NDA.
+                Data yang Anda tambahkan di sini akan langsung tersedia di seluruh modul aplikasi.
+              </p>
+              <div className="mt-4">
+                <button
+                  onClick={handleOpenCreate}
+                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-white text-cyan-900 hover:bg-cyan-50 text-xs sm:text-sm font-extrabold shadow-lg transition-all transform hover:-translate-y-0.5 active:translate-y-0 cursor-pointer"
+                >
+                  <Plus size={17} className="text-cyan-700" />
+                  <span>Tambah {tabsConfig.find((t) => t.id === activeTab)?.label}</span>
+                </button>
+              </div>
+            </div>
           </div>
 
-          <button
-            onClick={handleOpenCreate}
-            className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-blue-500 hover:bg-blue-400 text-white font-bold shadow-lg hover:shadow-blue-500/30 transition-all transform hover:-translate-y-0.5 active:translate-y-0"
-          >
-            <Plus size={18} />
-            <span>Tambah {tabsConfig.find((t) => t.id === activeTab)?.label}</span>
-          </button>
+          {/* Right: Vector Illustration Card */}
+          <div className="hidden xl:flex items-center justify-end flex-shrink-0">
+            <div className="relative w-[290px] h-[145px] rounded-2xl bg-slate-950/35 border border-white/25 backdrop-blur-md p-3.5 flex flex-col justify-between shadow-2xl transform -rotate-1 hover:rotate-0 transition-transform duration-500">
+              <div className="flex items-center justify-between border-b border-white/15 pb-2">
+                <div className="flex items-center gap-1.5">
+                  <span className="w-2.5 h-2.5 rounded-full bg-rose-400" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-amber-300" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
+                </div>
+                <span className="text-[10px] font-mono font-bold text-cyan-100 tracking-wider uppercase">
+                  DATA MASTER • HUB
+                </span>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2 my-auto py-1">
+                <div className="rounded-lg bg-white/10 border border-white/15 px-2.5 py-1.5 flex items-center justify-between">
+                  <div className="flex items-center gap-1.5">
+                    <CreditCard size={13} className="text-cyan-200" />
+                    <span className="text-[10px] font-bold text-white/90">Rekening</span>
+                  </div>
+                  <span className="text-xs font-extrabold text-cyan-200">{rekeningList.length}</span>
+                </div>
+                <div className="rounded-lg bg-white/10 border border-white/15 px-2.5 py-1.5 flex items-center justify-between">
+                  <div className="flex items-center gap-1.5">
+                    <Car size={13} className="text-emerald-200" />
+                    <span className="text-[10px] font-bold text-white/90">Angkutan</span>
+                  </div>
+                  <span className="text-xs font-extrabold text-emerald-200">{angkutanList.length}</span>
+                </div>
+                <div className="rounded-lg bg-white/10 border border-white/15 px-2.5 py-1.5 flex items-center justify-between">
+                  <div className="flex items-center gap-1.5">
+                    <Users size={13} className="text-amber-200" />
+                    <span className="text-[10px] font-bold text-white/90">Pegawai</span>
+                  </div>
+                  <span className="text-xs font-extrabold text-amber-200">{pegawaiList.length}</span>
+                </div>
+                <div className="rounded-lg bg-white/10 border border-white/15 px-2.5 py-1.5 flex items-center justify-between">
+                  <div className="flex items-center gap-1.5">
+                    <FileSignature size={13} className="text-purple-200" />
+                    <span className="text-[10px] font-bold text-white/90">Master NDA</span>
+                  </div>
+                  <span className="text-xs font-extrabold text-purple-200">{ndaList.length}</span>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between text-[10px] text-cyan-100/80 font-semibold pt-1 border-t border-white/10">
+                <span>Sinkronisasi Referensi Aktif</span>
+                <span className="px-2 py-0.5 rounded-full bg-cyan-400/25 text-cyan-100 font-bold text-[9px]">
+                  4 TABEL
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 

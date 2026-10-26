@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { User, Sun, Moon, ShieldCog, FolderKanban, FileText, TrendingUp, Users, ShieldCheck, Home } from "lucide-react";
+import { User, Sun, Moon, ShieldCog, FolderKanban, FileText, TrendingUp, Users, ShieldCheck, Database, Home } from "lucide-react";
 import Avatar from "@/components/ui/Avatar";
 import Dropdown from "@/components/ui/Dropdown";
 import { useRouter, usePathname } from "next/navigation";
@@ -55,6 +55,7 @@ export default function Header({ title, subtitle, showBrand = false }: HeaderPro
                        pathname.startsWith("/magang") || 
                        pathname.startsWith("/smki") || 
                        pathname.startsWith("/daftar-aset-ti") ||
+                       pathname.startsWith("/master") ||
                        isIkiPage;
 
   const moduleNavItems = [
@@ -63,6 +64,7 @@ export default function Header({ title, subtitle, showBrand = false }: HeaderPro
     { label: "Manajemen Tugas Digital", path: "/manajementugasdigital", icon: <FolderKanban size={15} /> },
     { label: "IKI Report", path: "/integrasiinteroperabilitas/dashboard", icon: <TrendingUp size={15} /> },
     { label: "SMKI", path: "/smki", icon: <ShieldCheck size={15} /> },
+    { label: "Data Master", path: "/master", icon: <Database size={15} /> },
   ];
 
   const profileMenuItems = [

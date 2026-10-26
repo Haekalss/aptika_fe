@@ -16,6 +16,7 @@ import {
   Clock,
   UserPlus,
   AlertTriangle,
+  Database,
 } from "lucide-react";
 
 import { useAuthStore } from "@/store/useAuthStore";
@@ -539,6 +540,17 @@ export default function Homepage() {
       arrowBg: "bg-violet-500 hover:bg-violet-600",
       path: "/smki",
     },
+    {
+      id: "data-master",
+      code: "DATA_MASTER",
+      title: "Data Master",
+      desc: "Sentral referensi data sistem (Kode Rekening, Alat Angkutan, Daftar Pegawai, dan Master NDA).",
+      icon: <Database size={22} className="text-white" />,
+      iconBg: "bg-cyan-500",
+      cardBorder: "border-slate-100 hover:border-cyan-300 dark:border-slate-800",
+      arrowBg: "bg-cyan-500 hover:bg-cyan-600",
+      path: "/master",
+    },
   ];
 
   const getFilteredCards = () => {
@@ -548,11 +560,12 @@ export default function Homepage() {
       const targetBidang = bidangMatrixList.find((b) => String(b.bidang_id) === selectedBidangId);
       if (!targetBidang) return allCards;
       return allCards.filter((card) => {
+        if (card.code === "DATA_MASTER") return true;
         const svc = targetBidang.services.find((s) => s.code === card.code);
         return svc ? svc.is_enabled : true;
       });
     }
-    return allCards.filter((c) => hasServicePermission(c.code));
+    return allCards.filter((c) => c.code === "DATA_MASTER" || hasServicePermission(c.code));
   };
 
   const cards = getFilteredCards();
@@ -670,7 +683,7 @@ export default function Homepage() {
         </div>
 
         {/* Module Cards: Logo sejajar vertikal dengan teks, Deskripsi diperbesar, posisi diturunkan sedikit */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4.5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4.5">
           {cards.map((card) => (
             <div
               key={card.id}
