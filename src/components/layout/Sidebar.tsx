@@ -27,6 +27,13 @@ import {
   CalendarCheck,
   FileCheck,
   MessageSquare,
+  ClipboardCheck,
+  Server,
+  ServerCog,
+  ScrollText,
+  MonitorSmartphone,
+  Cctv,
+  DatabaseBackup,
 } from "lucide-react";
 import Avatar from "@/components/ui/Avatar";
 import { useSidebarStore } from "@/store/useSidebarStore";
@@ -268,16 +275,58 @@ export default function Sidebar() {
                 iconColor: "text-emerald-600 bg-emerald-50 border border-emerald-200/60",
               },
               {
+                name: "Log Perubahan",
+                key: "smki/log-perubahan",
+                icon: FileText,
+                iconColor: "text-emerald-600 bg-emerald-50 border border-emerald-200/60",
+              },
+              {
                 name: "Daftar Penyedia",
                 key: "smki/daftar-penyedia",
                 icon: Building2,
                 iconColor: "text-emerald-600 bg-emerald-50 border border-emerald-200/60",
               },
               {
+                name: "Evaluasi Kepatuhan",
+                key: "smki/evaluasi-kepatuhan",
+                icon: ClipboardCheck,
+                iconColor: "text-sky-600 bg-sky-50 border border-sky-200/60",
+              },
+              {
+                name: "Review Log",
+                key: "smki/review-log",
+                icon: ScrollText,
+                iconColor: "text-orange-600 bg-orange-50 border border-orange-200/60",
+              },
+              {
+                name: "Perangkat Pribadi (BYOD)",
+                key: "smki/perangkat-pribadi",
+                icon: MonitorSmartphone,
+                iconColor: "text-indigo-600 bg-indigo-50 border border-indigo-200/60",
+              },
+              {
+                name: "Review CCTV",
+                key: "smki/reviu-cctv",
+                icon: Cctv,
+                iconColor: "text-rose-600 bg-rose-50 border border-rose-200/60",
+              },
+              {
+                name: "Evaluasi DRP",
+                key: "smki/evaluasi-drp",
+                icon: DatabaseBackup,
+                iconColor: "text-violet-600 bg-violet-50 border border-violet-200/60",
+              },
+              {
                 name: "Daftar Aset TI",
                 key: "daftar-aset-ti",
                 icon: Box,
                 iconColor: "text-blue-600 bg-blue-50 border border-blue-200/60",
+              },
+              {
+                name: "Aset Sistem Info",
+                key: "smki/aset-sistem-informasi",
+                icon: Database,
+                iconColor: "text-indigo-600 bg-indigo-50 border border-indigo-200/60",
               },
               {
                 name: "Penghancuran Media",
@@ -295,6 +344,24 @@ export default function Sidebar() {
                 name: "Laporan Audit",
                 key: "smki/laporan-audit",
                 icon: FileCheck,
+                iconColor: "text-emerald-600 bg-emerald-50 border border-emerald-200/60",
+              },
+              {
+                name: "Formulir Tahunan",
+                key: "smki/laporan-audit-tahunan",
+                icon: FileText,
+                iconColor: "text-emerald-600 bg-emerald-50 border border-emerald-200/60",
+              },
+              {
+                name: "Laporan Kerusakan DC",
+                key: "smki/laporan-kerusakan",
+                icon: ServerCog,
+                iconColor: "text-red-600 bg-red-50 border border-red-200/60",
+              },
+              {
+                name: "Screening Karyawan",
+                key: "smki/screening-karyawan",
+                icon: Users,
                 iconColor: "text-emerald-600 bg-emerald-50 border border-emerald-200/60",
               },
             ],

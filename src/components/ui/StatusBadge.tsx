@@ -7,6 +7,11 @@ const STATUS_STYLE: Record<string, string> = {
     "bg-blue-50 dark:bg-blue-950/70 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800",
   Selesai:
     "bg-emerald-50 dark:bg-emerald-950/70 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800",
+  // Jenis perangkat TI (FR-045 BYOD)
+  Laptop:
+    "bg-blue-50 dark:bg-blue-950/70 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800",
+  PC: "bg-emerald-50 dark:bg-emerald-950/70 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800",
+  Tab: "bg-amber-50 dark:bg-amber-950/70 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800",
 };
 
 /** Atom global: badge status. Tambah entri di STATUS_STYLE untuk modul lain. */
