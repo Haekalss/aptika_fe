@@ -205,19 +205,7 @@ export default function AdminLayout({
             </p>
           </div>
           <div className="flex items-center gap-3">
-            {/* Theme Toggle Button (Light / Dark) */}
-            <button
-              onClick={toggleTheme}
-              className="p-2 rounded-xl border border-slate-200 dark:border-slate-700/80 bg-slate-50 dark:bg-[#0b1630] text-slate-600 dark:text-amber-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all flex items-center justify-center shadow-sm"
-              title={theme === "dark" ? "Ganti ke Mode Terang" : "Ganti ke Mode Gelap"}
-              aria-label="Toggle Theme"
-            >
-              {theme === "dark" ? (
-                <Sun size={16} className="text-amber-400" />
-              ) : (
-                <Moon size={16} className="text-slate-600" />
-              )}
-            </button>
+
 
             <Link
               href="/dashboard"

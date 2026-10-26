@@ -151,19 +151,7 @@ export default function Header({ title, subtitle, showBrand = false }: HeaderPro
 
       {/* Right Controls */}
       <div className="flex items-center gap-2.5 flex-shrink-0">
-        {/* Theme Toggle */}
-        <button
-          type="button"
-          onClick={toggleTheme}
-          title={theme === "dark" ? "Mode Terang" : "Mode Gelap"}
-          className="flex items-center justify-center w-8 h-8 rounded-xl border border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-800/80 text-slate-600 dark:text-amber-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all active:scale-95"
-        >
-          {theme === "dark" ? (
-            <Sun size={16} className="text-amber-400" />
-          ) : (
-            <Moon size={16} className="text-slate-600" />
-          )}
-        </button>
+
 
         <NotificationBell />
 
