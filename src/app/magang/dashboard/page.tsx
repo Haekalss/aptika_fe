@@ -1152,34 +1152,142 @@ export default function MagangDashboard() {
   return (
     <div className="flex flex-col gap-6 pb-6 font-sans">
 
-      {/* ── HERO BANNER (Sesuai Desain Asli) ── */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#1565d8] via-[#1e76e6] to-[#4facfe] text-white shadow-md min-h-[120px] sm:min-h-[135px] flex items-center justify-between px-6 sm:px-8 py-5">
-        {/* Soft background glow */}
-        <div className="absolute -left-12 -bottom-12 w-64 h-64 rounded-full bg-white/10 blur-3xl pointer-events-none" />
-        <div className="absolute right-1/4 -top-12 w-64 h-64 rounded-full bg-cyan-200/20 blur-3xl pointer-events-none" />
+      {/* ── HERO BANNER ── */}
+      <div
+        className="relative overflow-hidden rounded-3xl shadow-lg"
+        style={{
+          background: "linear-gradient(135deg, #124d96 0%, #1964c0 38%, #2680e2 72%, #4ea3f5 100%)",
+        }}
+      >
+        {/* Decorative background circles */}
+        <div className="absolute top-0 right-0 w-72 h-72 rounded-full bg-white/10 -translate-y-1/2 translate-x-1/4 blur-2xl pointer-events-none" />
+        <div className="absolute bottom-0 left-1/3 w-56 h-56 rounded-full bg-cyan-300/15 translate-y-1/2 blur-2xl pointer-events-none" />
+        <div className="absolute -left-10 -top-10 w-44 h-44 rounded-full bg-white/5 pointer-events-none" />
 
-        {/* Left: Icon & Text */}
-        <div className="relative z-10 flex items-center gap-4 sm:gap-5">
-          <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center text-white shadow-md flex-shrink-0">
-            <GraduationCap size={34} className="text-white drop-shadow-sm" />
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6 px-7 py-7 sm:px-9">
+          {/* Left: Icon + Text */}
+          <div className="flex items-center gap-5">
+            <div className="w-16 h-16 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center flex-shrink-0 border border-white/30 shadow-lg">
+              <GraduationCap size={34} className="text-white drop-shadow-sm" />
+            </div>
+            <div>
+              <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight drop-shadow-sm">
+                Magang
+              </h1>
+              <p className="text-sm text-blue-100/95 mt-1.5 font-normal">
+                Dashboard monitoring dan pendataan Magang
+              </p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white leading-tight">
-              Magang
-            </h1>
-            <p className="text-xs sm:text-sm text-white/90 font-medium mt-1">
-              Dashboard monitoring dan pendataan Magang
-            </p>
-          </div>
-        </div>
 
-        {/* Right: Ilustrasi Asli dari Desain */}
-        <div className="hidden sm:block relative z-10 h-[90px] sm:h-[110px] flex-shrink-0 select-none pointer-events-none">
-          <img
-            src="/magang-ill-exact.png"
-            alt="Ilustrasi Magang"
-            className="h-full w-auto object-contain object-right"
-          />
+          {/* Right: Vector SVG Illustration (Laptop + Topi Wisuda + Dokumen + Daun) */}
+          <div className="hidden md:flex items-center justify-end flex-shrink-0 pr-2 select-none pointer-events-none">
+            <svg width="360" height="118" viewBox="0 0 360 118" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="magangScreenGrad" x1="115" y1="16" x2="245" y2="96" gradientUnits="userSpaceOnUse">
+                  <stop offset="0%" stopColor="#1e6ce0" />
+                  <stop offset="55%" stopColor="#358ef5" />
+                  <stop offset="100%" stopColor="#6bc1ff" />
+                </linearGradient>
+                <linearGradient id="magangDocGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stopColor="#ffffff" stopOpacity="0.96" />
+                  <stop offset="100%" stopColor="#e8f3ff" stopOpacity="0.92" />
+                </linearGradient>
+              </defs>
+
+              {/* Soft glow behind laptop */}
+              <ellipse cx="182" cy="64" rx="125" ry="48" fill="white" opacity="0.12" />
+
+              {/* Left tropical leaves */}
+              <g opacity="0.92">
+                <path d="M58 106 C34 96, 22 76, 24 54 C42 60, 56 78, 58 106 Z" fill="#2dd4bf" opacity="0.75" />
+                <path d="M68 108 C42 88, 36 62, 46 40 C62 52, 70 78, 68 108 Z" fill="#34d399" opacity="0.85" />
+                <path d="M46 40 L64 104" stroke="#a7f3d0" strokeWidth="1.3" strokeLinecap="round" opacity="0.7" />
+                <path d="M76 106 C58 92, 56 70, 68 52 C78 64, 80 86, 76 106 Z" fill="#60a5fa" opacity="0.65" />
+              </g>
+
+              {/* Right tropical leaves */}
+              <g opacity="0.92">
+                <path d="M302 106 C326 96, 338 76, 336 54 C318 60, 304 78, 302 106 Z" fill="#2dd4bf" opacity="0.75" />
+                <path d="M292 108 C318 88, 324 62, 314 40 C298 52, 290 78, 292 108 Z" fill="#34d399" opacity="0.85" />
+                <path d="M314 40 L296 104" stroke="#a7f3d0" strokeWidth="1.3" strokeLinecap="round" opacity="0.7" />
+                <path d="M284 106 C302 92, 304 70, 292 52 C282 64, 280 86, 284 106 Z" fill="#93c5fd" opacity="0.65" />
+              </g>
+
+              {/* Left Floating Clipboard / Profile Card (tilted -10deg) */}
+              <g transform="rotate(-10 86 64)">
+                <rect x="54" y="24" width="60" height="78" rx="9" fill="url(#magangDocGrad)" stroke="white" strokeWidth="1.5" />
+                {/* Clipboard top clip */}
+                <rect x="73" y="19" width="22" height="8" rx="3" fill="#60a5fa" />
+                {/* Avatar circle */}
+                <circle cx="71" cy="43" r="8" fill="#dbeafe" />
+                <circle cx="71" cy="41" r="3" fill="#2563eb" />
+                <path d="M65 48 C66.5 45, 75.5 45, 77 48" stroke="#2563eb" strokeWidth="1.8" strokeLinecap="round" />
+                {/* Lines next to avatar */}
+                <rect x="83" y="38" width="22" height="4" rx="2" fill="#3b82f6" opacity="0.85" />
+                <rect x="83" y="45" width="15" height="3.5" rx="1.75" fill="#93c5fd" />
+                {/* Checklist rows */}
+                <rect x="63" y="58" width="42" height="4" rx="2" fill="#bfdbfe" />
+                <rect x="63" y="67" width="36" height="4" rx="2" fill="#bfdbfe" />
+                <rect x="63" y="76" width="40" height="4" rx="2" fill="#bfdbfe" />
+                <rect x="63" y="85" width="26" height="4" rx="2" fill="#93c5fd" />
+              </g>
+
+              {/* Right Floating Clipboard / Checklist Card (tilted +10deg) */}
+              <g transform="rotate(10 274 64)">
+                <rect x="246" y="24" width="60" height="78" rx="9" fill="url(#magangDocGrad)" stroke="white" strokeWidth="1.5" />
+                {/* Clipboard top clip */}
+                <rect x="265" y="19" width="22" height="8" rx="3" fill="#38bdf8" />
+                {/* Header bar */}
+                <rect x="255" y="34" width="30" height="4.5" rx="2.25" fill="#2563eb" opacity="0.85" />
+                {/* Bullet rows */}
+                <circle cx="259" cy="49" r="3.5" fill="#34d399" />
+                <rect x="266" y="47" width="31" height="4" rx="2" fill="#bfdbfe" />
+                <circle cx="259" cy="61" r="3.5" fill="#3b82f6" />
+                <rect x="266" y="59" width="28" height="4" rx="2" fill="#bfdbfe" />
+                <circle cx="259" cy="73" r="3.5" fill="#38bdf8" />
+                <rect x="266" y="71" width="31" height="4" rx="2" fill="#bfdbfe" />
+                {/* Bottom badge */}
+                <rect x="255" y="83" width="24" height="7" rx="3.5" fill="#dbeafe" />
+              </g>
+
+              {/* Centerpiece Laptop */}
+              <g>
+                {/* Laptop Outer Frame / Bezel */}
+                <rect x="114" y="16" width="132" height="84" rx="9" fill="#0f2952" stroke="#93c5fd" strokeWidth="1.5" />
+                {/* Laptop Glowing Screen */}
+                <rect x="120" y="22" width="120" height="72" rx="5" fill="url(#magangScreenGrad)" />
+                {/* Screen decorative inner circles */}
+                <circle cx="225" cy="34" r="18" fill="white" opacity="0.1" />
+                <circle cx="136" cy="82" r="22" fill="white" opacity="0.08" />
+
+                {/* Graduation Cap on Laptop Screen */}
+                <g transform="translate(180, 54)">
+                  {/* Cap Top Diamond */}
+                  <polygon points="0,-18 32,-5 0,8 -32,-5" fill="#ffffff" />
+                  <polygon points="0,-16 28,-5 0,6 -28,-5" fill="#f0f7ff" />
+                  {/* Cap Skull Base */}
+                  <path d="M-17,2 L-17,13 C-17,18 17,18 17,13 L17,2 L0,9 Z" fill="#dbeafe" />
+                  {/* Tassel */}
+                  <circle cx="0" cy="-5" r="2.5" fill="#fbbf24" />
+                  <path d="M0,-5 Q18,-2 23,12" stroke="#fbbf24" strokeWidth="2" fill="none" strokeLinecap="round" />
+                  <circle cx="23" cy="13" r="2.2" fill="#fbbf24" />
+                </g>
+
+                {/* Laptop Keyboard Base */}
+                <path d="M98 99 H262 L254 107 C252 109 249 110 245 110 H115 C111 110 108 109 106 107 L98 99 Z" fill="#e2e8f0" />
+                <path d="M98 99 H262 L259 103 H101 L98 99 Z" fill="#f8fafc" />
+                {/* Trackpad notch */}
+                <rect x="166" y="99" width="28" height="3" rx="1.5" fill="#94a3b8" />
+              </g>
+
+              {/* Sparkle dots */}
+              <circle cx="102" cy="22" r="2.5" fill="white" opacity="0.65" />
+              <circle cx="262" cy="18" r="2" fill="white" opacity="0.65" />
+              <circle cx="42" cy="48" r="2" fill="#bae6fd" opacity="0.6" />
+              <circle cx="322" cy="44" r="2.5" fill="#bae6fd" opacity="0.6" />
+            </svg>
+          </div>
         </div>
       </div>
 
