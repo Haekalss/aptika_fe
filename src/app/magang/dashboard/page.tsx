@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Users, UserCheck, Eye, Edit, Pencil, Trash2, Plus, Printer, Upload, Download, FileText, Search, RotateCcw, GraduationCap, Leaf, ClipboardList, LayoutGrid, ChevronDown } from "lucide-react";
+import { Users, UserCheck, Eye, Edit, Pencil, Trash2, Plus, Printer, Upload, Download, FileText, Search, RotateCcw, GraduationCap, ClipboardList, CheckCircle2, Award } from "lucide-react";
 import { getMagangList, deleteMagang, createMagang, updateMagang, uploadMagangNda, getBidangs } from "@/services/api";
 import { Modal } from "@/components/ui/Modal";
 import { useAuthStore } from "@/store/useAuthStore";
@@ -104,6 +104,59 @@ const formatCertificatePeriod = (tglMulaiStr: string, tglSelesaiStr: string) => 
 
   return `${startDay} ${startMonth} ${startYear} s.d ${endDay} ${endMonth} ${endYear}`;
 };
+
+
+/* Ilustrasi banner Magang — gaya sama dengan IsometricIllustration di Dashboard */
+function MagangIllustration() {
+  const rows = [
+    { color: "bg-cyan-400/70", pill: "bg-blue-400/50", w: "w-14" },
+    { color: "bg-emerald-400/70", pill: "bg-emerald-400/50", w: "w-10" },
+    { color: "bg-purple-400/70", pill: "bg-blue-400/50", w: "w-12" },
+  ];
+  return (
+    <div className="relative w-[320px] h-[180px] flex items-center justify-center pointer-events-none select-none">
+      <div className="absolute inset-0 bg-cyan-400/20 blur-2xl rounded-full transform scale-75" />
+
+      {/* Jendela preview data magang */}
+      <div className="relative z-10 w-[200px] h-[130px] rounded-xl bg-gradient-to-tr from-slate-900/90 to-blue-950/95 border border-white/30 backdrop-blur-md shadow-2xl p-2.5 flex flex-col gap-2 transform -rotate-3">
+        <div className="flex items-center justify-between border-b border-white/10 pb-1.5">
+          <div className="flex gap-1">
+            <span className="w-2 h-2 rounded-full bg-red-400/80" />
+            <span className="w-2 h-2 rounded-full bg-yellow-400/80" />
+            <span className="w-2 h-2 rounded-full bg-green-400/80" />
+          </div>
+          <span className="text-[8px] text-cyan-200/80 font-mono">magang.preview</span>
+        </div>
+        <div className="flex flex-col gap-1.5 flex-1 justify-center">
+          {rows.map((r, i) => (
+            <div key={i} className="flex items-center gap-1.5 bg-white/5 border border-white/10 rounded-md px-1.5 py-1">
+              <span className={`w-4 h-4 rounded-full ${r.color} flex-shrink-0`} />
+              <div className="flex-1 space-y-0.5">
+                <div className={`${r.w} h-1 bg-white/50 rounded-full`} />
+                <div className="w-8 h-1 bg-white/25 rounded-full" />
+              </div>
+              <span className={`w-7 h-2.5 rounded-full ${r.pill}`} />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Ikon melayang */}
+      <div className="absolute left-6 top-3 z-20 w-11 h-11 rounded-xl bg-gradient-to-br from-cyan-400 to-blue-600 shadow-lg shadow-cyan-900/40 border border-white/30 flex items-center justify-center transform -rotate-12">
+        <GraduationCap size={20} className="text-white" />
+      </div>
+      <div className="absolute right-5 top-3 z-20 w-10 h-10 rounded-xl bg-gradient-to-br from-pink-500 to-rose-600 shadow-xl shadow-rose-900/40 border border-white/30 flex items-center justify-center transform rotate-12">
+        <FileText size={17} className="text-white" />
+      </div>
+      <div className="absolute right-10 -bottom-1 z-20 w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 shadow-xl shadow-amber-900/40 border border-white/30 flex items-center justify-center transform rotate-6">
+        <Award size={20} className="text-white" />
+      </div>
+      <div className="absolute left-9 bottom-2 z-20 w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-600 shadow-lg shadow-teal-900/40 border border-white/30 flex items-center justify-center transform rotate-12">
+        <UserCheck size={16} className="text-white" />
+      </div>
+    </div>
+  );
+}
 
 export default function MagangDashboard() {
   const { bidang: authBidang, isAdminAptika } = useAuthStore();
@@ -1093,306 +1146,283 @@ export default function MagangDashboard() {
   };
 
   const activeMagangs = magangs.filter(m => m.status_magang === 'Sedang magang').length;
+  const selesaiMagangs = magangs.filter(m => m.status_magang === 'Selesai magang').length;
+  const sertifikatTerbit = magangs.filter(m => m.sertifikat === 'Sudah menerima').length;
 
   return (
-    <div className="flex gap-5 font-sans">
+    <div className="flex flex-col gap-6 pb-6 font-sans">
 
-      {/* ── PANEL KIRI (Sub-menu Magang) ── */}
-      <aside className="hidden lg:flex flex-col w-[190px] flex-shrink-0 bg-white/90 rounded-2xl border border-slate-200/80 shadow-sm p-3 self-stretch min-h-[calc(100vh-150px)]">
-        <button
-          type="button"
-          className="flex items-center justify-between w-full px-3 py-2.5 rounded-xl bg-blue-50 text-slate-800 border border-blue-100/80"
-        >
-          <span className="flex items-center gap-2.5 text-[13px] font-bold">
-            <LayoutGrid size={16} className="text-blue-600" />
-            Magang
-          </span>
-          <ChevronDown size={15} className="text-slate-500" />
-        </button>
-      </aside>
+      {/* ── HERO BANNER (format sama seperti Dashboard) ── */}
+      <div className="relative overflow-hidden bg-gradient-to-r from-[#0b2146] via-[#163868] to-[#1d4ed8] rounded-3xl text-white shadow-xl min-h-[190px]">
+        <div className="absolute -right-20 -bottom-20 w-80 h-80 rounded-full bg-blue-400/15 blur-3xl pointer-events-none" />
+        <div className="absolute left-1/3 -top-10 w-60 h-60 rounded-full bg-cyan-400/15 blur-2xl pointer-events-none" />
 
-      <div className="flex-1 min-w-0 flex flex-col gap-5 pb-6">
+        <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6 px-6 py-6 sm:px-8">
+          <div className="flex-1 min-w-0 max-w-lg">
+            <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-white/15 text-cyan-200 text-xs font-bold backdrop-blur-sm border border-white/20 mb-3">
+              <GraduationCap size={14} />
+              <span>Modul Layanan Magang</span>
+            </div>
+            <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white mb-2 leading-tight">
+              Dashboard <span className="text-cyan-300">Magang</span>
+            </h1>
+            <p className="text-sm text-slate-100/90 leading-relaxed font-normal">
+              Monitoring dan pendataan peserta magang Diskominfo Provinsi Jawa Barat — mulai dari periode, status, sertifikat, hingga dokumen NDA.
+            </p>
+          </div>
 
-        {/* ── HERO BANNER ── */}
-        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#1b62d6] via-[#2b7de9] to-[#5aa6f3] text-white shadow-md min-h-[130px]">
-          <div className="absolute -left-10 -bottom-16 w-72 h-72 rounded-full bg-white/10 blur-3xl pointer-events-none" />
-          <div className="absolute right-1/3 -top-20 w-64 h-64 rounded-full bg-cyan-200/20 blur-3xl pointer-events-none" />
-
-          <div className="relative z-10 flex items-center justify-between gap-6 px-6 sm:px-8 py-6">
-            <div className="flex items-center gap-5">
-              <div className="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-lg flex-shrink-0">
-                <GraduationCap size={34} className="text-white" />
-              </div>
-              <div>
-                <h1 className="text-3xl font-extrabold tracking-tight leading-tight">Magang</h1>
-                <p className="text-sm text-white/90 mt-1">Dashboard monitoring dan pendataan Magang</p>
-              </div>
+          <div className="flex items-center gap-4 flex-shrink-0">
+            <div className="hidden xl:flex items-center justify-center">
+              <MagangIllustration />
             </div>
 
-            {/* Ilustrasi: laptop + topi wisuda + dokumen + daun */}
-            <div className="hidden lg:block relative w-[300px] h-[100px] flex-shrink-0 pointer-events-none select-none">
-              {/* Daun kiri */}
-              <Leaf size={46} className="absolute left-2 bottom-0 text-emerald-300/90 -rotate-[30deg]" />
-              <Leaf size={34} className="absolute left-12 bottom-1 text-teal-200/80 rotate-[10deg]" />
-              {/* Dokumen kiri */}
-              <div className="absolute left-[70px] top-3 w-14 h-[72px] rounded-lg bg-white/85 shadow-lg -rotate-6 p-2 space-y-1.5">
-                <div className="w-6 h-6 rounded-md bg-blue-100" />
-                <div className="w-full h-1 bg-blue-200 rounded-full" />
-                <div className="w-3/4 h-1 bg-blue-200 rounded-full" />
-                <div className="w-1/2 h-1 bg-blue-200 rounded-full" />
-              </div>
-              {/* Laptop */}
-              <div className="absolute left-[105px] top-0 w-[120px]">
-                <div className="h-[74px] rounded-t-lg bg-[#16336b] border-[3px] border-[#0d1f45] flex items-center justify-center shadow-xl">
-                  <div className="w-full h-full bg-gradient-to-br from-[#2a6fe0] to-[#5aa6f3] flex items-center justify-center">
-                    <GraduationCap size={34} className="text-white drop-shadow" />
-                  </div>
+            <div className="flex flex-col gap-2.5 flex-shrink-0">
+              <div className="flex items-center gap-3 bg-white/10 backdrop-blur-md px-4 py-3 rounded-2xl border border-white/15 min-w-[170px] shadow-sm">
+                <CheckCircle2 size={18} className="text-emerald-300 flex-shrink-0" />
+                <div>
+                  <div className="text-[11px] text-slate-300 font-medium">Selesai Magang:</div>
+                  <div className="text-emerald-300 font-extrabold text-sm">{selesaiMagangs} Peserta</div>
                 </div>
-                <div className="h-2.5 -mx-3 rounded-b-xl bg-slate-200 shadow-md" />
               </div>
-              {/* Dokumen kanan (checklist) */}
-              <div className="absolute right-[38px] top-2 w-14 h-[76px] rounded-lg bg-white/90 shadow-lg rotate-6 p-2 space-y-2">
-                {[0, 1, 2].map((i) => (
-                  <div key={i} className="flex items-center gap-1">
-                    <div className="w-2 h-2 rounded-full bg-blue-400" />
-                    <div className="flex-1 h-1 bg-blue-200 rounded-full" />
-                  </div>
-                ))}
+              <div className="flex items-center gap-3 bg-white/10 backdrop-blur-md px-4 py-3 rounded-2xl border border-white/15 min-w-[170px] shadow-sm">
+                <Award size={18} className="text-amber-300 flex-shrink-0" />
+                <div>
+                  <div className="text-[11px] text-slate-300 font-medium">Sertifikat Terbit:</div>
+                  <div className="text-white font-extrabold text-sm">{sertifikatTerbit} Sertifikat</div>
+                </div>
               </div>
-              {/* Daun kanan */}
-              <Leaf size={44} className="absolute right-0 bottom-0 text-emerald-300/90 rotate-[35deg]" />
             </div>
           </div>
         </div>
+      </div>
 
-        {/* ── STATISTIC CARDS ── */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          <div className="bg-white rounded-2xl px-6 py-5 border border-slate-200/80 shadow-sm flex items-center gap-5">
-            <div className="w-12 h-12 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center flex-shrink-0">
-              <Users size={22} />
-            </div>
-            <div>
-              <p className="text-[13px] font-medium text-slate-600">Total Anak Magang</p>
-              <h3 className="text-2xl font-extrabold text-slate-900 leading-tight">{magangs.length}</h3>
-            </div>
+      {/* ── STATISTIC CARDS ── */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="bg-white/60 dark:bg-[#071733]/80 backdrop-blur-md rounded-3xl px-6 py-5 shadow-sm border border-white/70 dark:border-slate-800 flex items-center gap-5">
+          <div className="w-12 h-12 rounded-2xl bg-blue-100 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center flex-shrink-0 shadow-sm">
+            <Users size={22} />
           </div>
-
-          <div className="bg-white rounded-2xl px-6 py-5 border border-slate-200/80 shadow-sm flex items-center gap-5">
-            <div className="w-12 h-12 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center flex-shrink-0">
-              <UserCheck size={22} />
-            </div>
-            <div>
-              <p className="text-[13px] font-medium text-slate-600">Sedang Magang</p>
-              <h3 className="text-2xl font-extrabold text-slate-900 leading-tight">{activeMagangs}</h3>
-            </div>
+          <div>
+            <p className="text-[13px] font-semibold text-slate-500 dark:text-slate-400">Total Anak Magang</p>
+            <h3 className="text-2xl font-extrabold text-slate-900 dark:text-white leading-tight">{magangs.length}</h3>
           </div>
         </div>
 
-        {/* ── DAFTAR ANAK MAGANG (Header + Filter + Tabel) ── */}
-        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5">
-          {/* Header Card */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center flex-shrink-0">
-                <ClipboardList size={20} />
-              </div>
-              <div>
-                <h2 className="text-[15px] font-bold text-slate-800 leading-tight">Daftar Anak Magang</h2>
-                <p className="text-[11.5px] text-slate-500 mt-0.5">
-                  Menampilkan data dan informasi anak magang
-                  {isFiltered && ` (${filteredMagangs.length} dari ${magangs.length} data)`}
-                </p>
-              </div>
+        <div className="bg-white/60 dark:bg-[#071733]/80 backdrop-blur-md rounded-3xl px-6 py-5 shadow-sm border border-white/70 dark:border-slate-800 flex items-center gap-5">
+          <div className="w-12 h-12 rounded-2xl bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center flex-shrink-0 shadow-sm">
+            <UserCheck size={22} />
+          </div>
+          <div>
+            <p className="text-[13px] font-semibold text-slate-500 dark:text-slate-400">Sedang Magang</p>
+            <h3 className="text-2xl font-extrabold text-slate-900 dark:text-white leading-tight">{activeMagangs}</h3>
+          </div>
+        </div>
+      </div>
+
+      {/* ── DAFTAR ANAK MAGANG (Header + Filter + Tabel) ── */}
+      <div className="bg-white/60 dark:bg-[#071733]/80 backdrop-blur-md rounded-3xl p-6 shadow-sm border border-white/70 dark:border-slate-800">
+        {/* Header Card */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200/70 dark:border-slate-800">
+          <div className="flex items-center gap-3.5">
+            <div className="w-11 h-11 rounded-2xl bg-blue-100 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center flex-shrink-0 shadow-sm">
+              <ClipboardList size={20} />
             </div>
-            <button
-              onClick={() => handleOpenModal("add")}
-              className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-xl text-[13px] font-semibold shadow-sm transition-all whitespace-nowrap"
+            <div>
+              <h2 className="text-base font-extrabold text-slate-800 dark:text-white leading-tight">Daftar Anak Magang</h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                Menampilkan data dan informasi anak magang
+                {isFiltered && ` (${filteredMagangs.length} dari ${magangs.length} data)`}
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={() => handleOpenModal("add")}
+            className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-xl text-[13px] font-semibold shadow-sm transition-all whitespace-nowrap"
+          >
+            <Plus size={16} />
+            Tambah Data Magang
+          </button>
+        </div>
+
+        {/* Filter Controls */}
+        <div className="flex flex-col lg:flex-row lg:items-center gap-3 py-4">
+          {/* Search */}
+          <div className="relative lg:w-[240px] flex-shrink-0">
+            <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+            <input
+              type="text"
+              placeholder="Cari nama atau kampus..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-9 pr-3 py-2.5 text-[12.5px] bg-white dark:bg-[#0b1630] border border-slate-200 dark:border-slate-700 rounded-xl focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all dark:text-slate-200"
+            />
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-3 flex-1 lg:justify-end">
+            <select
+              value={filterBidang}
+              onChange={(e) => setFilterBidang(e.target.value)}
+              className="sm:w-[190px] px-3 py-2.5 text-[12.5px] bg-white dark:bg-[#0b1630] border border-slate-200 dark:border-slate-700 rounded-xl focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all text-slate-700 dark:text-slate-200 cursor-pointer"
             >
-              <Plus size={16} />
-              Tambah Data Magang
-            </button>
+              <option value="all">Semua Bidang / Unit Kerja</option>
+              {bidangs.map((b) => (
+                <option key={b.id} value={String(b.id)}>
+                  {b.name} ({b.code})
+                </option>
+              ))}
+            </select>
+
+            <select
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value)}
+              className="sm:w-[190px] px-3 py-2.5 text-[12.5px] bg-white dark:bg-[#0b1630] border border-slate-200 dark:border-slate-700 rounded-xl focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all text-slate-700 dark:text-slate-200 cursor-pointer"
+            >
+              <option value="all">Semua Status Magang</option>
+              <option value="Sedang magang">Sedang magang</option>
+              <option value="Selesai magang">Selesai magang</option>
+              <option value="Belum mulai">Belum mulai</option>
+            </select>
+
+            <select
+              value={filterSertifikat}
+              onChange={(e) => setFilterSertifikat(e.target.value)}
+              className="sm:w-[170px] px-3 py-2.5 text-[12.5px] bg-white dark:bg-[#0b1630] border border-slate-200 dark:border-slate-700 rounded-xl focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all text-slate-700 dark:text-slate-200 cursor-pointer"
+            >
+              <option value="all">Semua Status Sertifikat</option>
+              <option value="Sudah menerima">Sudah menerima</option>
+              <option value="Belum menerima">Belum menerima</option>
+            </select>
+
+            {isFiltered && (
+              <button
+                onClick={handleResetFilter}
+                title="Reset Filter"
+                className="flex items-center justify-center gap-1.5 px-3 py-2.5 text-[12px] font-semibold text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all border border-slate-200 dark:border-slate-700 flex-shrink-0"
+              >
+                <RotateCcw size={14} />
+                Reset
+              </button>
+            )}
           </div>
+        </div>
 
-          {/* Filter Controls */}
-          <div className="flex flex-col lg:flex-row lg:items-center gap-3 py-4">
-            {/* Search */}
-            <div className="relative lg:w-[240px] flex-shrink-0">
-              <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-              <input
-                type="text"
-                placeholder="Cari nama atau kampus..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-3 py-2.5 text-[12.5px] bg-white border border-slate-200 rounded-lg focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all"
-              />
-            </div>
-
-            <div className="flex flex-col sm:flex-row gap-3 flex-1 lg:justify-end">
-              <select
-                value={filterBidang}
-                onChange={(e) => setFilterBidang(e.target.value)}
-                className="sm:w-[190px] px-3 py-2.5 text-[12.5px] bg-white border border-slate-200 rounded-lg focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all text-slate-700 cursor-pointer"
-              >
-                <option value="all">Semua Bidang / Unit Kerja</option>
-                {bidangs.map((b) => (
-                  <option key={b.id} value={String(b.id)}>
-                    {b.name} ({b.code})
-                  </option>
-                ))}
-              </select>
-
-              <select
-                value={filterStatus}
-                onChange={(e) => setFilterStatus(e.target.value)}
-                className="sm:w-[190px] px-3 py-2.5 text-[12.5px] bg-white border border-slate-200 rounded-lg focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all text-slate-700 cursor-pointer"
-              >
-                <option value="all">Semua Status Magang</option>
-                <option value="Sedang magang">Sedang magang</option>
-                <option value="Selesai magang">Selesai magang</option>
-                <option value="Belum mulai">Belum mulai</option>
-              </select>
-
-              <select
-                value={filterSertifikat}
-                onChange={(e) => setFilterSertifikat(e.target.value)}
-                className="sm:w-[170px] px-3 py-2.5 text-[12.5px] bg-white border border-slate-200 rounded-lg focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all text-slate-700 cursor-pointer"
-              >
-                <option value="all">Semua Status Sertifikat</option>
-                <option value="Sudah menerima">Sudah menerima</option>
-                <option value="Belum menerima">Belum menerima</option>
-              </select>
-
-              {isFiltered && (
-                <button
-                  onClick={handleResetFilter}
-                  title="Reset Filter"
-                  className="flex items-center justify-center gap-1.5 px-3 py-2.5 text-[12px] font-semibold text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all border border-slate-200 flex-shrink-0"
-                >
-                  <RotateCcw size={14} />
-                  Reset
-                </button>
-              )}
-            </div>
-          </div>
-
-          {/* Tabel */}
-          <div className="rounded-xl border border-slate-200/80 overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse table-auto">
-                <thead>
-                  <tr className="bg-[#f1f5fb] border-b border-slate-200/80">
-                    <th className="px-3 py-3 text-[11px] font-bold text-slate-600 uppercase tracking-wide w-10 text-center">No</th>
-                    <th className="px-3 py-3 text-[11px] font-bold text-slate-600 uppercase tracking-wide">Nama</th>
-                    <th className="px-3 py-3 text-[11px] font-bold text-slate-600 uppercase tracking-wide">Kampus</th>
-                    <th className="px-3 py-3 text-[11px] font-bold text-slate-600 uppercase tracking-wide">Bidang</th>
-                    <th className="px-3 py-3 text-[11px] font-bold text-slate-600 uppercase tracking-wide">Periode</th>
-                    <th className="px-3 py-3 text-[11px] font-bold text-slate-600 uppercase tracking-wide">Status Magang</th>
-                    <th className="px-3 py-3 text-[11px] font-bold text-slate-600 uppercase tracking-wide">Sertifikat</th>
-                    <th className="px-3 py-3 text-[11px] font-bold text-slate-600 uppercase tracking-wide text-center">NDA</th>
-                    <th className="px-3 py-3 text-[11px] font-bold text-slate-600 uppercase tracking-wide text-center w-28">Aksi</th>
+        {/* Tabel */}
+        <div className="rounded-2xl border border-slate-200/80 dark:border-slate-800 overflow-hidden bg-white dark:bg-[#0b1630]">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse table-auto">
+              <thead>
+                <tr className="bg-[#f1f5fb] dark:bg-slate-900/60 border-b border-slate-200/80 dark:border-slate-800">
+                  <th className="px-3 py-3 text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wide w-10 text-center">No</th>
+                  <th className="px-3 py-3 text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wide">Nama</th>
+                  <th className="px-3 py-3 text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wide">Kampus</th>
+                  <th className="px-3 py-3 text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wide">Bidang</th>
+                  <th className="px-3 py-3 text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wide">Periode</th>
+                  <th className="px-3 py-3 text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wide">Status Magang</th>
+                  <th className="px-3 py-3 text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wide">Sertifikat</th>
+                  <th className="px-3 py-3 text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wide text-center">NDA</th>
+                  <th className="px-3 py-3 text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wide text-center w-28">Aksi</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                {loading ? (
+                  <tr>
+                    <td colSpan={9} className="text-center py-10 text-sm text-slate-500">Memuat data...</td>
                   </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {loading ? (
-                    <tr>
-                      <td colSpan={9} className="text-center py-10 text-sm text-slate-500">Memuat data...</td>
-                    </tr>
-                  ) : filteredMagangs.length === 0 ? (
-                    <tr>
-                      <td colSpan={9} className="text-center py-10 text-sm text-slate-500">
-                        {isFiltered ? "Tidak ada data anak magang yang sesuai filter" : "Tidak ada data magang"}
+                ) : filteredMagangs.length === 0 ? (
+                  <tr>
+                    <td colSpan={9} className="text-center py-10 text-sm text-slate-500">
+                      {isFiltered ? "Tidak ada data anak magang yang sesuai filter" : "Tidak ada data magang"}
+                    </td>
+                  </tr>
+                ) : (
+                  filteredMagangs.map((item, idx) => (
+                    <tr key={item.id} className="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition-colors">
+                      <td className="px-3 py-3 text-[12.5px] text-slate-700 dark:text-slate-300 font-semibold text-center">{idx + 1}</td>
+                      <td className="px-3 py-3 text-[12.5px] font-bold text-slate-800 dark:text-white max-w-[170px]">{item.nama}</td>
+                      <td className="px-3 py-3 text-[12px] text-slate-500 dark:text-slate-400 max-w-[170px] leading-snug">{item.nama_kampus}</td>
+                      <td className="px-3 py-3">
+                        {item.bidang ? (
+                          <span className="inline-block max-w-[170px] text-[11px] font-semibold text-blue-700 bg-blue-50 border border-blue-100 px-2 py-1 rounded-md leading-snug">
+                            {item.bidang.name}
+                          </span>
+                        ) : (
+                          <span className="text-slate-400 text-xs italic">-</span>
+                        )}
+                      </td>
+                      <td className="px-3 py-3 text-[12px] text-slate-600 dark:text-slate-300 whitespace-nowrap">
+                        {formatDate(item.tgl_mulai)} - {formatDate(item.tgl_selesai)}
+                      </td>
+                      <td className="px-3 py-3">
+                        <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-semibold whitespace-nowrap border ${item.status_magang === 'Sedang magang' ? 'bg-blue-50 text-blue-600 border-blue-100' :
+                          item.status_magang === 'Selesai magang' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
+                            'bg-slate-50 text-slate-600 border-slate-200'
+                          }`}>
+                          {item.status_magang}
+                        </span>
+                      </td>
+                      <td className="px-3 py-3">
+                        <div className="flex items-center gap-1">
+                          <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-semibold whitespace-nowrap border ${item.sertifikat === 'Sudah menerima' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-red-50 text-red-500 border-red-100'}`}>
+                            {item.sertifikat || 'Belum menerima'}
+                          </span>
+                          {isSertifikatEligible(item.tgl_selesai) && (
+                            <button
+                              onClick={() => handlePrintCertificate(item)}
+                              className="p-1 text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
+                              title="Cetak Sertifikat Magang"
+                            >
+                              <Printer size={14} />
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-3 py-3">
+                        <div className="flex items-center justify-center gap-1">
+                          <button
+                            onClick={() => handleOpenNdaModalForMagang(item.id)}
+                            className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
+                            title="Cetak Surat NDA"
+                          >
+                            <FileText size={15} />
+                          </button>
+                          <button
+                            onClick={() => handleOpenUploadNdaModal(item)}
+                            className={`p-1.5 rounded-md transition-colors ${item.nda_file ? 'text-emerald-600 hover:bg-emerald-50' : 'text-blue-600 hover:bg-blue-50'}`}
+                            title={item.nda_file ? "Ganti File NDA" : "Upload File NDA"}
+                          >
+                            <Upload size={15} />
+                          </button>
+                          {item.nda_file && (
+                            <a
+                              href={item.nda_file}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
+                              title="Unduh / Lihat Dokumen NDA"
+                            >
+                              <Download size={15} />
+                            </a>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-3 py-3">
+                        <div className="flex items-center justify-center gap-1.5">
+                          <button onClick={() => handleOpenModal("view", item)} className="w-7 h-7 flex items-center justify-center text-blue-600 bg-blue-50/60 border border-blue-100 hover:bg-blue-100 rounded-md transition-colors" title="Lihat Detail">
+                            <Eye size={14} />
+                          </button>
+                          <button onClick={() => handleOpenModal("edit", item)} className="w-7 h-7 flex items-center justify-center text-blue-600 bg-blue-50/60 border border-blue-100 hover:bg-blue-100 rounded-md transition-colors" title="Edit">
+                            <Pencil size={13} />
+                          </button>
+                          <button onClick={() => handleDelete(item.id)} className="w-7 h-7 flex items-center justify-center text-red-500 hover:bg-red-50 rounded-md transition-colors" title="Hapus">
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
                       </td>
                     </tr>
-                  ) : (
-                    filteredMagangs.map((item, idx) => (
-                      <tr key={item.id} className="hover:bg-slate-50/60 transition-colors">
-                        <td className="px-3 py-3 text-[12.5px] text-slate-700 font-semibold text-center">{idx + 1}</td>
-                        <td className="px-3 py-3 text-[12.5px] font-bold text-slate-800 max-w-[170px]">{item.nama}</td>
-                        <td className="px-3 py-3 text-[12px] text-slate-500 max-w-[170px] leading-snug">{item.nama_kampus}</td>
-                        <td className="px-3 py-3">
-                          {item.bidang ? (
-                            <span className="inline-block max-w-[170px] text-[11px] font-semibold text-blue-700 bg-blue-50 border border-blue-100 px-2 py-1 rounded-md leading-snug">
-                              {item.bidang.name}
-                            </span>
-                          ) : (
-                            <span className="text-slate-400 text-xs italic">-</span>
-                          )}
-                        </td>
-                        <td className="px-3 py-3 text-[12px] text-slate-600 whitespace-nowrap">
-                          {formatDate(item.tgl_mulai)} - {formatDate(item.tgl_selesai)}
-                        </td>
-                        <td className="px-3 py-3">
-                          <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-semibold whitespace-nowrap border ${item.status_magang === 'Sedang magang' ? 'bg-blue-50 text-blue-600 border-blue-100' :
-                            item.status_magang === 'Selesai magang' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
-                              'bg-slate-50 text-slate-600 border-slate-200'
-                            }`}>
-                            {item.status_magang}
-                          </span>
-                        </td>
-                        <td className="px-3 py-3">
-                          <div className="flex items-center gap-1">
-                            <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-semibold whitespace-nowrap border ${item.sertifikat === 'Sudah menerima' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-red-50 text-red-500 border-red-100'}`}>
-                              {item.sertifikat || 'Belum menerima'}
-                            </span>
-                            {isSertifikatEligible(item.tgl_selesai) && (
-                              <button
-                                onClick={() => handlePrintCertificate(item)}
-                                className="p-1 text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
-                                title="Cetak Sertifikat Magang"
-                              >
-                                <Printer size={14} />
-                              </button>
-                            )}
-                          </div>
-                        </td>
-                        <td className="px-3 py-3">
-                          <div className="flex items-center justify-center gap-1">
-                            <button
-                              onClick={() => handleOpenNdaModalForMagang(item.id)}
-                              className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
-                              title="Cetak Surat NDA"
-                            >
-                              <FileText size={15} />
-                            </button>
-                            <button
-                              onClick={() => handleOpenUploadNdaModal(item)}
-                              className={`p-1.5 rounded-md transition-colors ${item.nda_file ? 'text-emerald-600 hover:bg-emerald-50' : 'text-blue-600 hover:bg-blue-50'}`}
-                              title={item.nda_file ? "Ganti File NDA" : "Upload File NDA"}
-                            >
-                              <Upload size={15} />
-                            </button>
-                            {item.nda_file && (
-                              <a
-                                href={item.nda_file}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
-                                title="Unduh / Lihat Dokumen NDA"
-                              >
-                                <Download size={15} />
-                              </a>
-                            )}
-                          </div>
-                        </td>
-                        <td className="px-3 py-3">
-                          <div className="flex items-center justify-center gap-1.5">
-                            <button onClick={() => handleOpenModal("view", item)} className="w-7 h-7 flex items-center justify-center text-blue-600 bg-blue-50/60 border border-blue-100 hover:bg-blue-100 rounded-md transition-colors" title="Lihat Detail">
-                              <Eye size={14} />
-                            </button>
-                            <button onClick={() => handleOpenModal("edit", item)} className="w-7 h-7 flex items-center justify-center text-blue-600 bg-blue-50/60 border border-blue-100 hover:bg-blue-100 rounded-md transition-colors" title="Edit">
-                              <Pencil size={13} />
-                            </button>
-                            <button onClick={() => handleDelete(item.id)} className="w-7 h-7 flex items-center justify-center text-red-500 hover:bg-red-50 rounded-md transition-colors" title="Hapus">
-                              <Trash2 size={14} />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
+                  ))
+                )}
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
