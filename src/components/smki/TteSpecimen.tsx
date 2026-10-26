@@ -27,7 +27,7 @@ interface Props {
  * Gambar diambil lewat axios (membawa token) lalu diubah menjadi blob URL,
  * karena endpoint TTE berada di balik middleware auth.
  */
-export default function TteSpecimen({ pegawaiId, nip, nama, unit, width = 260, className }: Props) {
+export default function TteSpecimen({ pegawaiId, nip, nama, unit, width = 300, className }: Props) {
   const [src, setSrc] = useState<string | null>(null);
   const [failed, setFailed] = useState(false);
 
@@ -78,7 +78,7 @@ export default function TteSpecimen({ pegawaiId, nip, nama, unit, width = 260, c
         className={className}
         style={{
           width,
-          height: Math.round((width * 458) / 720),
+          height: Math.round((width * 381) / 945),
           border: "1px dashed #cbd5e1",
           borderRadius: 6,
           display: "flex",

@@ -239,7 +239,7 @@ export default function PrintPerangkatPribadiPage() {
                   </p>
                   {item.nip || item.nama ? (
                     <div style={{ marginTop: "0.15in", display: "flex", justifyContent: "center" }}>
-                      <TteSpecimen nip={item.nip} nama={item.nama} width={190} />
+                      <TteSpecimen nip={item.nip} nama={item.nama} width={300} />
                     </div>
                   ) : (
                     <div

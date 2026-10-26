@@ -198,7 +198,7 @@ export default function PrintReviuCctvPage() {
           <div style={{ paddingLeft: "0.4in" }}>Pengelola CCTV,</div>
           {penandatangan ? (
             <div style={{ paddingLeft: "0.4in", margin: "6px 0 4px" }}>
-              <TteSpecimen nip={penandatangan.nip} nama={penandatangan.nama} width={230} />
+              <TteSpecimen nip={penandatangan.nip} nama={penandatangan.nama} width={360} />
             </div>
           ) : item.pengelola_nama || item.pengelola_nip ? (
             <div style={{ paddingLeft: "0.4in", margin: "6px 0 4px" }}>
