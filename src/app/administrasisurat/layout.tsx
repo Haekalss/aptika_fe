@@ -217,9 +217,9 @@ export default function AdministrasiSuratLayout({
                   </div>
                 </div>
 
-                {/* Ilustrasi 3D Kertas Melayang */}
-                <div className="hidden lg:flex items-center justify-center relative w-[220px] h-[130px] flex-shrink-0 pointer-events-none select-none">
-                  <div className="absolute right-8 top-1 w-24 h-32 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 shadow-xl transform rotate-12 flex flex-col p-3 justify-between">
+                {/* Ilustrasi 3D Kertas Melayang (Dinaikkan agar sejajar tengah banner) */}
+                <div className="hidden lg:flex items-center justify-center relative w-[220px] h-[130px] -mt-3 flex-shrink-0 pointer-events-none select-none">
+                  <div className="absolute right-8 -top-2 w-24 h-32 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 shadow-xl transform rotate-12 flex flex-col p-3 justify-between">
                     <div className="w-8 h-2 bg-white/40 rounded-full" />
                     <div className="space-y-1.5">
                       <div className="w-full h-1 bg-white/20 rounded-full" />
@@ -227,7 +227,7 @@ export default function AdministrasiSuratLayout({
                     </div>
                   </div>
 
-                  <div className="absolute right-16 top-3 w-28 h-36 rounded-2xl bg-white/25 backdrop-blur-lg border border-white/40 shadow-2xl transform -rotate-6 flex flex-col p-3.5 justify-between">
+                  <div className="absolute right-16 -top-1 w-28 h-[134px] rounded-2xl bg-white/25 backdrop-blur-lg border border-white/40 shadow-2xl transform -rotate-6 flex flex-col p-3.5 justify-between">
                     <div className="flex justify-between items-center">
                       <div className="w-10 h-2.5 bg-cyan-300/80 rounded-full" />
                       <div className="w-3 h-3 rounded-full bg-emerald-400/80" />
@@ -245,7 +245,7 @@ export default function AdministrasiSuratLayout({
                     </div>
                   </div>
 
-                  <div className="absolute -right-2 bottom-3 w-10 h-10 rounded-xl bg-cyan-400/30 backdrop-blur-sm border border-cyan-300/40 flex items-center justify-center transform rotate-45 shadow-lg">
+                  <div className="absolute -right-2 bottom-5 w-10 h-10 rounded-xl bg-cyan-400/30 backdrop-blur-sm border border-cyan-300/40 flex items-center justify-center transform rotate-45 shadow-lg">
                     <span className="text-white text-base transform -rotate-45">✈️</span>
                   </div>
                 </div>
