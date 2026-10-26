@@ -45,14 +45,14 @@ const smkiNavItems = [
   {
     label: "Formulir Hardening",
     title: "Formulir Hardening Pengecekan Aset (FR-047)",
-    desc: "Pemeriksaan kepatuhan hardening keamanan perangkat teknologi informasi (Laptop/PC/Server) berdasarkan standar ISO 27001, verifikasi auditor, dan ekspor dokumen resmi FR-047.",
+    desc: "Pemeriksaan kepatuhan hardening keamanan perangkat teknologi informasi (Laptop/PC/Server) verifikasi auditor, dan ekspor dokumen resmi FR-047.",
     path: "/smki/formulir-hardening",
     icon: ShieldAlert,
   },
   {
     label: "Hak Akses TI",
     title: "Formulir Hak Akses TI (FR-018)",
-    desc: "Pencatatan, pengajuan, dan verifikasi permohonan hak akses sistem informasi, penetapan level serta jenis akses pengguna sesuai standar ISO 27001 SMKI.",
+    desc: "Pencatatan, pengajuan, dan verifikasi permohonan hak akses sistem informasi, penetapan level serta jenis akses pengguna sesuai standar keamanan informasi SMKI.",
     path: "/smki/hak-akses-ti",
     icon: Lock,
   },
@@ -87,7 +87,7 @@ const smkiNavItems = [
   {
     label: "Rencana Audit",
     title: "Formulir Rencana Audit Internal SMKI (F05-SMKI)",
-    desc: "Jadwalkan dan kelola rencana audit internal SMKI, kontrol kepatuhan ISO 27001, penetapan auditee dan auditor, serta ekspor dokumen resmi PDF.",
+    desc: "Jadwalkan dan kelola rencana audit internal SMKI, kontrol kepatuhan keamanan informasi, penetapan auditee dan auditor, serta ekspor dokumen resmi PDF.",
     path: "/smki/rencana-audit",
     icon: CalendarCheck,
   },
@@ -311,7 +311,7 @@ export default function SmkiLayout({
                   </div>
                   <div>
                     <p className="text-xs sm:text-sm font-semibold text-violet-200 mb-1">
-                      Layanan Tata Kelola SMKI • ISO/IEC 27001
+                      Layanan Tata Kelola SMKI Diskominfo Jawa Barat
                     </p>
                     <h1 className="text-2xl sm:text-3xl lg:text-[30px] font-extrabold text-white tracking-tight leading-tight drop-shadow-sm">
                       {activeItem.title}
@@ -440,7 +440,7 @@ export default function SmkiLayout({
                         fontWeight="bold"
                         letterSpacing="0.5"
                       >
-                        ISO/IEC 27001 • SMKI AUDIT
+                        SMKI SECURITY AUDIT
                       </text>
 
                       {/* Left Column: Server & Asset Hardening Status Bars */}

@@ -240,10 +240,7 @@ export default function SmkiPage() {
                   />
                 </g>
 
-                {/* Floating ISO 27001 Pill above Shield */}
-                <rect x="44" y="8" width="56" height="15" rx="7.5" fill="#0f2952" fillOpacity="0.8" stroke="#7dd3fc" strokeWidth="1" />
-                <circle cx="53" cy="15.5" r="3" fill="#34d399" />
-                <text x="60" y="18" fontSize="7" fontWeight="700" fill="white" letterSpacing="0.4">ISO 27001</text>
+
 
                 {/* Connection Line from Shield to Audit Board */}
                 <path d="M118 61 H134" stroke="#7dd3fc" strokeWidth="1.8" strokeDasharray="3 3" />
