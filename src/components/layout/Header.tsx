@@ -39,14 +39,13 @@ export default function Header({ title, subtitle, showBrand = false }: HeaderPro
     router.push("/");
   };
 
-  const isModulePage = pathname === "/dashboard" || pathname.startsWith("/dashboard/") || pathname.startsWith("/manajementugasdigital") || 
+  const isModulePage = pathname.startsWith("/manajementugasdigital") || 
                        pathname.startsWith("/administrasisurat") || 
                        pathname.startsWith("/magang") || 
                        pathname.startsWith("/smki") || 
                        pathname.startsWith("/integrasiinteroperabilitas");
 
   const moduleNavItems = [
-    { label: "Dashboard", path: "/dashboard", icon: <Home size={15} /> },
     { label: "Manajemen Tugas Digital", path: "/manajementugasdigital", icon: <FolderKanban size={15} /> },
     { label: "Administrasi Surat", path: "/administrasisurat", icon: <FileText size={15} /> },
     { label: "IKI Report", path: "/integrasiinteroperabilitas/dashboard", icon: <TrendingUp size={15} /> },
