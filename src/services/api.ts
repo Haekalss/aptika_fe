@@ -41,9 +41,39 @@ export const getBidangs = async () => {
   return res.data; // expects { success: true, data: [...] }
 };
 
+interface LoginPayload {
+  token?: unknown;
+  access_token?: unknown;
+  user?: Record<string, unknown>;
+  data?: {
+    token?: unknown;
+    access_token?: unknown;
+    user?: Record<string, unknown>;
+  };
+}
+
+export interface LoginResponse {
+  access_token: string;
+  user?: Record<string, unknown>;
+}
+
 export const login = async (email: string, password: string) => {
   const res = await api.post("/login", { email, password });
-  return res.data; // expects { token, user }
+  const payload: LoginPayload = res.data;
+  const token =
+    payload.access_token ??
+    payload.token ??
+    payload.data?.access_token ??
+    payload.data?.token;
+
+  if (typeof token !== "string" || token.trim() === "") {
+    throw new Error("Respons login tidak berisi token autentikasi.");
+  }
+
+  return {
+    access_token: token,
+    user: payload.user ?? payload.data?.user,
+  } satisfies LoginResponse;
 };
 
 export const logout = async () => {
@@ -399,12 +429,22 @@ export const deleteDetailPerjalanan = async (id: number) => {
 };
 
 export const getPegawaiList = async () => {
-  const res = await api.get("/spd/pegawai");
+  const res = await api.get("/master/pegawai");
   return res.data;
 };
 
 export const createPegawai = async (payload: any) => {
-  const res = await api.post("/spd/pegawai", payload);
+  const res = await api.post("/master/pegawai", payload);
+  return res.data;
+};
+
+export const updatePegawai = async (id: number, payload: any) => {
+  const res = await api.put(`/master/pegawai/${id}`, payload);
+  return res.data;
+};
+
+export const deletePegawai = async (id: number) => {
+  const res = await api.delete(`/master/pegawai/${id}`);
   return res.data;
 };
 
@@ -414,7 +454,7 @@ export const createSpdPeserta = async (payload: { detail_perjalanan_id: number; 
 };
 
 export const getRekeningList = async () => {
-  const res = await api.get("/spd/rekening");
+  const res = await api.get("/master/rekening");
   return res.data;
 };
 
@@ -423,7 +463,7 @@ export const createRekening = async (payload: {
   nomor_rekening: string;
   nama_rekening: string;
 }) => {
-  const res = await api.post("/spd/rekening", payload);
+  const res = await api.post("/master/rekening", payload);
   return res.data;
 };
 
@@ -435,17 +475,17 @@ export const updateRekening = async (
     nama_rekening: string;
   }
 ) => {
-  const res = await api.put(`/spd/rekening/${id}`, payload);
+  const res = await api.put(`/master/rekening/${id}`, payload);
   return res.data;
 };
 
 export const deleteRekening = async (id: number) => {
-  const res = await api.delete(`/spd/rekening/${id}`);
+  const res = await api.delete(`/master/rekening/${id}`);
   return res.data;
 };
 
 export const getAlatAngkutanList = async () => {
-  const res = await api.get("/spd/alat-angkutan");
+  const res = await api.get("/master/alat-angkutan");
   return res.data;
 };
 
@@ -453,7 +493,7 @@ export const createAlatAngkutan = async (payload: {
   nama: string;
   deskripsi?: string;
 }) => {
-  const res = await api.post("/spd/alat-angkutan", payload);
+  const res = await api.post("/master/alat-angkutan", payload);
   return res.data;
 };
 
@@ -464,12 +504,52 @@ export const updateAlatAngkutan = async (
     deskripsi?: string;
   }
 ) => {
-  const res = await api.put(`/spd/alat-angkutan/${id}`, payload);
+  const res = await api.put(`/master/alat-angkutan/${id}`, payload);
   return res.data;
 };
 
 export const deleteAlatAngkutan = async (id: number) => {
-  const res = await api.delete(`/spd/alat-angkutan/${id}`);
+  const res = await api.delete(`/master/alat-angkutan/${id}`);
+  return res.data;
+};
+
+// ─── MASTER NDA ──────────────────────────────────────────
+export const getMasterNdaList = async () => {
+  const res = await api.get("/master/nda");
+  return res.data;
+};
+
+export const createMasterNda = async (payload: {
+  judul: string;
+  nama_pihak_pertama: string;
+  nip_pihak_pertama?: string;
+  jabatan_pihak_pertama?: string;
+  instansi_pihak_pertama?: string;
+  klausul_perjanjian?: string;
+  is_active?: boolean;
+}) => {
+  const res = await api.post("/master/nda", payload);
+  return res.data;
+};
+
+export const updateMasterNda = async (
+  id: number,
+  payload: {
+    judul: string;
+    nama_pihak_pertama: string;
+    nip_pihak_pertama?: string;
+    jabatan_pihak_pertama?: string;
+    instansi_pihak_pertama?: string;
+    klausul_perjanjian?: string;
+    is_active?: boolean;
+  }
+) => {
+  const res = await api.put(`/master/nda/${id}`, payload);
+  return res.data;
+};
+
+export const deleteMasterNda = async (id: number) => {
+  const res = await api.delete(`/master/nda/${id}`);
   return res.data;
 };
 
@@ -2063,11 +2143,716 @@ export const exportSmkiFormulirHardeningDocx = async (id: number) => {
   return res.data;
 };
 
+// ============================================================
+// SMKI: FORMULIR RENCANA AUDIT (F05-SMKI)
+// ============================================================
 
+export interface AuditorItem {
+  id_auditor: number;
+  nama_auditor: string;
+  nip_auditor?: string | null;
+}
 
+export interface BidangAuditeeItem {
+  id_bidang_auditee: number;
+  bidang_auditee: string;
+}
 
+export interface LokasiAuditeeItem {
+  id_lokasi_auditee: number;
+  lokasi_auditee: string;
+}
 
+export interface AuditeeItem {
+  id_auditee: number;
+  id_bidang_auditee: number;
+  id_lokasi_auditee: number;
+  bidang?: BidangAuditeeItem;
+  lokasi?: LokasiAuditeeItem;
+}
 
+export interface DetailAuditItem {
+  id_detail_audit: number;
+  id_auditor: number;
+  id_auditee: number;
+  kontrol_SMKI: string;
+  tanggal_audit: string;
+  kode_prosedur?: string | null;
+  status: "SCHEDULED" | "IN PROGRESS" | "PENDING" | "COMPLETED";
+  catatan?: string | null;
+  bidang_nama: string;
+  lokasi_nama: string;
+  auditor_nama: string;
+  auditor_nip?: string | null;
+  auditor?: AuditorItem;
+  auditee?: AuditeeItem;
+  created_at?: string;
+  updated_at?: string;
+}
 
+export interface RencanaAuditPayload {
+  kontrol_SMKI: string;
+  tanggal_audit: string;
+  id_auditor?: number | null;
+  nama_auditor?: string;
+  nip_auditor?: string;
+  id_bidang_auditee?: number | null;
+  bidang_auditee?: string;
+  id_lokasi_auditee?: number | null;
+  lokasi_auditee?: string;
+  kode_prosedur?: string;
+  status?: "SCHEDULED" | "IN PROGRESS" | "PENDING" | "COMPLETED";
+  catatan?: string;
+}
 
+export interface RencanaAuditStats {
+  total_terjadwal: number;
+  dalam_proses: number;
+  butuh_perhatian: number;
+  selesai: number;
+  total_aktif: number;
+}
 
+export interface RencanaAuditMetadata {
+  no_dokumen: string;
+  no_revisi: string;
+  tanggal_berlaku: string;
+  judul_formulir: string;
+}
+
+export interface RencanaAuditLookupData {
+  auditors: AuditorItem[];
+  bidang_auditee: BidangAuditeeItem[];
+  lokasi_auditee: LokasiAuditeeItem[];
+  standard_clauses: string[];
+  default_meta: {
+    no_dokumen: string;
+    no_revisi: string;
+    tanggal_berlaku: string;
+  };
+}
+
+export const getRencanaAuditList = async (params?: {
+  search?: string;
+  status?: string;
+  id_auditor?: number;
+  id_bidang_auditee?: number;
+  date_from?: string;
+  date_to?: string;
+  page?: number;
+  per_page?: number;
+}) => {
+  const res = await api.get("/smki/rencana-audit", { params });
+  return res.data;
+};
+
+export const getRencanaAuditLookup = async () => {
+  const res = await api.get("/smki/rencana-audit/lookup");
+  return res.data;
+};
+
+export const getRencanaAuditDetail = async (id: number) => {
+  const res = await api.get(`/smki/rencana-audit/${id}`);
+  return res.data;
+};
+
+export const createRencanaAudit = async (payload: RencanaAuditPayload) => {
+  const res = await api.post("/smki/rencana-audit", payload);
+  return res.data;
+};
+
+export const updateRencanaAudit = async (
+  id: number,
+  payload: Partial<RencanaAuditPayload>
+) => {
+  const res = await api.put(`/smki/rencana-audit/${id}`, payload);
+  return res.data;
+};
+
+export const deleteRencanaAudit = async (id: number) => {
+  const res = await api.delete(`/smki/rencana-audit/${id}`);
+  return res.data;
+};
+
+// ============================================================
+// SMKI: FORMULIR HAK AKSES TI (FR-018)
+// ============================================================
+
+export interface MasterSimpleItem {
+  id: number;
+  nama: string;
+}
+
+export interface HakAksesTiItem {
+  id?: number;
+  id_hak_akses?: number;
+  no_dokumen?: string | null;
+  nomor_request?: string | null;
+  nama_pemohon?: string | null;
+  nip_pemohon?: string | null;
+  nip_id_pegawai?: string | null;
+  jabatan_pemohon?: string | null;
+  jabatan?: string | null;
+  email?: string | null;
+  kontak_person?: string | null;
+  id_unit_kerja?: number | null;
+  id_jenis_permohonan?: number | null;
+  id_sistem_aplikasi?: number | null;
+  id_level_akses?: number | null;
+  unit_kerja?: any;
+  nama_unit_kerja?: string | null;
+  jenis_permohonan?: any;
+  nama_jenis_permohonan?: string | null;
+  sistem_aplikasi?: any;
+  nama_sistem_aplikasi?: string | null;
+  level_akses?: any;
+  nama_level_akses?: string | null;
+  sifat_akses?: string | null;
+  waktu_akses?: string | null;
+  waktu_akses_lainnya?: string | null;
+  jenis_akses_ids?: number[] | null;
+  jenis_akses_labels?: string[] | null;
+  jenis_akses?: any[] | null;
+  daftar_jenis_akses?: string[] | null;
+  nama_sistem?: string | null;
+  masa_berlaku?: string | null;
+  masa_berlaku_mulai?: string | null;
+  masa_berlaku_selesai?: string | null;
+  alasan_pengajuan?: string | null;
+  keperluan?: string | null;
+  sistem_lainnya?: string | null;
+  modul_fitur?: string[] | any;
+  persetujuan_ketentuan?: boolean | null;
+  status?: "Diproses" | "Disetujui" | "Ditolak" | "Draft" | string | null;
+  status_permohonan?: string | null;
+  tanggal_pengajuan?: string | null;
+  created_at?: string | null;
+  updated_at?: string | null;
+  nama_atasan?: string | null;
+  nip_atasan?: string | null;
+  jabatan_atasan?: string | null;
+  catatan_atasan?: string | null;
+  nama_petugas_ti?: string | null;
+  nip_petugas_ti?: string | null;
+  tanggal_eksekusi?: string | null;
+  catatan_petugas_ti?: string | null;
+  bidang_id?: number | null;
+  user_id?: number | null;
+}
+
+export interface HakAksesTiStats {
+  total_permohonan: number;
+  total_diproses: number;
+  total_disetujui: number;
+  total_ditolak: number;
+  total_draft: number;
+}
+
+export interface HakAksesTiLookupData {
+  unit_kerja?: any[];
+  unit_kerjas?: any[];
+  jenis_permohonan?: any[];
+  jenis_permohonans?: any[];
+  sistem_aplikasi?: any[];
+  sistem_aplikasis?: any[];
+  level_akses?: any[];
+  level_akseses?: any[];
+  jenis_akses?: any[];
+  jenis_akseses?: any[];
+  status_permohonan?: any[];
+  default_meta?: {
+    no_dokumen: string;
+    no_revisi: string;
+    tanggal_berlaku: string;
+  };
+}
+
+export const getHakAksesTiList = async (params?: {
+  search?: string;
+  status?: string;
+  unit_kerja?: string;
+  sistem_aplikasi?: string;
+  jenis_permohonan?: string;
+  page?: number;
+  per_page?: number;
+}) => {
+  const res = await api.get("/smki/hak-akses-ti", { params });
+  return res.data;
+};
+
+export const getHakAksesTiDetail = async (id: number | string) => {
+  const res = await api.get(`/smki/hak-akses-ti/${id}`);
+  return res.data;
+};
+
+export const getHakAksesTiLookup = async () => {
+  const res = await api.get("/smki/hak-akses-ti/lookup");
+  return res.data;
+};
+
+export const createHakAksesTi = async (payload: Partial<HakAksesTiItem>) => {
+  const res = await api.post("/smki/hak-akses-ti", payload);
+  return res.data;
+};
+
+export const updateHakAksesTi = async (id: number | string, payload: Partial<HakAksesTiItem>) => {
+  const res = await api.put(`/smki/hak-akses-ti/${id}`, payload);
+  return res.data;
+};
+
+export const deleteHakAksesTi = async (id: number | string) => {
+  const res = await api.delete(`/smki/hak-akses-ti/${id}`);
+  return res.data;
+};
+
+export const exportHakAksesTiDocx = async (id: number | string) => {
+  const res = await api.get(`/smki/hak-akses-ti/export-docx?id=${id}`, {
+    responseType: "blob",
+  });
+  return res.data;
+};
+
+// ============================================================
+// SMKI: LAPORAN AUDIT INTERNAL (FR-006)
+// ============================================================
+
+export interface SmkiUnitKerja {
+  id_unit_kerja: number;
+  nama_unit_kerja: string;
+}
+
+export interface SmkiKategoriTemuan {
+  id_kategori: number;
+  nama_kategori: string;
+}
+
+export interface SmkiDetailTemuan {
+  id_detail_temuan?: number;
+  id_laporan_audit?: number;
+  tanggal_audit?: string;
+  id_kategori?: number | null;
+  kategori_temuan?: string;
+  klausul_annex?: string;
+  deskripsi_temuan?: string;
+  rekomendasi?: string;
+}
+
+export interface SmkiLaporanAudit {
+  id_laporan_audit: number;
+  nomor_laporan: string;
+  temuan_major: number;
+  temuan_minor: number;
+  ofi: number;
+  id_unit_kerja?: number | null;
+  nama_unit_kerja?: string;
+  id_auditor?: number | null;
+  auditor?: string;
+  id_auditee?: number | null;
+  auditee?: string;
+  tanggal_audit?: string;
+  id_kategori?: number | null;
+  kategori?: string;
+  klausul_annex?: string;
+  latar_belakang?: string;
+  tujuan?: string;
+  ruang_lingkup?: string;
+  id_status?: number | null;
+  status: string;
+  bidang_id?: number | null;
+  user_id?: number | null;
+  created_at?: string;
+  updated_at?: string;
+  unit_kerja?: SmkiUnitKerja;
+  kategori_temuan?: SmkiKategoriTemuan;
+  detail_temuans?: SmkiDetailTemuan[];
+}
+
+export interface LaporanAuditStats {
+  total_laporan: number;
+  sedang_ditinjau: number;
+  total_draft: number;
+  total_selesai: number;
+}
+
+export const getSmkiLaporanAuditList = async (params?: {
+  search?: string;
+  unit_kerja?: string;
+  status?: string;
+  date_from?: string;
+  date_to?: string;
+  page?: number;
+  per_page?: number;
+}) => {
+  const res = await api.get("/smki/laporan-audit", { params });
+  return res.data;
+};
+
+export const getSmkiLaporanAuditDetail = async (id: number | string) => {
+  const res = await api.get(`/smki/laporan-audit/${id}`);
+  return res.data;
+};
+
+export const getSmkiLaporanAuditLookup = async () => {
+  const res = await api.get("/smki/laporan-audit/lookup");
+  return res.data;
+};
+
+export const createSmkiLaporanAudit = async (
+  payload: Omit<Partial<SmkiLaporanAudit>, 'unit_kerja' | 'detail_temuans'> & { unit_kerja?: string; details?: SmkiDetailTemuan[] }
+) => {
+  const res = await api.post("/smki/laporan-audit", payload);
+  return res.data;
+};
+
+export const updateSmkiLaporanAudit = async (
+  id: number | string,
+  payload: Omit<Partial<SmkiLaporanAudit>, 'unit_kerja' | 'detail_temuans'> & { unit_kerja?: string; details?: SmkiDetailTemuan[] }
+) => {
+  const res = await api.put(`/smki/laporan-audit/${id}`, payload);
+  return res.data;
+};
+
+export const deleteSmkiLaporanAudit = async (id: number | string) => {
+  const res = await api.delete(`/smki/laporan-audit/${id}`);
+  return res.data;
+};
+
+export const exportSmkiLaporanAuditDocx = async (id: number | string) => {
+  const res = await api.get(`/smki/laporan-audit/${id}/export-docx`, {
+    responseType: "blob",
+  });
+  return res.data;
+};
+
+// ─── SMKI: LAPORAN AUDIT TAHUNAN (FR-008) ───────────────
+export interface LaporanAuditTahunanTimItem {
+  id?: number;
+  nama_auditor: string;
+  unit_kerja: string;
+  peran: string;
+}
+
+export interface LaporanAuditTahunanKlausulItem {
+  id?: number;
+  klausul_annex: string;
+  uraian_klausul?: string;
+}
+
+export interface LaporanAuditTahunanJadwalItem {
+  id?: number;
+  bulan: number;
+}
+
+export interface LaporanAuditTahunanObjekItem {
+  id?: number;
+  kode_objek: string;
+  objek_audit: string;
+  ruang_lingkup: string;
+  unit_kerja: string;
+  klausul?: LaporanAuditTahunanKlausulItem[] | string[];
+  jadwal?: LaporanAuditTahunanJadwalItem[] | number[];
+}
+
+export interface LaporanAuditTahunanData {
+  id?: number;
+  tahun_smki: number | string;
+  no_dokumen: string;
+  no_revisi: string;
+  tanggal_berlaku: string;
+  kriteria_audit: string;
+  tujuan: string;
+  disusun_oleh?: string;
+  jabatan_penyusun?: string;
+  disahkan_oleh?: string;
+  jabatan_pengesah?: string;
+  status?: string;
+  tim_auditor?: LaporanAuditTahunanTimItem[];
+  objek_audit?: LaporanAuditTahunanObjekItem[];
+}
+
+export const getLaporanAuditTahunanList = async () => {
+  const res = await api.get("/smki/laporan-audit-tahunan");
+  return res.data;
+};
+
+export const getLaporanAuditTahunanById = async (id: number | string) => {
+  const res = await api.get(`/smki/laporan-audit-tahunan/${id}`);
+  return res.data;
+};
+
+export const saveLaporanAuditTahunan = async (payload: LaporanAuditTahunanData) => {
+  const res = await api.post("/smki/laporan-audit-tahunan/store-all", payload);
+  return res.data;
+};
+
+export const deleteLaporanAuditTahunan = async (id: number | string) => {
+  const res = await api.delete(`/smki/laporan-audit-tahunan/${id}`);
+  return res.data;
+};
+
+export const getLaporanAuditTahunanLookup = async () => {
+  const res = await api.get("/smki/laporan-audit-tahunan/lookup");
+  return res.data;
+};
+
+export const exportLaporanAuditTahunanDocx = async (id: number | string) => {
+  const res = await api.get(`/smki/laporan-audit-tahunan/${id}/export-docx`, {
+    responseType: "blob",
+  });
+  return res.data;
+};
+
+// ========================================================
+// DATA CENTER: LAPORAN KERUSAKAN
+// ========================================================
+
+export interface DataCenterAssetItem {
+  id: number;
+  kode_aset: string;
+  nama_aset: string;
+  kategori?: string;
+  lokasi_rak?: string;
+  status_operasional?: string;
+  penanggung_jawab_default?: string;
+  penanggung_jawab_id?: number | null;
+}
+
+export interface LaporanKerusakanHistoryItem {
+  id: number;
+  laporan_id: number;
+  user_id?: number;
+  action: string;
+  status_from?: string;
+  status_to?: string;
+  catatan?: string;
+  created_at: string;
+  user?: {
+    id: number;
+    name: string;
+    email: string;
+  };
+}
+
+export interface LaporanKerusakanItem {
+  id?: number;
+  nomor_laporan?: string;
+  tanggal: string; // YYYY-MM-DD
+  jam: string; // "09.30 WIB"
+  aset_id: number;
+  nama_aset?: string;
+  kode_aset?: string;
+  lokasi_rak?: string;
+  jenis_kerusakan: string;
+  penyebab?: string;
+  uraian_tindakan?: string;
+  target_selesai?: string;
+  tanggal_selesai_aktual?: string;
+  pelapor_id?: number;
+  pelapor_nama?: string;
+  penanggung_jawab_id?: number | null;
+  penanggung_jawab_nama?: string;
+  supervisor_id?: number | null;
+  supervisor_nama?: string;
+  status: "Baru" | "Diproses" | "Selesai" | "Closed" | string;
+  catatan_validasi?: string;
+  validated_at?: string;
+  created_at?: string;
+  updated_at?: string;
+  asset?: DataCenterAssetItem;
+  histories?: LaporanKerusakanHistoryItem[];
+}
+
+export interface LaporanKerusakanStats {
+  total: number;
+  baru: number;
+  diproses: number;
+  selesai: number;
+}
+
+export const getLaporanKerusakanList = async (params?: {
+  status?: string;
+  search?: string;
+  tanggal?: string;
+  per_page?: number;
+  page?: number;
+}) => {
+  const res = await api.get("/smki/laporan-kerusakan", { params });
+  return res.data;
+};
+
+export const getLaporanKerusakanLookup = async () => {
+  const res = await api.get("/smki/laporan-kerusakan/lookup");
+  return res.data;
+};
+
+export const getLaporanKerusakanById = async (id: number | string) => {
+  const res = await api.get(`/smki/laporan-kerusakan/${id}`);
+  return res.data;
+};
+
+export const createLaporanKerusakan = async (payload: Partial<LaporanKerusakanItem>) => {
+  const res = await api.post("/smki/laporan-kerusakan", payload);
+  return res.data;
+};
+
+export const updateLaporanKerusakan = async (
+  id: number | string,
+  payload: Partial<LaporanKerusakanItem>
+) => {
+  const res = await api.put(`/smki/laporan-kerusakan/${id}`, payload);
+  return res.data;
+};
+
+export const assignTeknisiLaporanKerusakan = async (
+  id: number | string,
+  payload: { penanggung_jawab_id: number; target_selesai: string; catatan?: string }
+) => {
+  const res = await api.patch(`/smki/laporan-kerusakan/${id}/assign`, payload);
+  return res.data;
+};
+
+export const validateLaporanKerusakan = async (
+  id: number | string,
+  payload: { valid: boolean; catatan_validasi?: string }
+) => {
+  const res = await api.patch(`/smki/laporan-kerusakan/${id}/validate`, payload);
+  return res.data;
+};
+
+export const deleteLaporanKerusakan = async (id: number | string) => {
+  const res = await api.delete(`/smki/laporan-kerusakan/${id}`);
+  return res.data;
+};
+
+export const exportLaporanKerusakanDocx = async (id: number | string) => {
+  const res = await api.get(`/smki/laporan-kerusakan/${id}/export-docx`, {
+    responseType: "blob",
+  });
+  return res.data;
+};
+
+export const exportBatchLaporanKerusakanDocx = async (params?: {
+  status?: string;
+  search?: string;
+}) => {
+  const res = await api.get("/smki/laporan-kerusakan/export-docx", {
+    params,
+    responseType: "blob",
+  });
+  return res.data;
+};
+
+// ─── SMKI: SCREENING KARYAWAN OUTSOURCING (FR-012/KOM.03.05/SANDIKAMI) ────────
+export interface JabatanItem {
+  id_jabatan: number;
+  nama_jabatan: string;
+}
+
+export interface MasterBidangItem {
+  id_bidang: number;
+  nama_bidang: string;
+}
+
+export interface ItemScreeningItem {
+  id_item: number;
+  nama_item: string;
+}
+
+export interface DetailScreeningItem {
+  id_detail?: number;
+  id_screening?: number;
+  id_item: number;
+  status: "Ada" | "Tidak";
+  keterangan: string | null;
+  kesimpulan?: string | null;
+  catatan?: string | null;
+  item?: ItemScreeningItem;
+}
+
+export interface ScreeningKaryawanItem {
+  id_screening: number;
+  nama_karyawan: string;
+  id_jabatan: number;
+  id_bidang: number;
+  tahun: number;
+  id_detail?: number | null;
+  tanggal_screening: string;
+  kesimpulan: "Perlu melengkapi administrasi" | "Administrasi Lengkap";
+  catatan?: string | null;
+  created_at?: string;
+  updated_at?: string;
+  jabatan?: JabatanItem;
+  bidang?: MasterBidangItem;
+  details?: DetailScreeningItem[];
+}
+
+export interface ScreeningKaryawanStats {
+  total_screening: number;
+  total_karyawan: number;
+  tahun_periode: number;
+  status_lengkap: number;
+  status_perlu_melengkapi: number;
+}
+
+export interface ScreeningKaryawanLookupData {
+  jabatan: JabatanItem[];
+  bidang: MasterBidangItem[];
+  items: ItemScreeningItem[];
+  tahun_options: number[];
+  kesimpulan_options: string[];
+}
+
+export interface ScreeningKaryawanPayload {
+  nama_karyawan: string;
+  id_jabatan: number;
+  id_bidang: number;
+  tahun: number;
+  tanggal_screening: string;
+  kesimpulan: string;
+  catatan?: string | null;
+  details: {
+    id_item: number;
+    status: "Ada" | "Tidak";
+    keterangan?: string | null;
+  }[];
+}
+
+export const getScreeningKaryawanList = async (params?: {
+  search?: string;
+  tahun?: string | number;
+  id_bidang?: string | number;
+  kesimpulan?: string;
+  page?: number;
+  per_page?: number;
+}) => {
+  const res = await api.get("/smki/screening-karyawan", { params });
+  return res.data;
+};
+
+export const getScreeningKaryawanLookup = async () => {
+  const res = await api.get("/smki/screening-karyawan/lookup");
+  return res.data;
+};
+
+export const getScreeningKaryawanDetail = async (id: number) => {
+  const res = await api.get(`/smki/screening-karyawan/${id}`);
+  return res.data;
+};
+
+export const createScreeningKaryawan = async (payload: ScreeningKaryawanPayload) => {
+  const res = await api.post("/smki/screening-karyawan", payload);
+  return res.data;
+};
+
+export const updateScreeningKaryawan = async (
+  id: number,
+  payload: Partial<ScreeningKaryawanPayload>
+) => {
+  const res = await api.put(`/smki/screening-karyawan/${id}`, payload);
+  return res.data;
+};
+
+export const deleteScreeningKaryawan = async (id: number) => {
+  const res = await api.delete(`/smki/screening-karyawan/${id}`);
+  return res.data;
+};
