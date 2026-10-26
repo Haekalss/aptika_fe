@@ -46,10 +46,10 @@ export default function Header({ title, subtitle, showBrand = false }: HeaderPro
                        pathname.startsWith("/integrasiinteroperabilitas");
 
   const moduleNavItems = [
-    { label: "Manajemen Tugas Digital", path: "/manajementugasdigital", icon: <FolderKanban size={15} /> },
     { label: "Administrasi Surat", path: "/administrasisurat", icon: <FileText size={15} /> },
-    { label: "IKI Report", path: "/integrasiinteroperabilitas/dashboard", icon: <TrendingUp size={15} /> },
     { label: "Magang", path: "/magang/dashboard", icon: <Users size={15} /> },
+    { label: "Manajemen Tugas Digital", path: "/manajementugasdigital", icon: <FolderKanban size={15} /> },
+    { label: "IKI Report", path: "/integrasiinteroperabilitas/dashboard", icon: <TrendingUp size={15} /> },
     { label: "SMKI", path: "/smki", icon: <ShieldCheck size={15} /> },
   ];
 
