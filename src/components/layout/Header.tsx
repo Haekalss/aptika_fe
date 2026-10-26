@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { User, Sun, Moon, ShieldCog, FolderKanban, FileText, TrendingUp, Users, ShieldCheck } from "lucide-react";
+import { User, Sun, Moon, ShieldCog, FolderKanban, FileText, TrendingUp, Users, ShieldCheck, Home } from "lucide-react";
 import Avatar from "@/components/ui/Avatar";
 import Dropdown from "@/components/ui/Dropdown";
 import { useRouter, usePathname } from "next/navigation";
@@ -112,7 +112,9 @@ export default function Header({ title, subtitle, showBrand = false }: HeaderPro
       {showBrand && isModulePage && (
         <nav className="hidden lg:flex items-center gap-1.5 flex-1 justify-center">
           {moduleNavItems.map((item) => {
-            const isActive = pathname.startsWith(item.path);
+            const isActive = item.path === "/dashboard"
+              ? pathname === "/dashboard" || pathname.startsWith("/dashboard/")
+              : pathname.startsWith(item.path);
             return (
               <button
                 key={item.label}

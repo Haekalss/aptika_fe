@@ -1152,47 +1152,34 @@ export default function MagangDashboard() {
   return (
     <div className="flex flex-col gap-6 pb-6 font-sans">
 
-      {/* ── HERO BANNER (format sama seperti Dashboard) ── */}
-      <div className="relative overflow-hidden bg-gradient-to-r from-[#0b2146] via-[#163868] to-[#1d4ed8] rounded-3xl text-white shadow-xl min-h-[190px]">
-        <div className="absolute -right-20 -bottom-20 w-80 h-80 rounded-full bg-blue-400/15 blur-3xl pointer-events-none" />
-        <div className="absolute left-1/3 -top-10 w-60 h-60 rounded-full bg-cyan-400/15 blur-2xl pointer-events-none" />
+      {/* ── HERO BANNER (Sesuai Desain Asli) ── */}
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#1565d8] via-[#1e76e6] to-[#4facfe] text-white shadow-md min-h-[120px] sm:min-h-[135px] flex items-center justify-between px-6 sm:px-8 py-5">
+        {/* Soft background glow */}
+        <div className="absolute -left-12 -bottom-12 w-64 h-64 rounded-full bg-white/10 blur-3xl pointer-events-none" />
+        <div className="absolute right-1/4 -top-12 w-64 h-64 rounded-full bg-cyan-200/20 blur-3xl pointer-events-none" />
 
-        <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6 px-6 py-6 sm:px-8">
-          <div className="flex-1 min-w-0 max-w-lg">
-            <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-white/15 text-cyan-200 text-xs font-bold backdrop-blur-sm border border-white/20 mb-3">
-              <GraduationCap size={14} />
-              <span>Modul Layanan Magang</span>
-            </div>
-            <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white mb-2 leading-tight">
-              Dashboard <span className="text-cyan-300">Magang</span>
+        {/* Left: Icon & Text */}
+        <div className="relative z-10 flex items-center gap-4 sm:gap-5">
+          <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center text-white shadow-md flex-shrink-0">
+            <GraduationCap size={34} className="text-white drop-shadow-sm" />
+          </div>
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white leading-tight">
+              Magang
             </h1>
-            <p className="text-sm text-slate-100/90 leading-relaxed font-normal">
-              Monitoring dan pendataan peserta magang Diskominfo Provinsi Jawa Barat — mulai dari periode, status, sertifikat, hingga dokumen NDA.
+            <p className="text-xs sm:text-sm text-white/90 font-medium mt-1">
+              Dashboard monitoring dan pendataan Magang
             </p>
           </div>
+        </div>
 
-          <div className="flex items-center gap-4 flex-shrink-0">
-            <div className="hidden xl:flex items-center justify-center">
-              <MagangIllustration />
-            </div>
-
-            <div className="flex flex-col gap-2.5 flex-shrink-0">
-              <div className="flex items-center gap-3 bg-white/10 backdrop-blur-md px-4 py-3 rounded-2xl border border-white/15 min-w-[170px] shadow-sm">
-                <CheckCircle2 size={18} className="text-emerald-300 flex-shrink-0" />
-                <div>
-                  <div className="text-[11px] text-slate-300 font-medium">Selesai Magang:</div>
-                  <div className="text-emerald-300 font-extrabold text-sm">{selesaiMagangs} Peserta</div>
-                </div>
-              </div>
-              <div className="flex items-center gap-3 bg-white/10 backdrop-blur-md px-4 py-3 rounded-2xl border border-white/15 min-w-[170px] shadow-sm">
-                <Award size={18} className="text-amber-300 flex-shrink-0" />
-                <div>
-                  <div className="text-[11px] text-slate-300 font-medium">Sertifikat Terbit:</div>
-                  <div className="text-white font-extrabold text-sm">{sertifikatTerbit} Sertifikat</div>
-                </div>
-              </div>
-            </div>
-          </div>
+        {/* Right: Ilustrasi Asli dari Desain */}
+        <div className="hidden sm:block relative z-10 h-[90px] sm:h-[110px] flex-shrink-0 select-none pointer-events-none">
+          <img
+            src="/magang-ill-exact.png"
+            alt="Ilustrasi Magang"
+            className="h-full w-auto object-contain object-right"
+          />
         </div>
       </div>
 
