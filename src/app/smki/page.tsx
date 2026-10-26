@@ -177,7 +177,7 @@ export default function SmkiPage() {
         <div
           className="relative overflow-hidden rounded-3xl shadow-lg"
           style={{
-            background: "linear-gradient(135deg, #104991 0%, #1863be 38%, #2580e3 72%, #4da3f6 100%)",
+            background: "linear-gradient(135deg, #3b0764 0%, #4c1d95 38%, #6d28d9 72%, #8b5cf6 100%)",
           }}
         >
           {/* Decorative background circles */}
@@ -192,13 +192,13 @@ export default function SmkiPage() {
                 <ShieldCheck size={34} className="text-white drop-shadow-sm" />
               </div>
               <div>
-                <p className="text-xs sm:text-sm font-semibold text-blue-100 mb-1">
+                <p className="text-xs sm:text-sm font-semibold text-violet-200 mb-1">
                   Selamat Datang di
                 </p>
                 <h1 className="text-2xl sm:text-3xl lg:text-[32px] font-extrabold text-white tracking-tight leading-tight drop-shadow-sm">
                   SMKI Diskominfo Jawa Barat
                 </h1>
-                <p className="text-xs sm:text-[13px] text-blue-50/95 mt-2 leading-relaxed font-normal">
+                <p className="text-xs sm:text-[13px] text-violet-100/95 mt-2 leading-relaxed font-normal">
                   Pusat tata kelola, inventarisasi software resmi, kepatuhan lisensi, hardening aset, dan penerbitan dokumen standardisasi keamanan informasi di lingkungan Pemerintah Provinsi Jawa Barat.
                 </p>
               </div>
@@ -209,12 +209,12 @@ export default function SmkiPage() {
               <svg width="360" height="122" viewBox="0 0 360 122" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <defs>
                   <linearGradient id="smkiVaultGrad" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0%" stopColor="#0f2952" stopOpacity="0.92" />
-                    <stop offset="100%" stopColor="#1e40af" stopOpacity="0.88" />
+                    <stop offset="0%" stopColor="#2e1065" stopOpacity="0.92" />
+                    <stop offset="100%" stopColor="#5b21b6" stopOpacity="0.88" />
                   </linearGradient>
                   <linearGradient id="smkiShieldGlow" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#38bdf8" />
-                    <stop offset="100%" stopColor="#2563eb" />
+                    <stop offset="0%" stopColor="#c084fc" />
+                    <stop offset="100%" stopColor="#7c3aed" />
                   </linearGradient>
                 </defs>
 

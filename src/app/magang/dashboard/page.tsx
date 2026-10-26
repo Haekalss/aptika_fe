@@ -1156,7 +1156,7 @@ export default function MagangDashboard() {
       <div
         className="relative overflow-hidden rounded-3xl shadow-lg"
         style={{
-          background: "linear-gradient(135deg, #124d96 0%, #1964c0 38%, #2680e2 72%, #4ea3f5 100%)",
+          background: "linear-gradient(135deg, #581c87 0%, #6b21a8 38%, #7e22ce 72%, #a855f7 100%)",
         }}
       >
         {/* Decorative background circles */}
@@ -1174,7 +1174,7 @@ export default function MagangDashboard() {
               <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight drop-shadow-sm">
                 Magang
               </h1>
-              <p className="text-sm text-blue-100/95 mt-1.5 font-normal">
+              <p className="text-sm text-purple-100/95 mt-1.5 font-normal">
                 Dashboard monitoring dan pendataan Magang
               </p>
             </div>
@@ -1185,9 +1185,9 @@ export default function MagangDashboard() {
             <svg width="360" height="118" viewBox="0 0 360 118" fill="none" xmlns="http://www.w3.org/2000/svg">
               <defs>
                 <linearGradient id="magangScreenGrad" x1="115" y1="16" x2="245" y2="96" gradientUnits="userSpaceOnUse">
-                  <stop offset="0%" stopColor="#1e6ce0" />
-                  <stop offset="55%" stopColor="#358ef5" />
-                  <stop offset="100%" stopColor="#6bc1ff" />
+                  <stop offset="0%" stopColor="#6b21a8" />
+                  <stop offset="55%" stopColor="#9333ea" />
+                  <stop offset="100%" stopColor="#c084fc" />
                 </linearGradient>
                 <linearGradient id="magangDocGrad" x1="0" y1="0" x2="1" y2="1">
                   <stop offset="0%" stopColor="#ffffff" stopOpacity="0.96" />
