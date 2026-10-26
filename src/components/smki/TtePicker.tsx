@@ -17,8 +17,8 @@ interface Props {
 /**
  * Pemilih penanda tangan untuk halaman cetak / unduh.
  *
- * Menampilkan master spesimen TTE lebih dulu, lalu pegawai yang belum
- * punya spesimen. Tidak perlu mengetik NIP — cukup pilih dari daftar.
+ * Daftar diambil langsung dari data pegawai (Data Master → Daftar Pegawai).
+ * Tidak perlu mengetik NIP — cukup pilih dari daftar.
  */
 export default function TtePicker({ label = "Penanda Tangan", value, onChange, className }: Props) {
   const [options, setOptions] = useState<TteOption[]>([]);
@@ -51,8 +51,7 @@ export default function TtePicker({ label = "Penanda Tangan", value, onChange, c
     onChange(found);
   };
 
-  const masterCount = options.filter((o) => o.source === "master").length;
-  const pegawaiCount = options.filter((o) => o.source === "pegawai").length;
+  const pegawaiCount = options.length;
 
   return (
     <div className={className}>
@@ -74,26 +73,13 @@ export default function TtePicker({ label = "Penanda Tangan", value, onChange, c
             <option value="">
               {loading ? "Memuat daftar…" : "— Ikuti data dokumen (otomatis) —"}
             </option>
-            {masterCount > 0 && (
-              <optgroup label="Spesimen TTE (Data Master)">
-                {options
-                  .filter((o) => o.source === "master")
-                  .map((o) => (
-                    <option key={o.key} value={o.key}>
-                      {o.label}
-                    </option>
-                  ))}
-              </optgroup>
-            )}
             {pegawaiCount > 0 && (
               <optgroup label="Daftar Pegawai">
-                {options
-                  .filter((o) => o.source === "pegawai")
-                  .map((o) => (
-                    <option key={o.key} value={o.key}>
-                      {o.label}
-                    </option>
-                  ))}
+                {options.map((o) => (
+                  <option key={o.key} value={o.key}>
+                    {o.label}
+                  </option>
+                ))}
               </optgroup>
             )}
           </select>
