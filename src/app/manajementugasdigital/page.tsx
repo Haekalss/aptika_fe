@@ -636,11 +636,6 @@ export default function ManajemenTugasDigitalPage() {
               <circle cx="223" cy="61" r="3" fill="#34d399" opacity="0.9"/>
               <rect x="229" y="59" width="28" height="4" rx="2" fill="white" opacity="0.8"/>
 
-              {/* Person/avatar */}
-              <circle cx="288" cy="45" r="12" fill="#2d8c50" opacity="0.8"/>
-              <circle cx="288" cy="40" r="5" fill="white" opacity="0.9"/>
-              <path d="M278 60 Q288 50 298 60" stroke="white" strokeWidth="2" fill="none" opacity="0.7"/>
-
               {/* Plant right */}
               <ellipse cx="322" cy="108" rx="14" ry="5" fill="#1a6b3c" opacity="0.4"/>
               <rect x="320" y="68" width="4" height="40" rx="2" fill="#2d8c50" opacity="0.7"/>
