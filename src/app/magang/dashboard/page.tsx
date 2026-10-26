@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Users, Eye, Edit, Trash2, Plus, Printer, Upload, FileText, Search, RotateCcw } from "lucide-react";
+import { Users, UserCheck, Eye, Edit, Pencil, Trash2, Plus, Printer, Upload, Download, FileText, Search, RotateCcw, GraduationCap, Leaf, ClipboardList, LayoutGrid, ChevronDown } from "lucide-react";
 import { getMagangList, deleteMagang, createMagang, updateMagang, uploadMagangNda, getBidangs } from "@/services/api";
 import { Modal } from "@/components/ui/Modal";
 import { useAuthStore } from "@/store/useAuthStore";
@@ -1095,72 +1095,143 @@ export default function MagangDashboard() {
   const activeMagangs = magangs.filter(m => m.status_magang === 'Sedang magang').length;
 
   return (
-    <div className="p-6 max-w-[1200px] mx-auto font-sans">
+    <div className="flex gap-5 font-sans">
 
-      {/* ── STATISTIC CARD ── */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm flex items-center gap-5">
-          <div className="w-14 h-14 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
-            <Users size={28} />
-          </div>
-          <div>
-            <p className="text-sm font-semibold text-slate-500 mb-1">Total Anak Magang</p>
-            <h3 className="text-3xl font-extrabold text-slate-900">{magangs.length}</h3>
+      {/* ── PANEL KIRI (Sub-menu Magang) ── */}
+      <aside className="hidden lg:flex flex-col w-[190px] flex-shrink-0 bg-white/90 rounded-2xl border border-slate-200/80 shadow-sm p-3 self-stretch min-h-[calc(100vh-150px)]">
+        <button
+          type="button"
+          className="flex items-center justify-between w-full px-3 py-2.5 rounded-xl bg-blue-50 text-slate-800 border border-blue-100/80"
+        >
+          <span className="flex items-center gap-2.5 text-[13px] font-bold">
+            <LayoutGrid size={16} className="text-blue-600" />
+            Magang
+          </span>
+          <ChevronDown size={15} className="text-slate-500" />
+        </button>
+      </aside>
+
+      <div className="flex-1 min-w-0 flex flex-col gap-5 pb-6">
+
+        {/* ── HERO BANNER ── */}
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#1b62d6] via-[#2b7de9] to-[#5aa6f3] text-white shadow-md min-h-[130px]">
+          <div className="absolute -left-10 -bottom-16 w-72 h-72 rounded-full bg-white/10 blur-3xl pointer-events-none" />
+          <div className="absolute right-1/3 -top-20 w-64 h-64 rounded-full bg-cyan-200/20 blur-3xl pointer-events-none" />
+
+          <div className="relative z-10 flex items-center justify-between gap-6 px-6 sm:px-8 py-6">
+            <div className="flex items-center gap-5">
+              <div className="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-lg flex-shrink-0">
+                <GraduationCap size={34} className="text-white" />
+              </div>
+              <div>
+                <h1 className="text-3xl font-extrabold tracking-tight leading-tight">Magang</h1>
+                <p className="text-sm text-white/90 mt-1">Dashboard monitoring dan pendataan Magang</p>
+              </div>
+            </div>
+
+            {/* Ilustrasi: laptop + topi wisuda + dokumen + daun */}
+            <div className="hidden lg:block relative w-[300px] h-[100px] flex-shrink-0 pointer-events-none select-none">
+              {/* Daun kiri */}
+              <Leaf size={46} className="absolute left-2 bottom-0 text-emerald-300/90 -rotate-[30deg]" />
+              <Leaf size={34} className="absolute left-12 bottom-1 text-teal-200/80 rotate-[10deg]" />
+              {/* Dokumen kiri */}
+              <div className="absolute left-[70px] top-3 w-14 h-[72px] rounded-lg bg-white/85 shadow-lg -rotate-6 p-2 space-y-1.5">
+                <div className="w-6 h-6 rounded-md bg-blue-100" />
+                <div className="w-full h-1 bg-blue-200 rounded-full" />
+                <div className="w-3/4 h-1 bg-blue-200 rounded-full" />
+                <div className="w-1/2 h-1 bg-blue-200 rounded-full" />
+              </div>
+              {/* Laptop */}
+              <div className="absolute left-[105px] top-0 w-[120px]">
+                <div className="h-[74px] rounded-t-lg bg-[#16336b] border-[3px] border-[#0d1f45] flex items-center justify-center shadow-xl">
+                  <div className="w-full h-full bg-gradient-to-br from-[#2a6fe0] to-[#5aa6f3] flex items-center justify-center">
+                    <GraduationCap size={34} className="text-white drop-shadow" />
+                  </div>
+                </div>
+                <div className="h-2.5 -mx-3 rounded-b-xl bg-slate-200 shadow-md" />
+              </div>
+              {/* Dokumen kanan (checklist) */}
+              <div className="absolute right-[38px] top-2 w-14 h-[76px] rounded-lg bg-white/90 shadow-lg rotate-6 p-2 space-y-2">
+                {[0, 1, 2].map((i) => (
+                  <div key={i} className="flex items-center gap-1">
+                    <div className="w-2 h-2 rounded-full bg-blue-400" />
+                    <div className="flex-1 h-1 bg-blue-200 rounded-full" />
+                  </div>
+                ))}
+              </div>
+              {/* Daun kanan */}
+              <Leaf size={44} className="absolute right-0 bottom-0 text-emerald-300/90 rotate-[35deg]" />
+            </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm flex items-center gap-5">
-          <div className="w-14 h-14 rounded-xl bg-green-50 text-green-600 flex items-center justify-center">
-            <Users size={28} />
+        {/* ── STATISTIC CARDS ── */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div className="bg-white rounded-2xl px-6 py-5 border border-slate-200/80 shadow-sm flex items-center gap-5">
+            <div className="w-12 h-12 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center flex-shrink-0">
+              <Users size={22} />
+            </div>
+            <div>
+              <p className="text-[13px] font-medium text-slate-600">Total Anak Magang</p>
+              <h3 className="text-2xl font-extrabold text-slate-900 leading-tight">{magangs.length}</h3>
+            </div>
           </div>
-          <div>
-            <p className="text-sm font-semibold text-slate-500 mb-1">Sedang Magang</p>
-            <h3 className="text-3xl font-extrabold text-slate-900">{activeMagangs}</h3>
+
+          <div className="bg-white rounded-2xl px-6 py-5 border border-slate-200/80 shadow-sm flex items-center gap-5">
+            <div className="w-12 h-12 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center flex-shrink-0">
+              <UserCheck size={22} />
+            </div>
+            <div>
+              <p className="text-[13px] font-medium text-slate-600">Sedang Magang</p>
+              <h3 className="text-2xl font-extrabold text-slate-900 leading-tight">{activeMagangs}</h3>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* ── HEADER ACTION & FILTER BAR ── */}
-      <div className="space-y-4 mb-6">
-        <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
-          <div>
-            <h2 className="text-lg font-bold text-slate-800">Daftar Anak Magang</h2>
-            <p className="text-xs text-slate-500 mt-0.5">
-              Menampilkan {filteredMagangs.length} dari {magangs.length} data anak magang
-            </p>
-          </div>
-          <div className="flex items-center gap-3">
+        {/* ── DAFTAR ANAK MAGANG (Header + Filter + Tabel) ── */}
+        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5">
+          {/* Header Card */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center flex-shrink-0">
+                <ClipboardList size={20} />
+              </div>
+              <div>
+                <h2 className="text-[15px] font-bold text-slate-800 leading-tight">Daftar Anak Magang</h2>
+                <p className="text-[11.5px] text-slate-500 mt-0.5">
+                  Menampilkan data dan informasi anak magang
+                  {isFiltered && ` (${filteredMagangs.length} dari ${magangs.length} data)`}
+                </p>
+              </div>
+            </div>
             <button
               onClick={() => handleOpenModal("add")}
-              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-sm transition-all whitespace-nowrap"
+              className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-xl text-[13px] font-semibold shadow-sm transition-all whitespace-nowrap"
             >
-              <Plus size={18} />
+              <Plus size={16} />
               Tambah Data Magang
             </button>
           </div>
-        </div>
 
-        {/* ── FILTER CONTROLS ── */}
-        <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-            {/* Search Input */}
-            <div className="relative">
-              <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+          {/* Filter Controls */}
+          <div className="flex flex-col lg:flex-row lg:items-center gap-3 py-4">
+            {/* Search */}
+            <div className="relative lg:w-[240px] flex-shrink-0">
+              <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
               <input
                 type="text"
                 placeholder="Cari nama atau kampus..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-3 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all"
+                className="w-full pl-9 pr-3 py-2.5 text-[12.5px] bg-white border border-slate-200 rounded-lg focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all"
               />
             </div>
 
-            {/* Filter Bidang (Khusus Admin / Semua) */}
-            <div>
+            <div className="flex flex-col sm:flex-row gap-3 flex-1 lg:justify-end">
               <select
                 value={filterBidang}
                 onChange={(e) => setFilterBidang(e.target.value)}
-                className="w-full px-3 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all text-slate-700 font-medium cursor-pointer"
+                className="sm:w-[190px] px-3 py-2.5 text-[12.5px] bg-white border border-slate-200 rounded-lg focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all text-slate-700 cursor-pointer"
               >
                 <option value="all">Semua Bidang / Unit Kerja</option>
                 {bidangs.map((b) => (
@@ -1169,28 +1240,22 @@ export default function MagangDashboard() {
                   </option>
                 ))}
               </select>
-            </div>
 
-            {/* Filter Status Magang */}
-            <div>
               <select
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value)}
-                className="w-full px-3 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all text-slate-700 font-medium cursor-pointer"
+                className="sm:w-[190px] px-3 py-2.5 text-[12.5px] bg-white border border-slate-200 rounded-lg focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all text-slate-700 cursor-pointer"
               >
                 <option value="all">Semua Status Magang</option>
                 <option value="Sedang magang">Sedang magang</option>
                 <option value="Selesai magang">Selesai magang</option>
                 <option value="Belum mulai">Belum mulai</option>
               </select>
-            </div>
 
-            {/* Filter Sertifikat */}
-            <div className="flex items-center gap-2">
               <select
                 value={filterSertifikat}
                 onChange={(e) => setFilterSertifikat(e.target.value)}
-                className="w-full px-3 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all text-slate-700 font-medium cursor-pointer"
+                className="sm:w-[170px] px-3 py-2.5 text-[12.5px] bg-white border border-slate-200 rounded-lg focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all text-slate-700 cursor-pointer"
               >
                 <option value="all">Semua Status Sertifikat</option>
                 <option value="Sudah menerima">Sudah menerima</option>
@@ -1201,145 +1266,134 @@ export default function MagangDashboard() {
                 <button
                   onClick={handleResetFilter}
                   title="Reset Filter"
-                  className="p-2 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all border border-slate-200 flex-shrink-0"
+                  className="flex items-center justify-center gap-1.5 px-3 py-2.5 text-[12px] font-semibold text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all border border-slate-200 flex-shrink-0"
                 >
-                  <RotateCcw size={16} />
+                  <RotateCcw size={14} />
+                  Reset
                 </button>
               )}
             </div>
           </div>
-        </div>
-      </div>
 
-      {/* ── TABLE DASHBOARD ── */}
-      <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse table-auto">
-            <thead>
-              <tr className="bg-slate-50 border-b border-slate-200">
-                <th className="px-3 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider w-10 text-center">No</th>
-                <th className="px-3 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider">Nama</th>
-                <th className="px-3 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider">Kampus</th>
-                <th className="px-3 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider">Bidang</th>
-                <th className="px-3 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider">Periode</th>
-                <th className="px-3 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider">Status Magang</th>
-                <th className="px-3 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider">Sertifikat</th>
-                <th className="px-3 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider text-center">NDA</th>
-                <th className="px-3 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider text-center w-24">Aksi</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {loading ? (
-                <tr>
-                  <td colSpan={9} className="text-center py-10 text-slate-500">Memuat data...</td>
-                </tr>
-              ) : filteredMagangs.length === 0 ? (
-                <tr>
-                  <td colSpan={9} className="text-center py-10 text-slate-500">
-                    {isFiltered ? "Tidak ada data anak magang yang sesuai filter" : "Tidak ada data magang"}
-                  </td>
-                </tr>
-              ) : (
-                filteredMagangs.map((item, idx) => (
-                  <tr key={item.id} className="hover:bg-slate-50/50 transition-colors">
-                    <td className="px-3 py-3 text-sm text-slate-500 font-medium text-center">{idx + 1}</td>
-                    <td className="px-3 py-3 text-sm font-semibold text-slate-800">{item.nama}</td>
-                    <td className="px-3 py-3 text-sm text-slate-600">{item.nama_kampus}</td>
-                    <td className="px-3 py-3 text-sm text-slate-600">
-                      {item.bidang ? (
-                        <span className="inline-flex items-center text-xs font-bold text-blue-700 bg-blue-50 border border-blue-100 px-2.5 py-1 rounded-lg">
-                          {item.bidang.name}
-                        </span>
-                      ) : (
-                        <span className="text-slate-400 text-xs italic">-</span>
-                      )}
-                    </td>
-                    <td className="px-3 py-3 text-sm text-slate-600 whitespace-nowrap">
-                      {formatDate(item.tgl_mulai)} - {formatDate(item.tgl_selesai)}
-                    </td>
-                    <td className="px-3 py-3">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold whitespace-nowrap ${item.status_magang === 'Sedang magang' ? 'bg-blue-100 text-blue-800' :
-                        item.status_magang === 'Selesai magang' ? 'bg-green-100 text-green-800' :
-                          'bg-slate-100 text-slate-800'
-                        }`}>
-                        {item.status_magang}
-                      </span>
-                    </td>
-                    <td className="px-3 py-3">
-                      <div className="flex items-center gap-1.5">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold whitespace-nowrap ${item.sertifikat === 'Sudah menerima' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}`}>
-                          {item.sertifikat || 'Belum menerima'}
-                        </span>
-                        {isSertifikatEligible(item.tgl_selesai) ? (
-                          <button
-                            onClick={() => handlePrintCertificate(item)}
-                            className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                            title="Cetak Sertifikat Magang"
-                          >
-                            <Printer size={16} />
-                          </button>
-                        ) : (
-                          <button
-                            disabled
-                            onClick={() => alert(`Sertifikat belum dapat dicetak. Tanggal selesai magang adalah ${formatDate(item.tgl_selesai)}.`)}
-                            className="p-1.5 text-slate-300 cursor-not-allowed rounded-lg"
-                            title={`Magang belum selesai. Sertifikat baru dapat dicetak setelah ${formatDate(item.tgl_selesai)}`}
-                          >
-                            <Printer size={16} />
-                          </button>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-3 py-3">
-                      <div className="flex items-center justify-center gap-1.5">
-                        <button
-                          onClick={() => handleOpenNdaModalForMagang(item.id)}
-                          className="p-1.5 text-slate-500 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
-                          title="Cetak Surat NDA"
-                        >
-                          <Printer size={16} />
-                        </button>
-                        <button
-                          onClick={() => handleOpenUploadNdaModal(item)}
-                          className={`p-1.5 rounded-lg transition-colors ${item.nda_file
-                              ? 'text-blue-600 bg-blue-50 hover:bg-blue-100'
-                              : 'text-slate-400 hover:text-blue-600 hover:bg-blue-50'
-                            }`}
-                          title={item.nda_file ? "Ganti File NDA" : "Upload File NDA"}
-                        >
-                          <Upload size={16} />
-                        </button>
-                        {item.nda_file && (
-                          <a
-                            href={item.nda_file}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="p-1.5 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition-colors"
-                            title="Lihat Dokumen NDA"
-                          >
-                            <FileText size={16} />
-                          </a>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-3 py-3">
-                      <div className="flex items-center justify-center gap-1">
-                        <button onClick={() => handleOpenModal("view", item)} className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Lihat Detail">
-                          <Eye size={16} />
-                        </button>
-                        <button onClick={() => handleOpenModal("edit", item)} className="p-1.5 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors" title="Edit">
-                          <Edit size={16} />
-                        </button>
-                        <button onClick={() => handleDelete(item.id)} className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Hapus">
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    </td>
+          {/* Tabel */}
+          <div className="rounded-xl border border-slate-200/80 overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse table-auto">
+                <thead>
+                  <tr className="bg-[#f1f5fb] border-b border-slate-200/80">
+                    <th className="px-3 py-3 text-[11px] font-bold text-slate-600 uppercase tracking-wide w-10 text-center">No</th>
+                    <th className="px-3 py-3 text-[11px] font-bold text-slate-600 uppercase tracking-wide">Nama</th>
+                    <th className="px-3 py-3 text-[11px] font-bold text-slate-600 uppercase tracking-wide">Kampus</th>
+                    <th className="px-3 py-3 text-[11px] font-bold text-slate-600 uppercase tracking-wide">Bidang</th>
+                    <th className="px-3 py-3 text-[11px] font-bold text-slate-600 uppercase tracking-wide">Periode</th>
+                    <th className="px-3 py-3 text-[11px] font-bold text-slate-600 uppercase tracking-wide">Status Magang</th>
+                    <th className="px-3 py-3 text-[11px] font-bold text-slate-600 uppercase tracking-wide">Sertifikat</th>
+                    <th className="px-3 py-3 text-[11px] font-bold text-slate-600 uppercase tracking-wide text-center">NDA</th>
+                    <th className="px-3 py-3 text-[11px] font-bold text-slate-600 uppercase tracking-wide text-center w-28">Aksi</th>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {loading ? (
+                    <tr>
+                      <td colSpan={9} className="text-center py-10 text-sm text-slate-500">Memuat data...</td>
+                    </tr>
+                  ) : filteredMagangs.length === 0 ? (
+                    <tr>
+                      <td colSpan={9} className="text-center py-10 text-sm text-slate-500">
+                        {isFiltered ? "Tidak ada data anak magang yang sesuai filter" : "Tidak ada data magang"}
+                      </td>
+                    </tr>
+                  ) : (
+                    filteredMagangs.map((item, idx) => (
+                      <tr key={item.id} className="hover:bg-slate-50/60 transition-colors">
+                        <td className="px-3 py-3 text-[12.5px] text-slate-700 font-semibold text-center">{idx + 1}</td>
+                        <td className="px-3 py-3 text-[12.5px] font-bold text-slate-800 max-w-[170px]">{item.nama}</td>
+                        <td className="px-3 py-3 text-[12px] text-slate-500 max-w-[170px] leading-snug">{item.nama_kampus}</td>
+                        <td className="px-3 py-3">
+                          {item.bidang ? (
+                            <span className="inline-block max-w-[170px] text-[11px] font-semibold text-blue-700 bg-blue-50 border border-blue-100 px-2 py-1 rounded-md leading-snug">
+                              {item.bidang.name}
+                            </span>
+                          ) : (
+                            <span className="text-slate-400 text-xs italic">-</span>
+                          )}
+                        </td>
+                        <td className="px-3 py-3 text-[12px] text-slate-600 whitespace-nowrap">
+                          {formatDate(item.tgl_mulai)} - {formatDate(item.tgl_selesai)}
+                        </td>
+                        <td className="px-3 py-3">
+                          <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-semibold whitespace-nowrap border ${item.status_magang === 'Sedang magang' ? 'bg-blue-50 text-blue-600 border-blue-100' :
+                            item.status_magang === 'Selesai magang' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
+                              'bg-slate-50 text-slate-600 border-slate-200'
+                            }`}>
+                            {item.status_magang}
+                          </span>
+                        </td>
+                        <td className="px-3 py-3">
+                          <div className="flex items-center gap-1">
+                            <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-semibold whitespace-nowrap border ${item.sertifikat === 'Sudah menerima' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-red-50 text-red-500 border-red-100'}`}>
+                              {item.sertifikat || 'Belum menerima'}
+                            </span>
+                            {isSertifikatEligible(item.tgl_selesai) && (
+                              <button
+                                onClick={() => handlePrintCertificate(item)}
+                                className="p-1 text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
+                                title="Cetak Sertifikat Magang"
+                              >
+                                <Printer size={14} />
+                              </button>
+                            )}
+                          </div>
+                        </td>
+                        <td className="px-3 py-3">
+                          <div className="flex items-center justify-center gap-1">
+                            <button
+                              onClick={() => handleOpenNdaModalForMagang(item.id)}
+                              className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
+                              title="Cetak Surat NDA"
+                            >
+                              <FileText size={15} />
+                            </button>
+                            <button
+                              onClick={() => handleOpenUploadNdaModal(item)}
+                              className={`p-1.5 rounded-md transition-colors ${item.nda_file ? 'text-emerald-600 hover:bg-emerald-50' : 'text-blue-600 hover:bg-blue-50'}`}
+                              title={item.nda_file ? "Ganti File NDA" : "Upload File NDA"}
+                            >
+                              <Upload size={15} />
+                            </button>
+                            {item.nda_file && (
+                              <a
+                                href={item.nda_file}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
+                                title="Unduh / Lihat Dokumen NDA"
+                              >
+                                <Download size={15} />
+                              </a>
+                            )}
+                          </div>
+                        </td>
+                        <td className="px-3 py-3">
+                          <div className="flex items-center justify-center gap-1.5">
+                            <button onClick={() => handleOpenModal("view", item)} className="w-7 h-7 flex items-center justify-center text-blue-600 bg-blue-50/60 border border-blue-100 hover:bg-blue-100 rounded-md transition-colors" title="Lihat Detail">
+                              <Eye size={14} />
+                            </button>
+                            <button onClick={() => handleOpenModal("edit", item)} className="w-7 h-7 flex items-center justify-center text-blue-600 bg-blue-50/60 border border-blue-100 hover:bg-blue-100 rounded-md transition-colors" title="Edit">
+                              <Pencil size={13} />
+                            </button>
+                            <button onClick={() => handleDelete(item.id)} className="w-7 h-7 flex items-center justify-center text-red-500 hover:bg-red-50 rounded-md transition-colors" title="Hapus">
+                              <Trash2 size={14} />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </div>
 
