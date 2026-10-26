@@ -78,7 +78,7 @@ export default function TteSpecimen({ pegawaiId, nip, nama, unit, width = 300, c
         className={className}
         style={{
           width,
-          height: Math.round((width * 381) / 945),
+          height: Math.round((width * 348) / 861),
           border: "1px dashed #cbd5e1",
           borderRadius: 6,
           display: "flex",
