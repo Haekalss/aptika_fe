@@ -19,7 +19,34 @@ import {
 } from "lucide-react";
 
 import { useAuthStore } from "@/store/useAuthStore";
-import { api } from "@/services/api";
+import {
+  api,
+  getNotaDinasList,
+  getHasilPentestList,
+  getKerentananList,
+  getMagangList,
+  getProjects,
+  getPerubahanItList,
+} from "@/services/api";
+
+function formatRelativeTimeId(dateInput?: string | Date | null): string {
+  if (!dateInput) return "Baru saja";
+  const d = new Date(dateInput);
+  if (isNaN(d.getTime())) return String(dateInput);
+  const diffMs = Date.now() - d.getTime();
+  const diffMin = Math.floor(diffMs / 60000);
+  if (diffMin < 1) return "Baru saja";
+  if (diffMin < 60) return `${diffMin} menit yang lalu`;
+  const diffHours = Math.floor(diffMin / 60);
+  if (diffHours < 24) return `${diffHours} jam yang lalu`;
+  const diffDays = Math.floor(diffHours / 24);
+  if (diffDays < 7) return `${diffDays} hari yang lalu`;
+  return d.toLocaleDateString("id-ID", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+}
 
 interface ServicePermissionItem {
   service_id: number;
@@ -187,6 +214,237 @@ export default function Homepage() {
   const [selectedBidangId, setSelectedBidangId] = useState<string>("all");
   const [bidangMatrixList, setBidangMatrixList] = useState<BidangMatrixItem[]>([]);
   const [matrixLoading, setMatrixLoading] = useState(false);
+  const [liveActivities, setLiveActivities] = useState<any[]>(recentActivities);
+  const [liveAnnouncements, setLiveAnnouncements] = useState<any[]>(announcements);
+
+  useEffect(() => {
+    let active = true;
+    const fetchLiveDashboardFeed = async () => {
+      try {
+        const [notifRes, ndRes, ptRes, krRes, mgRes, taskRes, tiRes] =
+          await Promise.allSettled([
+            api.get("/notifications").then((r) => r.data?.data || r.data || []),
+            getNotaDinasList({ per_page: 5 }),
+            getHasilPentestList({ per_page: 5 }),
+            getKerentananList({ per_page: 5 }),
+            getMagangList(),
+            getProjects(),
+            getPerubahanItList(),
+          ]);
+
+        const feed: {
+          id: string;
+          icon: React.ReactNode;
+          iconBg: string;
+          title: string;
+          desc: string;
+          time: string;
+          timestamp: number;
+          status: string;
+        }[] = [];
+
+        // 1. Notifikasi Sistem
+        if (notifRes.status === "fulfilled" && Array.isArray(notifRes.value)) {
+          notifRes.value.slice(0, 4).forEach((n: any, idx: number) => {
+            const ts = new Date(n.created_at || n.timestamp || Date.now()).getTime() || Date.now() - idx * 60000;
+            feed.push({
+              id: `notif-${n.id || idx}`,
+              icon: <FileText size={18} className="text-blue-600" />,
+              iconBg: "bg-blue-100 dark:bg-blue-950/60",
+              title: n.title || "Notifikasi Sistem Baru",
+              desc: n.message || n.description || "Pembaruan aktivitas pada layanan APTIKA.",
+              time: formatRelativeTimeId(n.created_at || n.timestamp),
+              timestamp: ts,
+              status: n.read ? "info" : "new",
+            });
+          });
+        }
+
+        // 2. Nota Dinas Terbaru
+        let ndCount = 0;
+        if (ndRes.status === "fulfilled" && ndRes.value) {
+          const list = Array.isArray(ndRes.value?.data) ? ndRes.value.data : [];
+          ndCount = Number(ndRes.value?.meta?.total ?? list.length) || 0;
+          list.slice(0, 3).forEach((item: any, idx: number) => {
+            const rawDate = item.created_at || item.updated_at || item.tanggal_surat;
+            const ts = new Date(rawDate || Date.now()).getTime() || Date.now() - (idx + 1) * 300000;
+            feed.push({
+              id: `nd-${item.id || idx}`,
+              icon: <FileText size={18} className="text-blue-600" />,
+              iconBg: "bg-blue-100 dark:bg-blue-950/60",
+              title: `Nota Dinas: ${item.perihal || item.nomor_surat || "Dokumen Baru"}`,
+              desc: `Tujuan: ${item.tujuan || "Unit Kerja Internal"} (${item.status || "Terkirim"})`,
+              time: formatRelativeTimeId(rawDate),
+              timestamp: ts,
+              status: "new",
+            });
+          });
+        }
+
+        // 3. Hasil Pentest Terbaru
+        if (ptRes.status === "fulfilled" && ptRes.value) {
+          const list = Array.isArray(ptRes.value?.data) ? ptRes.value.data : [];
+          list.slice(0, 2).forEach((item: any, idx: number) => {
+            const rawDate = item.created_at || item.updated_at || item.tanggal;
+            const ts = new Date(rawDate || Date.now()).getTime() || Date.now() - (idx + 2) * 600000;
+            feed.push({
+              id: `pt-${item.id || idx}`,
+              icon: <ShieldCheck size={18} className="text-purple-600" />,
+              iconBg: "bg-purple-100 dark:bg-purple-950/60",
+              title: `Laporan Pentest: ${item.perihal || item.aplikasi || "Uji Keamanan"}`,
+              desc: `Tujuan: ${item.tujuan || "Perangkat Daerah"} • Status: ${item.status || "DRAF"}`,
+              time: formatRelativeTimeId(rawDate),
+              timestamp: ts,
+              status: "info",
+            });
+          });
+        }
+
+        // 4. Peringatan Kerentanan Terbaru
+        if (krRes.status === "fulfilled" && krRes.value) {
+          const list = Array.isArray(krRes.value?.data) ? krRes.value.data : [];
+          list.slice(0, 2).forEach((item: any, idx: number) => {
+            const rawDate = item.created_at || item.updated_at || item.tanggal;
+            const ts = new Date(rawDate || Date.now()).getTime() || Date.now() - (idx + 3) * 900000;
+            feed.push({
+              id: `kr-${item.id || idx}`,
+              icon: <AlertTriangle size={18} className="text-red-500" />,
+              iconBg: "bg-red-100 dark:bg-red-950/60",
+              title: `Advis Kerentanan: ${item.aplikasi || item.perihal || "Sistem Aplikasi"}`,
+              desc: `Tingkat Risiko: ${item.tingkat_kerentanan || "Tinggi"} • Status: ${item.status || "DRAF"}`,
+              time: formatRelativeTimeId(rawDate),
+              timestamp: ts,
+              status: "warning",
+            });
+          });
+        }
+
+        // 5. Data Magang Terbaru
+        let activeMagangCount = 0;
+        let totalMagangCount = 0;
+        if (mgRes.status === "fulfilled" && mgRes.value) {
+          const list = Array.isArray(mgRes.value?.data)
+            ? mgRes.value.data
+            : Array.isArray(mgRes.value)
+            ? mgRes.value
+            : [];
+          totalMagangCount = list.length;
+          activeMagangCount = list.filter((m: any) => m.status_magang === "Sedang magang").length;
+          list.slice(0, 3).forEach((item: any, idx: number) => {
+            const rawDate = item.created_at || item.updated_at || item.tgl_mulai_magang || item.tgl_mulai;
+            const ts = new Date(rawDate || Date.now()).getTime() || Date.now() - (idx + 1) * 450000;
+            feed.push({
+              id: `mg-${item.id || idx}`,
+              icon: <Users size={18} className="text-amber-600" />,
+              iconBg: "bg-amber-100 dark:bg-amber-950/60",
+              title: `Data Magang: ${item.nama || "Peserta Magang"}`,
+              desc: `${item.nama_kampus || "Perguruan Tinggi"} • ${item.status_magang || "Terdaftar"}`,
+              time: formatRelativeTimeId(rawDate),
+              timestamp: ts,
+              status: "success",
+            });
+          });
+        }
+
+        // 6. Manajemen Tugas Digital Terbaru
+        let totalTaskCount = 0;
+        if (taskRes.status === "fulfilled" && taskRes.value) {
+          const list = Array.isArray(taskRes.value?.data)
+            ? taskRes.value.data
+            : Array.isArray(taskRes.value)
+            ? taskRes.value
+            : [];
+          totalTaskCount = list.length;
+          list.slice(0, 3).forEach((item: any, idx: number) => {
+            const rawDate = item.updated_at || item.created_at || item.due_date;
+            const ts = new Date(rawDate || Date.now()).getTime() || Date.now() - (idx + 2) * 500000;
+            feed.push({
+              id: `task-${item.id || idx}`,
+              icon: <Briefcase size={18} className="text-emerald-600" />,
+              iconBg: "bg-emerald-100 dark:bg-emerald-950/60",
+              title: `Tugas Digital: ${item.title || item.nama_tugas || "Penugasan Tim"}`,
+              desc: item.description || `Status penugasan: ${item.status || "Aktif"}`,
+              time: formatRelativeTimeId(rawDate),
+              timestamp: ts,
+              status: "success",
+            });
+          });
+        }
+
+        // 7. Permohonan TI Terbaru
+        let tiCount = 0;
+        if (tiRes.status === "fulfilled" && tiRes.value) {
+          const list = Array.isArray(tiRes.value)
+            ? tiRes.value
+            : Array.isArray(tiRes.value?.data)
+            ? tiRes.value.data
+            : [];
+          tiCount = list.length;
+          list.slice(0, 2).forEach((item: any, idx: number) => {
+            const rawDate = item.created_at || item.tanggal_pengajuan;
+            const ts = new Date(rawDate || Date.now()).getTime() || Date.now() - (idx + 3) * 700000;
+            feed.push({
+              id: `ti-${item.id || idx}`,
+              icon: <Layers size={18} className="text-blue-600" />,
+              iconBg: "bg-blue-100 dark:bg-blue-950/60",
+              title: `Permohonan TI: ${item.nama_aplikasi || item.no_rfc || "Perubahan TI"}`,
+              desc: `Pemohon: ${item.nama_perangkat_daerah || item.pemohon || "Perangkat Daerah"}`,
+              time: formatRelativeTimeId(rawDate),
+              timestamp: ts,
+              status: "new",
+            });
+          });
+        }
+
+        if (active && feed.length > 0) {
+          feed.sort((a, b) => b.timestamp - a.timestamp);
+          setLiveActivities(feed.slice(0, 5));
+        }
+
+        // Update Pengumuman secara dinamis mengikuti status data hari ini
+        const todayStr = new Date().toLocaleDateString("id-ID", {
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        });
+
+        if (active) {
+          setLiveAnnouncements([
+            {
+              id: 1,
+              color: "bg-blue-500",
+              title: "Status Layanan Administrasi & Permohonan TI",
+              desc: `Tercatat ${ndCount} Nota Dinas dan ${tiCount} Permohonan Perubahan TI yang terdata di dalam sistem APTIKA Tools.`,
+              date: todayStr,
+            },
+            {
+              id: 2,
+              color: "bg-amber-500",
+              title: "Monitoring Peserta Magang Diskominfo Jabar",
+              desc: `Saat ini terdapat ${activeMagangCount} peserta sedang aktif magang dari total ${totalMagangCount} data peserta terdaftar.`,
+              date: todayStr,
+            },
+            {
+              id: 3,
+              color: "bg-emerald-500",
+              title: "Manajemen Tugas Digital & Tata Kelola SMKI",
+              desc: totalTaskCount > 0
+                ? `Terdapat ${totalTaskCount} penugasan digital yang sedang dipantau pada papan kerja tim.`
+                : "Seluruh modul layanan IKI Report, Manajemen Tugas Digital, dan SMKI beroperasi normal.",
+              date: todayStr,
+            },
+          ]);
+        }
+      } catch (e) {
+        console.error("Gagal memuat aktivitas terbaru dashboard:", e);
+      }
+    };
+
+    fetchLiveDashboardFeed();
+    return () => {
+      active = false;
+    };
+  }, []);
 
   useEffect(() => {
     setMounted(true);
@@ -469,7 +727,7 @@ export default function Homepage() {
             </div>
 
             <div className="flex flex-col gap-3">
-              {recentActivities.map((item) => (
+              {liveActivities.map((item) => (
                 <div
                   key={item.id}
                   className="flex items-start gap-3.5 p-3 rounded-2xl hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors"
@@ -513,7 +771,7 @@ export default function Homepage() {
             </div>
 
             <div className="flex flex-col gap-3.5">
-              {announcements.map((item) => (
+              {liveAnnouncements.map((item) => (
                 <div
                   key={item.id}
                   className="flex items-start gap-3.5 p-3.5 rounded-2xl bg-white/70 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800 shadow-2xs"

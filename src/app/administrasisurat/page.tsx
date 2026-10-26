@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   FileText,
@@ -14,10 +15,142 @@ import {
 } from "lucide-react";
 import ServiceRouteGuard from "@/components/auth/ServiceRouteGuard";
 import { useAuthStore } from "@/store/useAuthStore";
+import {
+  getNotaDinasList,
+  getHasilPentestList,
+  getKerentananList,
+  getDetailPerjalananList,
+  getSpdList,
+  getPerubahanItList,
+} from "@/services/api";
 
 export default function AdministrasiSuratPage() {
   const router = useRouter();
   const { hasServicePermission } = useAuthStore();
+
+  const [counts, setCounts] = useState({
+    notaDinas: 0,
+    pentest: 0,
+    kerentanan: 0,
+    spd: 0,
+    ti: 0,
+  });
+  const [totalSurat, setTotalSurat] = useState(0);
+  const [suratDiproses, setSuratDiproses] = useState(0);
+  const [loadingStats, setLoadingStats] = useState(true);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchAllSuratStats = async () => {
+      setLoadingStats(true);
+      try {
+        const [ndRes, ptRes, krRes, spdRes, tiRes] = await Promise.allSettled([
+          getNotaDinasList({ per_page: 200 }),
+          getHasilPentestList({ per_page: 200 }),
+          getKerentananList({ per_page: 200 }),
+          getDetailPerjalananList().catch(() => getSpdList()),
+          getPerubahanItList(),
+        ]);
+
+        // 1. Nota Dinas
+        let ndTotal = 0;
+        let ndProcessed = 0;
+        if (ndRes.status === "fulfilled" && ndRes.value) {
+          const val = ndRes.value;
+          const list = Array.isArray(val?.data) ? val.data : [];
+          ndTotal = Number(val?.meta?.total ?? list.length) || 0;
+          ndProcessed = list.filter((x: any) => {
+            const st = String(x?.status || "").toLowerCase();
+            return st && st !== "draft" && st !== "draf";
+          }).length;
+        }
+
+        // 2. Hasil Pentest
+        let ptTotal = 0;
+        let ptProcessed = 0;
+        if (ptRes.status === "fulfilled" && ptRes.value) {
+          const val = ptRes.value;
+          const list = Array.isArray(val?.data) ? val.data : [];
+          ptTotal = Number(val?.meta?.total ?? list.length) || 0;
+          ptProcessed = list.filter((x: any) => {
+            const st = String(x?.status || "").toLowerCase();
+            return st && st !== "draft" && st !== "draf";
+          }).length;
+        }
+
+        // 3. Pemberitahuan Kerentanan
+        let krTotal = 0;
+        let krProcessed = 0;
+        if (krRes.status === "fulfilled" && krRes.value) {
+          const val = krRes.value;
+          const list = Array.isArray(val?.data) ? val.data : [];
+          krTotal = Number(val?.meta?.total ?? list.length) || 0;
+          krProcessed = list.filter((x: any) => {
+            const st = String(x?.status || "").toLowerCase();
+            return st && st !== "draft" && st !== "draf";
+          }).length;
+        }
+
+        // 4. SPD
+        let spdTotal = 0;
+        let spdProcessed = 0;
+        if (spdRes.status === "fulfilled" && spdRes.value) {
+          const val = spdRes.value;
+          const list = Array.isArray(val?.data)
+            ? val.data
+            : Array.isArray(val)
+            ? val
+            : [];
+          spdTotal = Number(val?.meta?.total ?? list.length) || 0;
+          spdProcessed = list.filter((x: any) => {
+            const st = String(x?.status || "").toLowerCase();
+            return st !== "draf" && st !== "draft";
+          }).length;
+        }
+
+        // 5. Permohonan TI
+        let tiTotal = 0;
+        let tiProcessed = 0;
+        if (tiRes.status === "fulfilled" && tiRes.value) {
+          const val = tiRes.value;
+          const list = Array.isArray(val)
+            ? val
+            : Array.isArray(val?.data)
+            ? val.data
+            : [];
+          tiTotal = list.length;
+          tiProcessed = list.filter((x: any) => {
+            const st = String(x?.status || "").toLowerCase();
+            return st !== "ditolak";
+          }).length;
+        }
+
+        if (isMounted) {
+          setCounts({
+            notaDinas: ndTotal,
+            pentest: ptTotal,
+            kerentanan: krTotal,
+            spd: spdTotal,
+            ti: tiTotal,
+          });
+          setTotalSurat(ndTotal + ptTotal + krTotal + spdTotal + tiTotal);
+          setSuratDiproses(
+            ndProcessed + ptProcessed + krProcessed + spdProcessed + tiProcessed
+          );
+        }
+      } catch (err) {
+        console.error("Gagal memuat ringkasan statistik surat:", err);
+      } finally {
+        if (isMounted) setLoadingStats(false);
+      }
+    };
+
+    fetchAllSuratStats();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const allCards = [
     {
@@ -29,7 +162,7 @@ export default function AdministrasiSuratPage() {
       iconBg: "bg-blue-50 dark:bg-blue-950/60",
       cardBorder: "border-slate-100 hover:border-blue-300 dark:border-slate-800",
       arrowBg: "bg-blue-500 hover:bg-blue-600",
-      count: 324,
+      count: counts.notaDinas,
       path: "/administrasisurat/nota-dinas",
     },
     {
@@ -41,7 +174,7 @@ export default function AdministrasiSuratPage() {
       iconBg: "bg-amber-50 dark:bg-amber-950/60",
       cardBorder: "border-slate-100 hover:border-amber-300 dark:border-slate-800",
       arrowBg: "bg-amber-500 hover:bg-amber-600",
-      count: 218,
+      count: counts.pentest,
       path: "/administrasisurat/hasil-pentest",
     },
     {
@@ -53,7 +186,7 @@ export default function AdministrasiSuratPage() {
       iconBg: "bg-rose-50 dark:bg-rose-950/60",
       cardBorder: "border-slate-100 hover:border-rose-300 dark:border-slate-800",
       arrowBg: "bg-rose-500 hover:bg-rose-600",
-      count: 176,
+      count: counts.kerentanan,
       path: "/administrasisurat/kerentanan",
     },
     {
@@ -65,7 +198,7 @@ export default function AdministrasiSuratPage() {
       iconBg: "bg-purple-50 dark:bg-purple-950/60",
       cardBorder: "border-slate-100 hover:border-purple-300 dark:border-slate-800",
       arrowBg: "bg-purple-500 hover:bg-purple-600",
-      count: 142,
+      count: counts.spd,
       path: "/spd",
     },
     {
@@ -77,7 +210,7 @@ export default function AdministrasiSuratPage() {
       iconBg: "bg-sky-50 dark:bg-sky-950/60",
       cardBorder: "border-slate-100 hover:border-sky-300 dark:border-slate-800",
       arrowBg: "bg-sky-500 hover:bg-sky-600",
-      count: 98,
+      count: counts.ti,
       path: "/perubahan-it/dashboard",
     },
   ];
@@ -88,7 +221,7 @@ export default function AdministrasiSuratPage() {
   return (
     <ServiceRouteGuard requiredService="ADMINISTRASI_SURAT">
       <div className="flex flex-col gap-6 pb-6 font-sans">
-        {/* ── Top Hero Banner (Tanpa 'Selamat Datang' dan tanpa 'Status Sistem') ── */}
+        {/* ── Top Hero Banner ── */}
         <div className="relative overflow-hidden bg-gradient-to-r from-[#0b2146] via-[#163868] to-[#1d4ed8] rounded-3xl text-white shadow-xl min-h-[175px]">
           <div className="absolute -right-16 -bottom-16 w-80 h-80 rounded-full bg-blue-400/20 blur-3xl pointer-events-none" />
           <div className="absolute left-1/3 -top-12 w-60 h-60 rounded-full bg-cyan-400/15 blur-2xl pointer-events-none" />
@@ -143,7 +276,7 @@ export default function AdministrasiSuratPage() {
           </div>
         </div>
 
-        {/* ── Section Pilih Jenis Surat: Logo Sejajar Kiri & Teks di Kanan, Panah di Kanan Bawah ── */}
+        {/* ── Section Pilih Jenis Surat ── */}
         <div className="bg-white/60 dark:bg-[#071733]/80 backdrop-blur-md rounded-3xl p-6 shadow-sm border border-white/70 dark:border-slate-800">
           <div className="flex items-center gap-3.5 mb-5">
             <div className="w-11 h-11 rounded-2xl bg-blue-100 dark:bg-blue-950/60 flex items-center justify-center flex-shrink-0 shadow-sm text-blue-600">
@@ -159,7 +292,6 @@ export default function AdministrasiSuratPage() {
             </div>
           </div>
 
-          {/* Grid Kartu: Logo sejajar horizontal di sebelah kiri, Judul & Deskripsi diperbesar, posisi diturunkan sedikit */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
             {cards.map((card) => (
               <div
@@ -167,7 +299,6 @@ export default function AdministrasiSuratPage() {
                 onClick={() => router.push(card.path)}
                 className={`bg-white dark:bg-[#0b1e3d] rounded-2xl p-5 pt-6 border ${card.cardBorder} shadow-sm cursor-pointer hover:shadow-md hover:-translate-y-1 transition-all duration-200 group flex flex-col justify-between min-h-[205px]`}
               >
-                {/* Horizontal row: Logo sejajar rapi dengan deskripsi (items-start dengan mt-1.5) */}
                 <div className="flex items-start gap-3.5">
                   <div
                     className={`w-11 h-11 rounded-2xl flex items-center justify-center ${card.iconBg} shadow-sm flex-shrink-0 mt-1.5`}
@@ -184,7 +315,6 @@ export default function AdministrasiSuratPage() {
                   </div>
                 </div>
 
-                {/* Panah Lingkaran di POJOK KANAN BAWAH: diturunkan dengan mt-auto & padding aman */}
                 <div className="flex items-center justify-end mt-auto pt-4 pr-1 pb-1">
                   <div
                     className={`w-8 h-8 rounded-full flex items-center justify-center ${card.arrowBg} transition-all group-hover:scale-105 shadow-xs`}
@@ -197,7 +327,7 @@ export default function AdministrasiSuratPage() {
           </div>
         </div>
 
-        {/* ── Bottom Section: Total Surat & Surat Diproses Sesuai Persis Gambar ── */}
+        {/* ── Bottom Section: Total Surat & Surat Diproses (Real-Time) ── */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           {/* Kolom Kiri: Total Surat & Surat Diproses (Span 6) */}
           <div className="lg:col-span-6 grid grid-cols-1 sm:grid-cols-2 gap-4 items-start">
@@ -212,13 +342,13 @@ export default function AdministrasiSuratPage() {
                     Total Surat
                   </div>
                   <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight mt-0.5 leading-none">
-                    1.248
+                    {loadingStats ? "..." : totalSurat.toLocaleString("id-ID")}
                   </div>
                 </div>
               </div>
               <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-600 mt-3.5 pt-3 border-t border-slate-100 dark:border-slate-800">
                 <TrendingUp size={14} />
-                <span>12% dari bulan lalu</span>
+                <span>Data real-time seluruh jenis surat</span>
               </div>
             </div>
 
@@ -233,13 +363,13 @@ export default function AdministrasiSuratPage() {
                     Surat Diproses
                   </div>
                   <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight mt-0.5 leading-none">
-                    892
+                    {loadingStats ? "..." : suratDiproses.toLocaleString("id-ID")}
                   </div>
                 </div>
               </div>
               <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-600 mt-3.5 pt-3 border-t border-slate-100 dark:border-slate-800">
                 <TrendingUp size={14} />
-                <span>8% dari bulan lalu</span>
+                <span>Surat aktif &amp; telah diproses</span>
               </div>
             </div>
           </div>
@@ -279,7 +409,7 @@ export default function AdministrasiSuratPage() {
                           </div>
                         </td>
                         <td className="py-2.5 font-semibold text-slate-700 dark:text-slate-300 text-center">
-                          {item.count}
+                          {loadingStats ? "..." : item.count.toLocaleString("id-ID")}
                         </td>
                         <td className="py-2.5 text-right pr-2">
                           <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10.5px] font-bold bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400 border border-emerald-200/50">
