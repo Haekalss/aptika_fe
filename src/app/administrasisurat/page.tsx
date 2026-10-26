@@ -95,8 +95,8 @@ export default function AdministrasiSuratPage() {
 
           <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6 px-7 py-7 sm:px-9">
             <div className="flex items-center gap-5 max-w-xl">
-              <div className="w-15 h-15 rounded-2xl bg-white/15 backdrop-blur-md border border-white/20 flex items-center justify-center text-cyan-200 shadow-lg flex-shrink-0">
-                <FileText size={32} className="text-cyan-300" />
+              <div className="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center text-white shadow-lg flex-shrink-0">
+                <FileText size={34} className="text-white drop-shadow-sm" />
               </div>
               <div>
                 <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white mb-2 leading-tight">
@@ -198,47 +198,47 @@ export default function AdministrasiSuratPage() {
         </div>
 
         {/* ── Bottom Section: Total Surat & Surat Diproses Sesuai Persis Gambar ── */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           {/* Kolom Kiri: Total Surat & Surat Diproses (Span 6) */}
-          <div className="lg:col-span-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="lg:col-span-6 grid grid-cols-1 sm:grid-cols-2 gap-4 items-start">
             {/* Card 1: Total Surat */}
-            <div className="bg-white/70 dark:bg-[#071733]/80 backdrop-blur-md rounded-3xl p-5 sm:p-6 border border-slate-100 dark:border-slate-800 shadow-sm flex flex-col justify-between min-h-[155px]">
+            <div className="bg-white/70 dark:bg-[#071733]/80 backdrop-blur-md rounded-3xl p-5 border border-slate-100 dark:border-slate-800 shadow-sm h-fit">
               <div className="flex items-center gap-4">
-                <div className="w-13 h-13 rounded-2xl bg-blue-500 flex items-center justify-center text-white shadow-sm flex-shrink-0">
-                  <FileText size={26} />
+                <div className="w-12 h-12 rounded-2xl bg-blue-500 flex items-center justify-center text-white shadow-sm flex-shrink-0">
+                  <FileText size={24} />
                 </div>
                 <div>
                   <div className="text-xs font-bold text-slate-500 dark:text-slate-400">
                     Total Surat
                   </div>
-                  <div className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight mt-0.5">
+                  <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight mt-0.5 leading-none">
                     1.248
                   </div>
                 </div>
               </div>
-              <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-600 mt-4 pt-3 border-t border-slate-100 dark:border-slate-800">
-                <TrendingUp size={15} />
+              <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-600 mt-3.5 pt-3 border-t border-slate-100 dark:border-slate-800">
+                <TrendingUp size={14} />
                 <span>12% dari bulan lalu</span>
               </div>
             </div>
 
             {/* Card 2: Surat Diproses */}
-            <div className="bg-white/70 dark:bg-[#071733]/80 backdrop-blur-md rounded-3xl p-5 sm:p-6 border border-slate-100 dark:border-slate-800 shadow-sm flex flex-col justify-between min-h-[155px]">
+            <div className="bg-white/70 dark:bg-[#071733]/80 backdrop-blur-md rounded-3xl p-5 border border-slate-100 dark:border-slate-800 shadow-sm h-fit">
               <div className="flex items-center gap-4">
-                <div className="w-13 h-13 rounded-2xl bg-sky-500 flex items-center justify-center text-white shadow-sm flex-shrink-0">
-                  <Clock size={26} />
+                <div className="w-12 h-12 rounded-2xl bg-sky-500 flex items-center justify-center text-white shadow-sm flex-shrink-0">
+                  <Clock size={24} />
                 </div>
                 <div>
                   <div className="text-xs font-bold text-slate-500 dark:text-slate-400">
                     Surat Diproses
                   </div>
-                  <div className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight mt-0.5">
+                  <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight mt-0.5 leading-none">
                     892
                   </div>
                 </div>
               </div>
-              <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-600 mt-4 pt-3 border-t border-slate-100 dark:border-slate-800">
-                <TrendingUp size={15} />
+              <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-600 mt-3.5 pt-3 border-t border-slate-100 dark:border-slate-800">
+                <TrendingUp size={14} />
                 <span>8% dari bulan lalu</span>
               </div>
             </div>
