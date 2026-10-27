@@ -8,7 +8,9 @@ import {
   fetchReviuCctvDetail, downloadReviuCctvDocx, formatTanggalIndo, formatPeriode,
   formatTanggalRingkas, reviuCctvErrMsg, ReviuCctv,
 } from "@/services/smki/reviuCctvService";
-
+import TteSpecimen from "@/components/smki/TteSpecimen";
+import TtePicker from "@/components/smki/TtePicker";
+import { TteOption } from "@/services/tteService";
 /** Jumlah baris minimum pada tabel (sama dengan template .docx: 3 baris). */
 const MIN_ROWS = 3;
 
@@ -24,6 +26,7 @@ export default function PrintReviuCctvPage() {
   const id = params?.id as string;
   const [item, setItem] = useState<ReviuCctv | null>(null);
   const [loading, setLoading] = useState(true);
+  const [penandatangan, setPenandatangan] = useState<TteOption | null>(null);
 
   useEffect(() => {
     if (!id) return;
@@ -41,7 +44,10 @@ export default function PrintReviuCctvPage() {
 
   const handleDocx = async () => {
     try {
-      await downloadReviuCctvDocx(id);
+      await downloadReviuCctvDocx(id, {
+        nama: penandatangan?.nama ?? null,
+        nip: penandatangan?.nip ?? null,
+      });
       toast.success("Dokumen FR-038 (.docx) berhasil diunduh.");
     } catch {
       toast.error("Gagal mengunduh dokumen FR-038.");
@@ -72,29 +78,44 @@ export default function PrintReviuCctvPage() {
   return (
     <div className="min-h-screen bg-slate-100 py-6 px-4 print:bg-white print:p-0 print:min-h-0">
       {/* Floating action bar - hidden on print */}
-      <div className="max-w-[13in] mx-auto mb-6 flex items-center justify-between gap-4 print:hidden bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
-        <button
-          onClick={() => router.push("/smki/reviu-cctv")}
-          className="flex items-center gap-1.5 px-4 py-2 rounded-xl border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-semibold transition"
-        >
-          <ChevronLeft className="w-4 h-4 text-slate-500" />
-          <span>Kembali ke Daftar</span>
-        </button>
-        <div className="flex items-center gap-2">
+      <div className="max-w-[13in] mx-auto mb-6 print:hidden bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+        <div className="flex items-center justify-between gap-4">
           <button
-            onClick={handleDocx}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 text-xs font-semibold transition"
+            onClick={() => router.push("/smki/reviu-cctv")}
+            className="flex items-center gap-1.5 px-4 py-2 rounded-xl border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-semibold transition"
           >
-            <FileDown className="w-4 h-4" />
-            <span>Unduh Word (.docx)</span>
+            <ChevronLeft className="w-4 h-4 text-slate-500" />
+            <span>Kembali ke Daftar</span>
           </button>
-          <button
-            onClick={() => window.print()}
-            className="flex items-center gap-2 px-5 py-2 rounded-xl bg-[#065f46] hover:bg-[#047857] text-white text-xs font-semibold shadow-xs transition"
-          >
-            <Printer className="w-4 h-4" />
-            <span>Cetak Dokumen (Print / PDF)</span>
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleDocx}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 text-xs font-semibold transition"
+            >
+              <FileDown className="w-4 h-4" />
+              <span>Unduh Word (.docx)</span>
+            </button>
+            <button
+              onClick={() => window.print()}
+              className="flex items-center gap-2 px-5 py-2 rounded-xl bg-[#065f46] hover:bg-[#047857] text-white text-xs font-semibold shadow-xs transition"
+            >
+              <Printer className="w-4 h-4" />
+              <span>Cetak Dokumen (Print / PDF)</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Pilih penanda tangan tanpa mengetik NIP */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-3 border-t border-slate-100">
+          <TtePicker
+            label="Spesimen TTE Pengelola CCTV"
+            value={penandatangan?.key ?? ""}
+            onChange={setPenandatangan}
+          />
+          <p className="text-[11px] text-slate-500 self-end pb-2">
+            Pilih dari daftar agar blok tanda tangan terisi otomatis. Biarkan
+            kosong untuk mengikuti data formulir.
+          </p>
         </div>
       </div>
 
@@ -175,10 +196,26 @@ export default function PrintReviuCctvPage() {
         {/* Tanda tangan pengelola CCTV */}
         <div style={{ marginTop: "0.4in", fontSize: "10pt", pageBreakInside: "avoid", breakInside: "avoid" }}>
           <div style={{ paddingLeft: "0.4in" }}>Pengelola CCTV,</div>
-          <div style={{ height: "1.1in" }} />
+          {penandatangan ? (
+            <div style={{ paddingLeft: "0.4in", margin: "6px 0 4px" }}>
+              <TteSpecimen nip={penandatangan.nip} nama={penandatangan.nama} width={360} />
+            </div>
+          ) : item.pengelola_nama || item.pengelola_nip ? (
+            <div style={{ paddingLeft: "0.4in", margin: "6px 0 4px" }}>
+              <TteSpecimen
+                nip={item.pengelola_nip}
+                nama={item.pengelola_nama}
+                width={300}
+              />
+            </div>
+          ) : (
+            <div style={{ height: "1.1in" }} />
+          )}
           <div>
-            ({item.pengelola_nama || "……………………………….."})
-            {item.pengelola_nip ? <div>NIP. {item.pengelola_nip}</div> : null}
+            ({penandatangan?.nama || item.pengelola_nama || "……………………………….."})
+            {penandatangan?.nip || item.pengelola_nip ? (
+              <div>NIP. {penandatangan?.nip || item.pengelola_nip}</div>
+            ) : null}
           </div>
         </div>
       </div>

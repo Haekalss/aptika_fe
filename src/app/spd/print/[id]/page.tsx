@@ -3,6 +3,29 @@
 import React, { useEffect, useState, use } from "react";
 import { useRouter } from "next/navigation";
 import { getSpdById, fromApiSpdItem, getDetailPerjalananById, fromApiDetailPerjalanan } from "@/services/api";
+import TteSpecimen from "@/components/smki/TteSpecimen";
+
+/**
+ * Wadah spesimen TTE untuk blok tanda tangan.
+ *
+ * Tinggi wadah dikunci mengikuti rasio gambar (861x348), sehingga saat
+ * spesimen tidak ditemukan ruang tanda tangan tetap ada dan tata letak
+ * dokumen tidak bergeser.
+ */
+function TteSlot({ nip, nama, width = 260 }: { nip?: string | null; nama?: string | null; width?: number }) {
+  return (
+    <div
+      style={{
+        height: Math.round((width * 348) / 861),
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      <TteSpecimen nip={nip} nama={nama} width={width} />
+    </div>
+  );
+}
 
 type PrintPageProps = {
   params: Promise<{ id: string }>;
@@ -307,7 +330,7 @@ export default function SpdPrintPage({ params }: PrintPageProps) {
             <div style={{ fontWeight: "bold" }}>
               {ppkLabel.includes("Sekretaris") ? "Sekretaris," : "Kepala Bidang APTIKA,"}
             </div>
-            <div style={{ height: "30px" }}></div>
+            <TteSlot nip={ppkNip} nama={ppkName} width={180} />
             <div style={{ fontWeight: "bold", textDecoration: "underline" }}>{ppkName}</div>
             <div>NIP. {ppkNip}</div>
           </div>
@@ -395,7 +418,7 @@ export default function SpdPrintPage({ params }: PrintPageProps) {
                 <div className="signature-section" style={{ display: "flex", justifyContent: "flex-end", marginTop: "15px", textAlign: "center" }}>
                   <div style={{ width: "200px" }}>
                     <div style={{ fontWeight: "bold" }}>Pejabat Pembuat Komitmen</div>
-                    <div style={{ height: "50px" }}></div>
+                    <TteSlot nip={ppkNip} nama={ppkName} width={180} />
                     <div style={{ fontWeight: "bold", textDecoration: "underline" }}>{ppkName}</div>
                     <div>NIP. {ppkNip}</div>
                   </div>
@@ -888,7 +911,7 @@ export default function SpdPrintPage({ params }: PrintPageProps) {
                 </table>
                 <div style={{ marginTop: "15px", textAlign: "center" }}>
                   <div>{signerLabel}</div>
-                  <div style={{ height: "65px" }}></div>
+                  <TteSlot nip={signerNip} nama={signerName} width={260} />
                   <div style={{ fontWeight: "bold", textDecoration: "underline" }}>{signerName}</div>
                   <div style={{ fontSize: "12px" }}>{signerTitle}</div>
                   <div>NIP. {signerNip}</div>

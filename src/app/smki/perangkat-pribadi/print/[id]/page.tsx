@@ -7,6 +7,7 @@ import toast from "react-hot-toast";
 import {
   fetchPerangkatPribadiDetail, downloadPerangkatPribadiDocx, formatTanggalIndo, perangkatErrMsg, PerangkatPribadi,
 } from "@/services/smki/perangkatPribadiService";
+import TteSpecimen from "@/components/smki/TteSpecimen";
 
 /** Jumlah baris minimum tabel perangkat (sama dengan template .docx: 5 baris). */
 const MIN_ROWS = 5;
@@ -236,19 +237,25 @@ export default function PrintPerangkatPribadiPage() {
                     {item.ditandatangani_di || "Bandung"},{" "}
                     {item.tanggal_ttd ? formatTanggalIndo(item.tanggal_ttd) : "Tanggal Bulan Tahun"}
                   </p>
-                  <div
-                    style={{
-                      marginTop: "0.25in",
-                      height: "0.975in",
-                      border: "1.5px dashed #4472c4",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      padding: "0 0.3in",
-                    }}
-                  >
-                    Spesimen TTE Kepala Unit Kerja
-                  </div>
+                  {item.nip || item.nama ? (
+                    <div style={{ marginTop: "0.15in", display: "flex", justifyContent: "center" }}>
+                      <TteSpecimen nip={item.nip} nama={item.nama} width={300} />
+                    </div>
+                  ) : (
+                    <div
+                      style={{
+                        marginTop: "0.25in",
+                        height: "0.975in",
+                        border: "1.5px dashed #4472c4",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        padding: "0 0.3in",
+                      }}
+                    >
+                      Spesimen TTE Kepala Unit Kerja
+                    </div>
+                  )}
                 </div>
               </td>
             </tr>

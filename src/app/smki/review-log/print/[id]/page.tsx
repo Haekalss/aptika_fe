@@ -8,6 +8,7 @@ import {
   fetchReviewLogDetail, downloadReviewLogDocx, formatTanggalIndo, formatPeriode,
   formatTanggalRingkas, formatWaktu, reviewLogErrMsg, ReviewLog,
 } from "@/services/smki/reviewLogService";
+import TteSpecimen from "@/components/smki/TteSpecimen";
 
 /** Jumlah baris log minimum pada tabel (sama dengan template .docx: 8 baris). */
 const MIN_ROWS = 8;
@@ -220,6 +221,9 @@ export default function PrintReviewLogPage() {
                         <td key={s.judul} style={{ border: line, borderBottom: "none", ...(i === 0 ? { borderLeft: "none" } : { borderRight: "none" }), textAlign: "center", verticalAlign: "top", fontSize: "10pt", padding: 0 }}>
                           <div style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", minHeight: "1.55in", padding: "2px 0 4px" }}>
                             <span>{s.judul}</span>
+                            <div style={{ display: "flex", justifyContent: "center", margin: "4px 0" }}>
+                              <TteSpecimen nip={s.nip} nama={s.nama} width={275} />
+                            </div>
                             <span>
                               ({s.nama || "……………………………….."})
                               {s.nip ? <div style={{ fontSize: "9pt" }}>NIP. {s.nip}</div> : null}

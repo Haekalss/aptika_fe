@@ -76,8 +76,18 @@ export const deleteReviuCctv = async (id: number | string) => {
 };
 
 /** Unduh formulir FR-038 (.docx) hasil pengisian template asli. */
-export const downloadReviuCctvDocx = async (id: number | string): Promise<void> => {
-  const res = await api.get(`/smki/reviu-cctv/${id}/export-docx`, { responseType: "blob" });
+export const downloadReviuCctvDocx = async (
+  id: number | string,
+  tte?: { nama?: string | null; nip?: string | null }
+): Promise<void> => {
+  const params: Record<string, string> = {};
+  if (tte?.nama) params.nama = tte.nama;
+  if (tte?.nip) params.nip = tte.nip;
+
+  const res = await api.get(`/smki/reviu-cctv/${id}/export-docx`, {
+    responseType: "blob",
+    params: Object.keys(params).length ? params : undefined,
+  });
   const cd = res.headers?.["content-disposition"] as string | undefined;
   const m = cd ? /filename\*=UTF-8''([^;]+)|filename="([^"]+)"/.exec(cd) : null;
   const filename = m ? decodeURIComponent(m[1] ?? m[2]) : `FR-038_Reviu_CCTV_${id}.docx`;
