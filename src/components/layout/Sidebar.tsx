@@ -26,6 +26,7 @@ import {
   Building2,
   CalendarCheck,
   FileCheck,
+  MessageSquare,
   ClipboardCheck,
   Server,
   ServerCog,
@@ -271,6 +272,12 @@ export default function Sidebar() {
                 key: "smki/daftar-rekaman",
                 icon: FileText,
                 iconColor: "text-purple-600 bg-purple-50 border border-purple-200/60",
+              },
+              {
+                name: "Komunikasi",
+                key: "smki/komunikasi",
+                icon: MessageSquare,
+                iconColor: "text-emerald-600 bg-emerald-50 border border-emerald-200/60",
               },
               {
                 name: "Log Perubahan",

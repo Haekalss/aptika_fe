@@ -49,5 +49,6 @@ export const config = {
     "/pengelolaanaplikasi/:path*",
     "/manajementugasdigital/:path*",
     "/admin/:path*",
+    "/daftar-aset-ti/:path*",
   ],
 };
