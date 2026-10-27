@@ -35,6 +35,7 @@ import {
   DatabaseBackup,
   GitPullRequest,
   Siren,
+  Video,
 } from "lucide-react";
 import Avatar from "@/components/ui/Avatar";
 import { useSidebarStore } from "@/store/useSidebarStore";
@@ -311,6 +312,12 @@ export default function Sidebar() {
                 key: "smki/evaluasi-drp",
                 icon: DatabaseBackup,
                 iconColor: "text-violet-600 bg-violet-50 border border-violet-200/60",
+              },
+              {
+                name: "Checklist CCTV",
+                key: "smki/pemeriksaan-cctv",
+                icon: Video,
+                iconColor: "text-rose-600 bg-rose-50 border border-rose-200/60",
               },
               {
                 name: "Daftar Aset TI",
