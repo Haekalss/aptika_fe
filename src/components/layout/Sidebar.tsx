@@ -343,6 +343,12 @@ export default function Sidebar() {
                 iconColor: "text-emerald-600 bg-emerald-50 border border-emerald-200/60",
               },
               {
+                name: "Notulen",
+                key: "smki/notulen",
+                icon: FileText,
+                iconColor: "text-emerald-600 bg-emerald-50 border border-emerald-200/60",
+              },
+              {
                 name: "Formulir Tahunan",
                 key: "smki/laporan-audit-tahunan",
                 icon: FileText,
@@ -483,6 +489,7 @@ export default function Sidebar() {
                 </div>
                 <button
                   onClick={toggleCollapsed}
+                  suppressHydrationWarning
                   className="flex p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 hover:text-[#0b2146] dark:hover:text-white transition-all ml-2"
                   title="Collapse Sidebar"
                 >
