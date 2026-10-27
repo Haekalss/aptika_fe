@@ -34,6 +34,7 @@ import {
   Cctv,
   DatabaseBackup,
   GitPullRequest,
+  Siren,
 } from "lucide-react";
 import Avatar from "@/components/ui/Avatar";
 import { useSidebarStore } from "@/store/useSidebarStore";
@@ -376,6 +377,12 @@ export default function Sidebar() {
                 key: "smki/perubahan-it",
                 icon: GitPullRequest,
                 iconColor: "text-orange-600 bg-orange-50 border border-orange-200/60",
+              },
+              {
+                name: "Pelaporan Insiden",
+                key: "smki/pelaporan-insiden",
+                icon: Siren,
+                iconColor: "text-rose-600 bg-rose-50 border border-rose-200/60",
               },
             ],
           },
