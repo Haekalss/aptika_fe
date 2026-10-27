@@ -9,7 +9,7 @@ export function logErrorMessage(error: unknown, fallback: string): string {
   if (isAxiosError<{ message?: string; errors?: Record<string, string[]> }>(error)) {
     if ((error.response?.status ?? 0) >= 500) return "Server gagal memproses log perubahan. Coba lagi.";
     const details = Object.values(error.response?.data?.errors ?? {}).flat().filter(value => typeof value === "string");
-    return details.join(" ") || error.response?.data?.message || fallback;
+    return details[0] || error.response?.data?.message || fallback;
   }
   return error instanceof Error ? error.message : fallback;
 }
@@ -20,18 +20,13 @@ export async function listChangeLogs(): Promise<ChangeLog[]> {
   return response.data.data;
 }
 
-export async function createChangeLog(input: LogInput, clientLogId?: string): Promise<ChangeLog> {
-  const response = await api.post<{ success: boolean; data: ChangeLog }>(endpoint, { ...input, clientLogId }, options);
+export async function createChangeLog(input: LogInput, status: "Draf" | "Tersimpan"): Promise<ChangeLog> {
+  const response = await api.post<{ success: boolean; data: ChangeLog }>(endpoint, { ...input, status }, options);
   return response.data.data;
 }
 
-export async function updateChangeLog(id: string, input: LogInput): Promise<ChangeLog> {
-  const response = await api.put<{ success: boolean; data: ChangeLog }>(`${endpoint}/${id}`, input, options);
-  return response.data.data;
-}
-
-export async function finalizeChangeLog(id: string): Promise<ChangeLog> {
-  const response = await api.post<{ success: boolean; data: ChangeLog }>(`${endpoint}/${id}/finalisasi`, undefined, options);
+export async function updateChangeLog(id: string, input: LogInput, status: "Draf" | "Tersimpan"): Promise<ChangeLog> {
+  const response = await api.put<{ success: boolean; data: ChangeLog }>(`${endpoint}/${id}`, { ...input, status }, options);
   return response.data.data;
 }
 

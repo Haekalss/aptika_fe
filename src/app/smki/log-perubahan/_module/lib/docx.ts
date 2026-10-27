@@ -1,5 +1,4 @@
 import type { ChangeLog } from "./model";
-import { formatTime } from "./model";
 
 // A DOCX is an Open XML ZIP package. Stored entries avoid adding a compression dependency.
 function zip(entries: Record<string, string | Uint8Array>): Uint8Array<ArrayBuffer> {
@@ -49,10 +48,7 @@ function effectiveDate(value?: string): string {
 const paragraph = (text: string, bold = false, size = 20, align = "left") =>
   `<w:p><w:pPr><w:spacing w:after="60" w:line="240" w:lineRule="auto"/><w:jc w:val="${align}"/></w:pPr><w:r><w:rPr>${bold ? "<w:b/>" : ""}<w:sz w:val="${size}"/></w:rPr>${(text || "\u2014").split(/\r?\n/).map((line, i) => `${i ? "<w:br/>" : ""}<w:t xml:space="preserve">${escapeXml(line)}</w:t>`).join("")}</w:r></w:p>`;
 const cell = (content: string, width: number, span = 1) => `<w:tc><w:tcPr><w:tcW w:w="${width}" w:type="dxa"/>${span > 1 ? `<w:gridSpan w:val="${span}"/>` : ""}<w:vAlign w:val="center"/></w:tcPr>${content}</w:tc>`;
-const table = (rows: string, widths: number[]) => `<w:tbl><w:tblPr><w:tblW w:w="9640" w:type="dxa"/><w:tblLayout w:type="fixed"/><w:tblBorders>${["top", "left", "bottom", "right", "insideH", "insideV"].map(edge => `<w:${edge} w:val="single" w:sz="4" w:color="000000"/>`).join("")}</w:tblBorders><w:tblCellMar><w:top w:w="90" w:type="dxa"/><w:left w:w="110" w:type="dxa"/><w:bottom w:w="90" w:type="dxa"/><w:right w:w="110" w:type="dxa"/></w:tblCellMar></w:tblPr><w:tblGrid>${widths.map(width => `<w:gridCol w:w="${width}"/>`).join("")}</w:tblGrid>${rows}</w:tbl>`;
-const section = (title: string, rows: [string, string][]) => table(
-  `<w:tr><w:trPr><w:tblHeader/></w:trPr>${cell(paragraph(title, true), 9640, 2)}</w:tr>` +
-  rows.map(([label, value]) => `<w:tr>${cell(paragraph(label), 2600)}${cell(paragraph(value), 7040)}</w:tr>`).join(""), [2600, 7040]) + '<w:p><w:pPr><w:spacing w:after="0" w:line="100" w:lineRule="exact"/></w:pPr></w:p>';
+const table = (rows: string, widths: number[]) => `<w:tbl><w:tblPr><w:tblW w:w="${widths.reduce((sum, width) => sum + width, 0)}" w:type="dxa"/><w:tblLayout w:type="fixed"/><w:tblBorders>${["top", "left", "bottom", "right", "insideH", "insideV"].map(edge => `<w:${edge} w:val="single" w:sz="6" w:color="000000"/>`).join("")}</w:tblBorders><w:tblCellMar><w:top w:w="75" w:type="dxa"/><w:left w:w="80" w:type="dxa"/><w:bottom w:w="75" w:type="dxa"/><w:right w:w="80" w:type="dxa"/></w:tblCellMar></w:tblPr><w:tblGrid>${widths.map(width => `<w:gridCol w:w="${width}"/>`).join("")}</w:tblGrid>${rows}</w:tbl>`;
 const relationships = (items: [string, string, string][]) => `${xml}<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">${items.map(([id, type, target]) => `<Relationship Id="${id}" Type="${rel}/${type}" Target="${target}"/>`).join("")}</Relationships>`;
 
 export function createLogDocx(logs: ChangeLog[], logo?: Uint8Array): Uint8Array<ArrayBuffer> {
@@ -63,19 +59,22 @@ export function createLogDocx(logs: ChangeLog[], logo?: Uint8Array): Uint8Array<
     ["No. Dokumen", log.documentNumber ?? ""],
     ["No. Revisi", log.documentRevision ?? ""],
     ["Tanggal Berlaku", effectiveDate(log.documentEffectiveDate)],
-  ].map(([label, value]) => `<w:tr>${cell(paragraph(label, false, 16), 1400)}${cell(paragraph(value, false, 16), 1540)}</w:tr>`).join(""), [1400, 1540]).replace('w:w="9640"', 'w:w="2940"');
-  const header = table(`<w:tr>${cell(logo ? drawing : paragraph("DISKOMINFO\nJAWA BARAT", true, 16, "center"), 1300)}${cell(paragraph("FORMULIR LOG PERUBAHAN", true, 28, "center"), 5400)}${cell(metadata + '<w:p><w:pPr><w:spacing w:after="0" w:line="20" w:lineRule="exact"/></w:pPr></w:p>', 2940)}</w:tr>`, [1300, 5400, 2940]);
+  ].map(([label, value]) => `<w:tr>${cell(paragraph(label, false, 17), 1500)}${cell(paragraph(value, false, 17), 1700)}</w:tr>`).join(""), [1500, 1700]);
+  const header = table(`<w:tr>${cell(logo ? drawing : paragraph("DISKOMINFO\nJAWA BARAT", true, 16, "center"), 1600)}${cell(paragraph("FORMULIR LOG PERUBAHAN", true, 28, "center"), 10400)}${cell(metadata + '<w:p><w:pPr><w:spacing w:after="0" w:line="20" w:lineRule="exact"/></w:pPr></w:p>', 3200)}</w:tr>`, [1600, 10400, 3200]);
   return header;
   });
-  const sectionProperties = (index: number) => `<w:sectPr><w:headerReference w:type="default" r:id="header${index + 1}"/><w:footerReference w:type="default" r:id="footer"/><w:type w:val="nextPage"/><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="2350" w:right="1133" w:bottom="1200" w:left="1133" w:header="567" w:footer="567"/></w:sectPr>`;
-  const body = logs.map((log, index) => `${index ? `<w:p><w:pPr>${sectionProperties(index - 1)}</w:pPr></w:p>` : ""}${log.status === "Draf" ? paragraph("DRAF \u2014 belum difinalisasi", true, 20, "center") : ""}${section("A. IDENTITAS PERUBAHAN", [
-    ["Nomor log", log.number], ["Status dokumen", log.status], ["Judul perubahan", log.title], ["Sistem / aset", log.system], ["Unit kerja", log.unit], ["Pencatat", log.references?.recorderName ?? "Belum tercatat pada data lama"], ["Pelaksana", log.executor],
-    ["Waktu mulai (WIB)", formatTime(log.startedAt)], ["Waktu selesai (WIB)", formatTime(log.endedAt)],
-  ])}${section("B. RINCIAN PELAKSANAAN", [["Kondisi sebelum", log.before], ["Tindakan perubahan", log.action], ["Kondisi sesudah", log.after], ["Hasil pengujian", log.testing]])}${section("C. HASIL DAN TINDAK LANJUT", [
-    ["Hasil pelaksanaan", log.outcome], ["Kendala", log.obstacles], ["Perlu tindak lanjut", log.needsFollowUp ? "Ya" : "Tidak"], ["Tindak lanjut", log.followUp], ["Catatan pemulihan", log.recovery],
-  ])}${section("D. LAMPIRAN DAN PENCATATAN", [
-    ["Lampiran (daftar nama)", log.attachments.map((file, i) => `${i + 1}. ${file.name}`).join("\n")], ["Dibuat", formatTime(log.createdAt)], ["Diperbarui", formatTime(log.updatedAt)], ["Finalisasi", formatTime(log.finalizedAt)],
-  ])}`).join("");
+  const sectionProperties = (index: number) => `<w:sectPr><w:headerReference w:type="default" r:id="header${index + 1}"/><w:footerReference w:type="default" r:id="footer"/><w:type w:val="nextPage"/><w:pgSz w:w="16838" w:h="11906" w:orient="landscape"/><w:pgMar w:top="1550" w:right="700" w:bottom="850" w:left="700" w:header="350" w:footer="350"/></w:sectPr>`;
+  const columnWidths = [900, 1800, 1100, 1200, 1100, 1000, 1900, 1200, 1900, 1200, 1900];
+  const columnNames = ["No. RFC", "Deskripsi Perubahan", "Diminta Oleh", "Tanggal Permintaan", "Jenis Perubahan", "Prioritas Perubahan", "Dampak ke Lingkungan Produksi", "PIC Perubahan", "Catatan Hasil Perubahan", "Tanggal Rilis ke Produksi", "Catatan Hasil Evaluasi Perubahan"];
+  const body = logs.map((log, index) => {
+    const values = [log.rfcNumber, log.title, log.requestedBy, effectiveDate(log.requestedAt), log.changeType, log.priority, log.productionImpact, log.executor, log.resultNotes, effectiveDate(log.releasedAt), log.evaluationNotes];
+    const heading = `<w:tr><w:trPr><w:tblHeader/></w:trPr>${columnNames.map((name, i) => cell(paragraph(name, true, 17, "center"), columnWidths[i])).join("")}</w:tr>`;
+    const record = `<w:tr>${values.map((value, i) => cell(paragraph(value ?? "", false, 16), columnWidths[i])).join("")}</w:tr>`;
+    const signature = table(`<w:tr>${cell(paragraph("Dibuat Oleh:", true, 19), 7600)}${cell(paragraph("Disetujui Oleh:", true, 19), 7600)}</w:tr><w:tr>${cell(paragraph(log.preparedBy ?? "", false, 19), 7600)}${cell(paragraph(log.approvedBy ?? "", false, 19), 7600)}</w:tr>`, [7600, 7600]);
+    const oldNotes: [string, string][] = [["Kondisi sebelum", log.before], ["Tindakan", log.action], ["Kondisi sesudah", log.after], ["Hasil pengujian", log.testing], ["Hasil pelaksanaan", log.outcome], ["Kendala", log.obstacles], ["Tindak lanjut", log.followUp], ["Catatan pemulihan", log.recovery], ["Lampiran", log.attachments.map(file => file.name).join(", ")]];
+    const archive = oldNotes.filter(([, value]) => !!value).map(([label, value]) => paragraph(`${label}: ${value}`, false, 16)).join("");
+    return `${index ? `<w:p><w:pPr>${sectionProperties(index - 1)}</w:pPr></w:p>` : ""}${log.status === "Draf" ? paragraph("DRAF — isian belum lengkap", true, 18, "center") : ""}${paragraph("", false, 10)}${table(heading + record, columnWidths)}${paragraph("", false, 10)}${paragraph(`Diterbitkan Pada : ${effectiveDate(log.issuedAt) || "—"}`, true, 20)}${signature}${archive ? paragraph("Catatan historis dari format sebelumnya", true, 18) + archive : ""}`;
+  }).join("");
   return zip({
     "[Content_Types].xml": `${xml}<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Default Extension="png" ContentType="image/png"/>${[["document", "document.main"], ...logs.map((_, index) => [`header${index + 1}`, "header"]), ["footer1", "footer"], ["styles", "styles"]].map(([file, type]) => `<Override PartName="/word/${file}.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.${type}+xml"/>`).join("")}</Types>`,
     "_rels/.rels": relationships([["document", "officeDocument", "word/document.xml"]]),
