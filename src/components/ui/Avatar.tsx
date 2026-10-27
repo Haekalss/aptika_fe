@@ -15,7 +15,7 @@ export function resolveAvatarUrl(src?: string): string | undefined {
     return src;
   }
 
-  const defaultBackend = "https://beaptikatools.up.railway.app";
+  const defaultBackend = "https://aptika-be.wasmer.dev";
   const apiBase = process.env.NEXT_PUBLIC_API_URL || `${defaultBackend}/api`;
   const backendOrigin = apiBase.replace(/\/api\/?$/, "");
 
