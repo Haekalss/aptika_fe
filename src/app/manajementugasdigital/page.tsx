@@ -29,7 +29,8 @@ import {
   SlidersHorizontal,
   Search
 } from "lucide-react";
-import Link from "next/link";
+import Link from "next/link";
+
 import { SearchBar } from "@/components/ui/SearchBar";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -689,6 +690,130 @@ export default function ManajemenTugasDigitalPage() {
         <div className="absolute bottom-0 left-1/3 w-48 h-48 rounded-full bg-white/5 translate-y-1/2 pointer-events-none"/>
 
       </div>
+
+      {/* ── METRIC SUMMARY CARDS (Sprint & Proyek Overview) ── */}
+      {(() => {
+        const totalP = projects.length;
+        const activeP = projects.filter((p) => p.status === "active").length;
+        const completedP = projects.filter((p) => p.status === "completed").length;
+        const archivedP = projects.filter((p) => p.status === "archived").length;
+
+        return (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4.5">
+            {/* Total Proyek */}
+            <div
+              onClick={() => { setSelectedStatusFilter("ALL"); setCurrentPage(1); }}
+              className={`relative overflow-hidden bg-white/70 dark:bg-[#071733]/90 backdrop-blur-md rounded-2xl p-5 shadow-sm border transition-all cursor-pointer select-none group hover:-translate-y-0.5 ${
+                selectedStatusFilter === "ALL"
+                  ? "border-emerald-500 shadow-md ring-2 ring-emerald-500/20 bg-white dark:bg-slate-800/90"
+                  : "border-slate-200/80 dark:border-slate-800 hover:border-slate-300"
+              }`}
+            >
+              <div className="h-1 w-full absolute top-0 left-0 bg-gradient-to-r from-emerald-600 to-teal-400" />
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                  Total Proyek
+                </span>
+                <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-800/60 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform shadow-2xs">
+                  <Layers size={19} />
+                </div>
+              </div>
+              <div className="mt-3 flex items-baseline gap-2">
+                <h3 className="text-2xl font-black text-slate-900 dark:text-white leading-tight">{totalP}</h3>
+                <span className="text-[11px] font-semibold text-slate-400 dark:text-slate-400">proyek</span>
+              </div>
+              <p className="mt-2 text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                Seluruh proyek tim
+              </p>
+            </div>
+
+            {/* Proyek Aktif */}
+            <div
+              onClick={() => { setSelectedStatusFilter("active"); setCurrentPage(1); }}
+              className={`relative overflow-hidden bg-white/70 dark:bg-[#071733]/90 backdrop-blur-md rounded-2xl p-5 shadow-sm border transition-all cursor-pointer select-none group hover:-translate-y-0.5 ${
+                selectedStatusFilter === "active"
+                  ? "border-teal-500 shadow-md ring-2 ring-teal-500/20 bg-white dark:bg-slate-800/90"
+                  : "border-slate-200/80 dark:border-slate-800 hover:border-slate-300"
+              }`}
+            >
+              <div className="h-1 w-full absolute top-0 left-0 bg-gradient-to-r from-teal-500 to-cyan-400" />
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                  Proyek Berjalan
+                </span>
+                <div className="w-10 h-10 rounded-xl bg-teal-50 dark:bg-teal-950/60 text-teal-600 dark:text-teal-400 border border-teal-200/60 dark:border-teal-800/60 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform shadow-2xs">
+                  <Clock size={19} />
+                </div>
+              </div>
+              <div className="mt-3 flex items-baseline gap-2">
+                <h3 className="text-2xl font-black text-slate-900 dark:text-white leading-tight">{activeP}</h3>
+                <span className="text-[11px] font-semibold text-slate-400 dark:text-slate-400">aktif</span>
+              </div>
+              <p className="mt-2 text-[11px] text-teal-600 dark:text-teal-400 font-semibold flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-teal-500 animate-pulse" />
+                Sprint berjalan
+              </p>
+            </div>
+
+            {/* Proyek Selesai */}
+            <div
+              onClick={() => { setSelectedStatusFilter("completed"); setCurrentPage(1); }}
+              className={`relative overflow-hidden bg-white/70 dark:bg-[#071733]/90 backdrop-blur-md rounded-2xl p-5 shadow-sm border transition-all cursor-pointer select-none group hover:-translate-y-0.5 ${
+                selectedStatusFilter === "completed"
+                  ? "border-blue-500 shadow-md ring-2 ring-blue-500/20 bg-white dark:bg-slate-800/90"
+                  : "border-slate-200/80 dark:border-slate-800 hover:border-slate-300"
+              }`}
+            >
+              <div className="h-1 w-full absolute top-0 left-0 bg-gradient-to-r from-blue-500 to-indigo-400" />
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                  Proyek Selesai
+                </span>
+                <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-200/60 dark:border-blue-800/60 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform shadow-2xs">
+                  <CheckCircle2 size={19} />
+                </div>
+              </div>
+              <div className="mt-3 flex items-baseline gap-2">
+                <h3 className="text-2xl font-black text-slate-900 dark:text-white leading-tight">{completedP}</h3>
+                <span className="text-[11px] font-semibold text-slate-400 dark:text-slate-400">tuntas</span>
+              </div>
+              <p className="mt-2 text-[11px] text-blue-600 dark:text-blue-400 font-semibold flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+                Target tercapai
+              </p>
+            </div>
+
+            {/* Proyek Arsip */}
+            <div
+              onClick={() => { setSelectedStatusFilter("archived"); setCurrentPage(1); }}
+              className={`relative overflow-hidden bg-white/70 dark:bg-[#071733]/90 backdrop-blur-md rounded-2xl p-5 shadow-sm border transition-all cursor-pointer select-none group hover:-translate-y-0.5 ${
+                selectedStatusFilter === "archived"
+                  ? "border-slate-500 shadow-md ring-2 ring-slate-500/20 bg-white dark:bg-slate-800/90"
+                  : "border-slate-200/80 dark:border-slate-800 hover:border-slate-300"
+              }`}
+            >
+              <div className="h-1 w-full absolute top-0 left-0 bg-gradient-to-r from-slate-400 to-slate-500" />
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                  Proyek Arsip
+                </span>
+                <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200/60 dark:border-slate-700 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform shadow-2xs">
+                  <Archive size={19} />
+                </div>
+              </div>
+              <div className="mt-3 flex items-baseline gap-2">
+                <h3 className="text-2xl font-black text-slate-900 dark:text-white leading-tight">{archivedP}</h3>
+                <span className="text-[11px] font-semibold text-slate-400 dark:text-slate-400">diarsipkan</span>
+              </div>
+              <p className="mt-2 text-[11px] text-slate-500 dark:text-slate-400 font-semibold flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-slate-400" />
+                Histori arsip tugas
+              </p>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* Filter Bar */}
       <div className="flex flex-col md:flex-row md:items-center gap-3 bg-white dark:bg-[#0b1630] border border-slate-200 dark:border-slate-800/80 rounded-2xl px-4 py-3 shadow-sm">

@@ -490,11 +490,20 @@ export default function MasterDataPage() {
         </div>
       </div>
 
-      {/* Metric Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* Metric Summary Cards (Modern Interactive Tabs) */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4.5">
         {tabsConfig.map((t) => {
           const Icon = t.icon;
           const isActive = activeTab === t.id;
+          const gradStrip =
+            t.id === "rekening"
+              ? "from-cyan-500 to-blue-500"
+              : t.id === "angkutan"
+              ? "from-emerald-500 to-teal-400"
+              : t.id === "pegawai"
+              ? "from-purple-500 to-indigo-500"
+              : "from-amber-500 to-yellow-400";
+
           return (
             <div
               key={t.id}
@@ -502,41 +511,53 @@ export default function MasterDataPage() {
                 setActiveTab(t.id);
                 setSearch("");
               }}
-              className={`p-5 rounded-2xl border transition-all cursor-pointer select-none group ${
+              className={`relative overflow-hidden p-5 rounded-2xl border transition-all cursor-pointer select-none group hover:-translate-y-0.5 ${
                 isActive
-                  ? "bg-white dark:bg-slate-800/90 border-blue-500 shadow-md ring-2 ring-blue-500/20"
-                  : "bg-white/70 dark:bg-slate-900/60 border-slate-200 dark:border-slate-800 hover:border-slate-300 hover:bg-white dark:hover:bg-slate-800 shadow-xs"
+                  ? "bg-white dark:bg-slate-800/90 border-cyan-500 shadow-md ring-2 ring-cyan-500/20"
+                  : "bg-white/70 dark:bg-slate-900/60 border-slate-200/80 dark:border-slate-800 hover:border-slate-300 hover:bg-white dark:hover:bg-slate-800 shadow-xs"
               }`}
             >
+              {/* Active / Accent Top Strip */}
+              <div className={`h-1 w-full absolute top-0 left-0 bg-gradient-to-r ${gradStrip} ${isActive ? "opacity-100" : "opacity-0 group-hover:opacity-60"} transition-opacity`} />
+
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                   {t.label}
                 </span>
                 <div
-                  className={`p-2.5 rounded-xl transition-transform group-hover:scale-110 ${
+                  className={`p-2.5 rounded-xl transition-transform group-hover:scale-110 shadow-2xs ${
                     t.id === "rekening"
-                      ? "bg-blue-50 dark:bg-blue-950/60 text-blue-600 border border-blue-200/60"
+                      ? "bg-cyan-50 dark:bg-cyan-950/60 text-cyan-600 dark:text-cyan-400 border border-cyan-200/60 dark:border-cyan-800/60"
                       : t.id === "angkutan"
-                      ? "bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 border border-emerald-200/60"
+                      ? "bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-800/60"
                       : t.id === "pegawai"
-                      ? "bg-purple-50 dark:bg-purple-950/60 text-purple-600 border border-purple-200/60"
-                      : "bg-amber-50 dark:bg-amber-950/60 text-amber-600 border border-amber-200/60"
+                      ? "bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 border border-purple-200/60 dark:border-purple-800/60"
+                      : "bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 border border-amber-200/60 dark:border-amber-800/60"
                   }`}
                 >
-                  <Icon size={20} />
+                  <Icon size={19} />
                 </div>
               </div>
+
               <div className="mt-3 flex items-baseline gap-2">
-                <span className="text-2xl font-black text-slate-900 dark:text-white">
+                <span className="text-2xl font-black text-slate-900 dark:text-white leading-tight">
                   {t.count}
                 </span>
                 <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
                   item terdaftar
                 </span>
               </div>
-              <p className="mt-2 text-[11px] text-slate-400 dark:text-slate-400 line-clamp-1">
-                {t.usage}
-              </p>
+
+              <div className="mt-2.5 flex items-center justify-between text-[11px]">
+                <p className="text-slate-400 dark:text-slate-400 truncate max-w-[150px]">
+                  {t.usage}
+                </p>
+                {isActive && (
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-cyan-100 dark:bg-cyan-950 text-cyan-700 dark:text-cyan-300">
+                    Aktif
+                  </span>
+                )}
+              </div>
             </div>
           );
         })}
