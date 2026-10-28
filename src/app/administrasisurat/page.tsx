@@ -201,17 +201,55 @@ export default function AdministrasiSuratPage() {
   return (
     <ServiceRouteGuard requiredService="ADMINISTRASI_SURAT">
       <div className="flex flex-col gap-6 pb-6 font-sans">
-        {/* ── Top Hero Banner ── */}
-        <div className="relative overflow-hidden bg-gradient-to-r from-[#0b2146] via-[#163868] to-[#1d4ed8] rounded-3xl text-white shadow-xl min-h-[175px]">
-          <div className="absolute -right-16 -bottom-16 w-80 h-80 rounded-full bg-blue-400/20 blur-3xl pointer-events-none" />
-          <div className="absolute left-1/3 -top-12 w-60 h-60 rounded-full bg-cyan-400/15 blur-2xl pointer-events-none" />
+        {/* ── Top Hero Banner (Dengan Ornamen Dot Matrix, Orbital Rings & Crystal Glow) ── */}
+        <div className="relative overflow-hidden bg-gradient-to-r from-[#071733] via-[#0f2e60] to-[#1d4ed8] rounded-3xl text-white shadow-xl min-h-[185px]">
+          {/* Top Shimmer Beam */}
+          <div className="absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-cyan-300/60 to-transparent pointer-events-none z-20" />
+
+          {/* Dot Matrix Pattern Overlay */}
+          <div
+            className="absolute inset-0 opacity-[0.16] pointer-events-none"
+            style={{
+              backgroundImage: "radial-gradient(rgba(255,255,255,0.45) 1px, transparent 1px)",
+              backgroundSize: "18px 18px",
+            }}
+          />
+
+          {/* Ambient Glow Orbs */}
+          <div className="absolute -right-16 -bottom-16 w-80 h-80 rounded-full bg-blue-400/25 blur-3xl pointer-events-none" />
+          <div className="absolute left-1/4 -top-12 w-64 h-64 rounded-full bg-cyan-400/20 blur-2xl pointer-events-none" />
+
+          {/* Orbital Rings / Geometric Circles */}
+          <div className="absolute right-8 top-1/2 -translate-y-1/2 w-80 h-80 rounded-full border border-white/10 pointer-events-none" />
+          <div className="absolute right-20 top-1/2 -translate-y-1/2 w-60 h-60 rounded-full border border-cyan-300/15 pointer-events-none" />
+
+          {/* Sparkle Stars Decorative */}
+          <div className="absolute right-64 top-6 pointer-events-none opacity-80 animate-pulse">
+            <svg className="w-3.5 h-3.5 text-cyan-200" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z" />
+            </svg>
+          </div>
+          <div className="absolute right-12 bottom-5 pointer-events-none opacity-70 animate-pulse" style={{ animationDelay: "1s" }}>
+            <svg className="w-4 h-4 text-cyan-300" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z" />
+            </svg>
+          </div>
 
           <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6 px-7 py-7 sm:px-9">
-            <div className="flex items-center gap-5 max-w-xl">
-              <div className="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center text-white shadow-lg flex-shrink-0">
-                <FileText size={34} className="text-white drop-shadow-sm" />
+            <div className="flex items-start sm:items-center gap-5 max-w-xl">
+              {/* Left: Crystal Glowing Icon Box */}
+              <div className="relative flex-shrink-0 mt-0.5 sm:mt-0">
+                <div className="absolute -inset-1.5 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-2xl blur-md opacity-50" />
+                <div className="relative w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-md border border-white/40 flex items-center justify-center text-white shadow-xl shadow-blue-950/40">
+                  <FileText size={34} className="text-white drop-shadow-sm" />
+                </div>
               </div>
+
               <div>
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 backdrop-blur-md border border-white/25 text-xs font-bold text-cyan-200 tracking-wide mb-2.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-cyan-300 animate-pulse" />
+                  <span>LAYANAN TATA NASKAH KEDINASAN</span>
+                </div>
                 <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white mb-2 leading-tight">
                   Administrasi <span className="text-cyan-300">Surat</span>
                 </h1>

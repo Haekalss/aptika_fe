@@ -722,10 +722,34 @@ export default function Homepage() {
 
   return (
     <div className="flex flex-col gap-6 pb-6 font-sans">
-      {/* ── Hero Welcome Banner ── */}
-      <div className="relative overflow-hidden bg-gradient-to-r from-[#0b2146] via-[#163868] to-[#1d4ed8] rounded-3xl text-white shadow-xl min-h-[190px]">
-        <div className="absolute -right-20 -bottom-20 w-80 h-80 rounded-full bg-blue-400/15 blur-3xl pointer-events-none" />
-        <div className="absolute left-1/3 -top-10 w-60 h-60 rounded-full bg-cyan-400/15 blur-2xl pointer-events-none" />
+      {/* ── Hero Welcome Banner (Dengan Ornamen Dot Matrix, Orbital Rings & Shimmer Beam) ── */}
+      <div className="relative overflow-hidden bg-gradient-to-r from-[#071733] via-[#0f2e60] to-[#1d4ed8] rounded-3xl text-white shadow-xl min-h-[195px]">
+        {/* Top Shimmer Beam */}
+        <div className="absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-cyan-300/60 to-transparent pointer-events-none z-20" />
+
+        {/* Dot Matrix Pattern Overlay */}
+        <div
+          className="absolute inset-0 opacity-[0.16] pointer-events-none"
+          style={{
+            backgroundImage: "radial-gradient(rgba(255,255,255,0.45) 1px, transparent 1px)",
+            backgroundSize: "18px 18px",
+          }}
+        />
+
+        {/* Ambient Glow Orbs */}
+        <div className="absolute -right-20 -bottom-20 w-80 h-80 rounded-full bg-blue-400/25 blur-3xl pointer-events-none" />
+        <div className="absolute left-1/3 -top-10 w-64 h-64 rounded-full bg-cyan-400/20 blur-2xl pointer-events-none" />
+
+        {/* Orbital Geometric Circles */}
+        <div className="absolute right-1/4 top-1/2 -translate-y-1/2 w-80 h-80 rounded-full border border-white/10 pointer-events-none" />
+        <div className="absolute right-1/4 top-1/2 -translate-y-1/2 w-56 h-56 rounded-full border border-cyan-300/15 pointer-events-none" />
+
+        {/* Sparkle Star Decorative */}
+        <div className="absolute left-1/2 top-4 pointer-events-none opacity-80 animate-pulse">
+          <svg className="w-3.5 h-3.5 text-cyan-200" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z" />
+          </svg>
+        </div>
 
         <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6 px-6 py-6 sm:px-8">
           <div className="flex-1 min-w-0 max-w-lg">
