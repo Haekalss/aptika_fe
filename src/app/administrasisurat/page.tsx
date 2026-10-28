@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import {
   FileText,
@@ -12,6 +12,8 @@ import {
   TrendingUp,
   Clock,
   Layers,
+  RefreshCw,
+  CheckCircle2,
 } from "lucide-react";
 import ServiceRouteGuard from "@/components/auth/ServiceRouteGuard";
 import { useAuthStore } from "@/store/useAuthStore";
@@ -39,118 +41,111 @@ export default function AdministrasiSuratPage() {
   const [suratDiproses, setSuratDiproses] = useState(0);
   const [loadingStats, setLoadingStats] = useState(true);
 
-  useEffect(() => {
-    let isMounted = true;
+  const fetchAllSuratStats = useCallback(async () => {
+    setLoadingStats(true);
+    try {
+      const [ndRes, ptRes, krRes, spdRes, tiRes] = await Promise.allSettled([
+        getNotaDinasList({ per_page: 200 }),
+        getHasilPentestList({ per_page: 200 }),
+        getKerentananList({ per_page: 200 }),
+        getDetailPerjalananList().catch(() => getSpdList()),
+        getPerubahanItList(),
+      ]);
 
-    const fetchAllSuratStats = async () => {
-      setLoadingStats(true);
-      try {
-        const [ndRes, ptRes, krRes, spdRes, tiRes] = await Promise.allSettled([
-          getNotaDinasList({ per_page: 200 }),
-          getHasilPentestList({ per_page: 200 }),
-          getKerentananList({ per_page: 200 }),
-          getDetailPerjalananList().catch(() => getSpdList()),
-          getPerubahanItList(),
-        ]);
-
-        // 1. Nota Dinas
-        let ndTotal = 0;
-        let ndProcessed = 0;
-        if (ndRes.status === "fulfilled" && ndRes.value) {
-          const val = ndRes.value;
-          const list = Array.isArray(val?.data) ? val.data : [];
-          ndTotal = Number(val?.meta?.total ?? list.length) || 0;
-          ndProcessed = list.filter((x: any) => {
-            const st = String(x?.status || "").toLowerCase();
-            return st && st !== "draft" && st !== "draf";
-          }).length;
-        }
-
-        // 2. Hasil Pentest
-        let ptTotal = 0;
-        let ptProcessed = 0;
-        if (ptRes.status === "fulfilled" && ptRes.value) {
-          const val = ptRes.value;
-          const list = Array.isArray(val?.data) ? val.data : [];
-          ptTotal = Number(val?.meta?.total ?? list.length) || 0;
-          ptProcessed = list.filter((x: any) => {
-            const st = String(x?.status || "").toLowerCase();
-            return st && st !== "draft" && st !== "draf";
-          }).length;
-        }
-
-        // 3. Pemberitahuan Kerentanan
-        let krTotal = 0;
-        let krProcessed = 0;
-        if (krRes.status === "fulfilled" && krRes.value) {
-          const val = krRes.value;
-          const list = Array.isArray(val?.data) ? val.data : [];
-          krTotal = Number(val?.meta?.total ?? list.length) || 0;
-          krProcessed = list.filter((x: any) => {
-            const st = String(x?.status || "").toLowerCase();
-            return st && st !== "draft" && st !== "draf";
-          }).length;
-        }
-
-        // 4. SPD
-        let spdTotal = 0;
-        let spdProcessed = 0;
-        if (spdRes.status === "fulfilled" && spdRes.value) {
-          const val = spdRes.value;
-          const list = Array.isArray(val?.data)
-            ? val.data
-            : Array.isArray(val)
-            ? val
-            : [];
-          spdTotal = Number(val?.meta?.total ?? list.length) || 0;
-          spdProcessed = list.filter((x: any) => {
-            const st = String(x?.status || "").toLowerCase();
-            return st !== "draf" && st !== "draft";
-          }).length;
-        }
-
-        // 5. Permohonan TI
-        let tiTotal = 0;
-        let tiProcessed = 0;
-        if (tiRes.status === "fulfilled" && tiRes.value) {
-          const val = tiRes.value;
-          const list = Array.isArray(val)
-            ? val
-            : Array.isArray(val?.data)
-            ? val.data
-            : [];
-          tiTotal = list.length;
-          tiProcessed = list.filter((x: any) => {
-            const st = String(x?.status || "").toLowerCase();
-            return st !== "ditolak";
-          }).length;
-        }
-
-        if (isMounted) {
-          setCounts({
-            notaDinas: ndTotal,
-            pentest: ptTotal,
-            kerentanan: krTotal,
-            spd: spdTotal,
-            ti: tiTotal,
-          });
-          setTotalSurat(ndTotal + ptTotal + krTotal + spdTotal + tiTotal);
-          setSuratDiproses(
-            ndProcessed + ptProcessed + krProcessed + spdProcessed + tiProcessed
-          );
-        }
-      } catch (err) {
-        console.error("Gagal memuat ringkasan statistik surat:", err);
-      } finally {
-        if (isMounted) setLoadingStats(false);
+      // 1. Nota Dinas
+      let ndTotal = 0;
+      let ndProcessed = 0;
+      if (ndRes.status === "fulfilled" && ndRes.value) {
+        const val = ndRes.value;
+        const list = Array.isArray(val?.data) ? val.data : [];
+        ndTotal = Number(val?.meta?.total ?? list.length) || 0;
+        ndProcessed = list.filter((x: any) => {
+          const st = String(x?.status || "").toLowerCase();
+          return st && st !== "draft" && st !== "draf";
+        }).length;
       }
-    };
 
-    fetchAllSuratStats();
-    return () => {
-      isMounted = false;
-    };
+      // 2. Hasil Pentest
+      let ptTotal = 0;
+      let ptProcessed = 0;
+      if (ptRes.status === "fulfilled" && ptRes.value) {
+        const val = ptRes.value;
+        const list = Array.isArray(val?.data) ? val.data : [];
+        ptTotal = Number(val?.meta?.total ?? list.length) || 0;
+        ptProcessed = list.filter((x: any) => {
+          const st = String(x?.status || "").toLowerCase();
+          return st && st !== "draft" && st !== "draf";
+        }).length;
+      }
+
+      // 3. Pemberitahuan Kerentanan
+      let krTotal = 0;
+      let krProcessed = 0;
+      if (krRes.status === "fulfilled" && krRes.value) {
+        const val = krRes.value;
+        const list = Array.isArray(val?.data) ? val.data : [];
+        krTotal = Number(val?.meta?.total ?? list.length) || 0;
+        krProcessed = list.filter((x: any) => {
+          const st = String(x?.status || "").toLowerCase();
+          return st && st !== "draft" && st !== "draf";
+        }).length;
+      }
+
+      // 4. SPD
+      let spdTotal = 0;
+      let spdProcessed = 0;
+      if (spdRes.status === "fulfilled" && spdRes.value) {
+        const val = spdRes.value;
+        const list = Array.isArray(val?.data)
+          ? val.data
+          : Array.isArray(val)
+          ? val
+          : [];
+        spdTotal = Number(val?.meta?.total ?? list.length) || 0;
+        spdProcessed = list.filter((x: any) => {
+          const st = String(x?.status || "").toLowerCase();
+          return st !== "draf" && st !== "draft";
+        }).length;
+      }
+
+      // 5. Permohonan TI
+      let tiTotal = 0;
+      let tiProcessed = 0;
+      if (tiRes.status === "fulfilled" && tiRes.value) {
+        const val = tiRes.value;
+        const list = Array.isArray(val)
+          ? val
+          : Array.isArray(val?.data)
+          ? val.data
+          : [];
+        tiTotal = list.length;
+        tiProcessed = list.filter((x: any) => {
+          const st = String(x?.status || "").toLowerCase();
+          return st !== "ditolak";
+        }).length;
+      }
+
+      setCounts({
+        notaDinas: ndTotal,
+        pentest: ptTotal,
+        kerentanan: krTotal,
+        spd: spdTotal,
+        ti: tiTotal,
+      });
+      setTotalSurat(ndTotal + ptTotal + krTotal + spdTotal + tiTotal);
+      setSuratDiproses(
+        ndProcessed + ptProcessed + krProcessed + spdProcessed + tiProcessed
+      );
+    } catch (err) {
+      console.error("Gagal memuat ringkasan statistik surat:", err);
+    } finally {
+      setLoadingStats(false);
+    }
   }, []);
+
+  useEffect(() => {
+    fetchAllSuratStats();
+  }, [fetchAllSuratStats]);
 
   const allCards = [
     {
@@ -158,10 +153,7 @@ export default function AdministrasiSuratPage() {
       code: "SURAT_NOTA_DINAS",
       title: "Nota Dinas",
       desc: "Format standar komunikasi internal kedinasan untuk koordinasi antar unit kerja.",
-      icon: <FileText size={22} className="text-blue-600" />,
-      iconBg: "bg-blue-50 dark:bg-blue-950/60",
-      cardBorder: "border-slate-100 hover:border-blue-300 dark:border-slate-800",
-      arrowBg: "bg-blue-500 hover:bg-blue-600",
+      icon: FileText,
       count: counts.notaDinas,
       path: "/administrasisurat/nota-dinas",
     },
@@ -170,10 +162,7 @@ export default function AdministrasiSuratPage() {
       code: "SURAT_HASIL_PENTEST",
       title: "Pemberitahuan Hasil Pentest",
       desc: "Laporan resmi mengenai hasil pengujian penetrasi keamanan infrastruktur atau aplikasi.",
-      icon: <ShieldAlert size={22} className="text-amber-600" />,
-      iconBg: "bg-amber-50 dark:bg-amber-950/60",
-      cardBorder: "border-slate-100 hover:border-amber-300 dark:border-slate-800",
-      arrowBg: "bg-amber-500 hover:bg-amber-600",
+      icon: ShieldAlert,
       count: counts.pentest,
       path: "/administrasisurat/hasil-pentest",
     },
@@ -182,10 +171,7 @@ export default function AdministrasiSuratPage() {
       code: "SURAT_KERENTANAN",
       title: "Pemberitahuan Kerentanan",
       desc: "Surat peringatan dini mengenai celah keamanan kritis yang ditemukan pada aplikasi.",
-      icon: <TriangleAlert size={22} className="text-rose-600" />,
-      iconBg: "bg-rose-50 dark:bg-rose-950/60",
-      cardBorder: "border-slate-100 hover:border-rose-300 dark:border-slate-800",
-      arrowBg: "bg-rose-500 hover:bg-rose-600",
+      icon: TriangleAlert,
       count: counts.kerentanan,
       path: "/administrasisurat/kerentanan",
     },
@@ -194,10 +180,7 @@ export default function AdministrasiSuratPage() {
       code: "SURAT_SPD",
       title: "SPD (Surat Perjalanan Dinas)",
       desc: "Dokumen penugasan resmi untuk perjalanan dinas pegawai di lingkungan kementerian.",
-      icon: <PlaneTakeoff size={22} className="text-purple-600" />,
-      iconBg: "bg-purple-50 dark:bg-purple-950/60",
-      cardBorder: "border-slate-100 hover:border-purple-300 dark:border-slate-800",
-      arrowBg: "bg-purple-500 hover:bg-purple-600",
+      icon: PlaneTakeoff,
       count: counts.spd,
       path: "/spd",
     },
@@ -206,10 +189,7 @@ export default function AdministrasiSuratPage() {
       code: "SURAT_PERMOHONAN_TI",
       title: "Permohonan TI",
       desc: "Surat pengajuan dukungan teknologi informasi, perangkat, atau pengembangan sistem.",
-      icon: <Laptop size={22} className="text-sky-600" />,
-      iconBg: "bg-sky-50 dark:bg-sky-950/60",
-      cardBorder: "border-slate-100 hover:border-sky-300 dark:border-slate-800",
-      arrowBg: "bg-sky-500 hover:bg-sky-600",
+      icon: Laptop,
       count: counts.ti,
       path: "/perubahan-it/dashboard",
     },
@@ -241,7 +221,7 @@ export default function AdministrasiSuratPage() {
               </div>
             </div>
 
-            {/* Ilustrasi 3D Kertas Melayang (Dinaikkan agar sejajar tengah banner) */}
+            {/* Ilustrasi 3D Kertas Melayang */}
             <div className="hidden lg:flex items-center justify-center relative w-[220px] h-[130px] -mt-3 flex-shrink-0 pointer-events-none select-none">
               <div className="absolute right-8 -top-2 w-24 h-32 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 shadow-xl transform rotate-12 flex flex-col p-3 justify-between">
                 <div className="w-8 h-2 bg-white/40 rounded-full" />
@@ -276,10 +256,10 @@ export default function AdministrasiSuratPage() {
           </div>
         </div>
 
-        {/* ── Section Pilih Jenis Surat ── */}
+        {/* ── Section Pilih Jenis Surat (Format Menggigit Serasi Dashboard & SMKI) ── */}
         <div className="bg-white/60 dark:bg-[#071733]/80 backdrop-blur-md rounded-3xl p-6 shadow-sm border border-white/70 dark:border-slate-800">
-          <div className="flex items-center gap-3.5 mb-5">
-            <div className="w-11 h-11 rounded-2xl bg-blue-100 dark:bg-blue-950/60 flex items-center justify-center flex-shrink-0 shadow-sm text-blue-600">
+          <div className="flex items-center gap-3.5 mb-6">
+            <div className="w-11 h-11 rounded-2xl bg-blue-100 dark:bg-blue-950/60 flex items-center justify-center flex-shrink-0 shadow-sm text-blue-600 dark:text-blue-400">
               <Layers size={22} />
             </div>
             <div>
@@ -292,133 +272,192 @@ export default function AdministrasiSuratPage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-            {cards.map((card) => (
-              <div
-                key={card.id}
-                onClick={() => router.push(card.path)}
-                className={`bg-white dark:bg-[#0b1e3d] rounded-2xl p-5 pt-6 border ${card.cardBorder} shadow-sm cursor-pointer hover:shadow-md hover:-translate-y-1 transition-all duration-200 group flex flex-col justify-between min-h-[205px]`}
-              >
-                <div className="flex items-start gap-3.5">
-                  <div
-                    className={`w-11 h-11 rounded-2xl flex items-center justify-center ${card.iconBg} shadow-sm flex-shrink-0 mt-1.5`}
-                  >
-                    {card.icon}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4.5">
+            {cards.map((card) => {
+              const WatermarkIcon = card.icon;
+              return (
+                <div
+                  key={card.id}
+                  onClick={() => router.push(card.path)}
+                  className="relative overflow-hidden bg-white dark:bg-[#0b1e3d] rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm cursor-pointer hover:-translate-y-1.5 hover:shadow-xl hover:shadow-blue-500/15 hover:border-blue-200 dark:hover:border-blue-800 transition-all duration-300 group flex flex-col min-h-[205px]"
+                >
+                  {/* Strip warna biru khas Administrasi Surat */}
+                  <div className="h-1.5 w-full bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500" />
+
+                  {/* Ikon watermark */}
+                  <div className="absolute -right-5 -bottom-5 opacity-[0.06] group-hover:opacity-[0.14] group-hover:scale-110 group-hover:-rotate-6 transition-all duration-500 pointer-events-none text-blue-600 dark:text-blue-400">
+                    <WatermarkIcon size={118} strokeWidth={1.5} />
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-sm font-extrabold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-snug">
+
+                  <div className="relative flex flex-col flex-1 p-5">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-gradient-to-br from-blue-600 via-indigo-600 to-cyan-600 shadow-lg shadow-blue-500/25 text-white group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
+                        <WatermarkIcon size={22} className="text-white" />
+                      </div>
+                    </div>
+
+                    <h3 className="mt-4 text-[15px] font-extrabold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-snug">
                       {card.title}
                     </h3>
-                    <p className="text-xs sm:text-[12.5px] text-slate-600 dark:text-slate-300 leading-relaxed mt-1 line-clamp-3">
+                    <p className="text-xs sm:text-[12.5px] text-slate-500 dark:text-slate-300 leading-relaxed mt-1 line-clamp-3">
                       {card.desc}
                     </p>
-                  </div>
-                </div>
 
-                <div className="flex items-center justify-end mt-auto pt-4 pr-1 pb-1">
-                  <div
-                    className={`w-8 h-8 rounded-full flex items-center justify-center ${card.arrowBg} transition-all group-hover:scale-105 shadow-xs`}
-                  >
-                    <ArrowRight size={14} className="text-white" />
+                    <div className="flex items-center justify-end mt-auto pt-4">
+                      <div className="h-9 min-w-[36px] px-2.5 group-hover:px-4 rounded-full flex items-center justify-center gap-1.5 bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-600 text-white shadow-md shadow-blue-500/20 transition-all duration-300">
+                        <span className="text-xs font-bold max-w-0 overflow-hidden group-hover:max-w-[60px] transition-all duration-300 whitespace-nowrap">
+                          Buka
+                        </span>
+                        <ArrowRight size={15} className="flex-shrink-0" />
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 
         {/* ── Bottom Section: Total Surat & Surat Diproses (Real-Time) ── */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-          {/* Kolom Kiri: Total Surat & Surat Diproses (Span 6) */}
-          <div className="lg:col-span-6 grid grid-cols-1 sm:grid-cols-2 gap-4 items-start">
+          {/* Kolom Kiri: Total Surat & Surat Diproses (Span 5) */}
+          <div className="lg:col-span-5 grid grid-cols-1 sm:grid-cols-2 gap-4.5 items-start">
             {/* Card 1: Total Surat */}
-            <div className="bg-white/70 dark:bg-[#071733]/80 backdrop-blur-md rounded-3xl p-5 border border-slate-100 dark:border-slate-800 shadow-sm h-fit">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-2xl bg-blue-500 flex items-center justify-center text-white shadow-sm flex-shrink-0">
-                  <FileText size={24} />
-                </div>
-                <div>
-                  <div className="text-xs font-bold text-slate-500 dark:text-slate-400">
-                    Total Surat
-                  </div>
-                  <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight mt-0.5 leading-none">
-                    {loadingStats ? "..." : totalSurat.toLocaleString("id-ID")}
-                  </div>
-                </div>
+            <div className="relative overflow-hidden bg-white/70 dark:bg-[#071733]/80 backdrop-blur-md rounded-3xl border border-white/70 dark:border-slate-800 shadow-sm group hover:shadow-md transition-all">
+              <div className="h-1.5 w-full bg-gradient-to-r from-blue-600 to-indigo-600" />
+              <div className="absolute -right-4 -bottom-4 opacity-[0.06] group-hover:opacity-[0.10] transition-opacity pointer-events-none text-blue-600 dark:text-blue-400">
+                <FileText size={105} strokeWidth={1.5} />
               </div>
-              <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-600 mt-3.5 pt-3 border-t border-slate-100 dark:border-slate-800">
-                <TrendingUp size={14} />
-                <span>Data real-time seluruh jenis surat</span>
+              <div className="p-5.5 relative z-10 flex flex-col justify-between min-h-[160px]">
+                <div className="flex items-center gap-4">
+                  <div className="w-13 h-13 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-blue-500/30 flex-shrink-0">
+                    <FileText size={24} />
+                  </div>
+                  <div>
+                    <div className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                      Total Surat
+                    </div>
+                    <div className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight mt-1 leading-none">
+                      {loadingStats ? "..." : totalSurat.toLocaleString("id-ID")}
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1.5 text-xs font-bold text-blue-600 dark:text-blue-400 mt-4 pt-3 border-t border-slate-100 dark:border-slate-800">
+                  <CheckCircle2 size={14} className="text-blue-500" />
+                  <span>Akumulasi 5 jenis surat</span>
+                </div>
               </div>
             </div>
 
             {/* Card 2: Surat Diproses */}
-            <div className="bg-white/70 dark:bg-[#071733]/80 backdrop-blur-md rounded-3xl p-5 border border-slate-100 dark:border-slate-800 shadow-sm h-fit">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-2xl bg-sky-500 flex items-center justify-center text-white shadow-sm flex-shrink-0">
-                  <Clock size={24} />
-                </div>
-                <div>
-                  <div className="text-xs font-bold text-slate-500 dark:text-slate-400">
-                    Surat Diproses
-                  </div>
-                  <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight mt-0.5 leading-none">
-                    {loadingStats ? "..." : suratDiproses.toLocaleString("id-ID")}
-                  </div>
-                </div>
+            <div className="relative overflow-hidden bg-white/70 dark:bg-[#071733]/80 backdrop-blur-md rounded-3xl border border-white/70 dark:border-slate-800 shadow-sm group hover:shadow-md transition-all">
+              <div className="h-1.5 w-full bg-gradient-to-r from-cyan-500 to-teal-500" />
+              <div className="absolute -right-4 -bottom-4 opacity-[0.06] group-hover:opacity-[0.10] transition-opacity pointer-events-none text-cyan-600 dark:text-cyan-400">
+                <Clock size={105} strokeWidth={1.5} />
               </div>
-              <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-600 mt-3.5 pt-3 border-t border-slate-100 dark:border-slate-800">
-                <TrendingUp size={14} />
-                <span>Surat aktif &amp; telah diproses</span>
+              <div className="p-5.5 relative z-10 flex flex-col justify-between min-h-[160px]">
+                <div className="flex items-center gap-4">
+                  <div className="w-13 h-13 rounded-2xl bg-gradient-to-br from-cyan-500 to-teal-500 flex items-center justify-center text-white shadow-lg shadow-cyan-500/30 flex-shrink-0">
+                    <Clock size={24} />
+                  </div>
+                  <div>
+                    <div className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                      Surat Diproses
+                    </div>
+                    <div className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight mt-1 leading-none">
+                      {loadingStats ? "..." : suratDiproses.toLocaleString("id-ID")}
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400 mt-4 pt-3 border-t border-slate-100 dark:border-slate-800">
+                  <TrendingUp size={14} className="text-emerald-500" />
+                  <span>Status aktif &amp; berjalan</span>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Kolom Kanan: Ringkasan Modul Table (Span 6) */}
-          <div className="lg:col-span-6 bg-white/70 dark:bg-[#071733]/80 backdrop-blur-md rounded-3xl p-5 sm:p-6 border border-white/70 dark:border-slate-800 shadow-sm flex flex-col justify-between">
-            <div>
-              <div className="flex items-center gap-3 mb-4 pb-2.5 border-b border-slate-100 dark:border-slate-800">
-                <div className="w-8 h-8 rounded-xl bg-blue-50 dark:bg-blue-950/60 flex items-center justify-center text-blue-600">
-                  <Layers size={17} />
+          {/* Kolom Kanan: Ringkasan Modul Table (Span 7) */}
+          <div className="lg:col-span-7 relative overflow-hidden bg-white/70 dark:bg-[#071733]/80 backdrop-blur-md rounded-3xl border border-white/70 dark:border-slate-800 shadow-sm flex flex-col">
+            <div className="h-1.5 w-full bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500" />
+            <div className="p-5 sm:p-6 flex flex-col flex-1">
+              <div className="flex items-center justify-between gap-3 mb-4 pb-3 border-b border-slate-100 dark:border-slate-800">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-blue-100 dark:bg-blue-950/60 flex items-center justify-center text-blue-600 dark:text-blue-400 flex-shrink-0">
+                    <Layers size={18} />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-extrabold text-slate-900 dark:text-white leading-tight">
+                      Ringkasan Modul
+                    </h3>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                      Statistik distribusi berkas per kategori surat
+                    </p>
+                  </div>
                 </div>
-                <h3 className="text-base font-extrabold text-slate-900 dark:text-white">
-                  Ringkasan Modul
-                </h3>
+                <button
+                  type="button"
+                  onClick={fetchAllSuratStats}
+                  title="Muat ulang statistik"
+                  className="w-8 h-8 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-blue-950/40 hover:border-blue-200 text-slate-500 hover:text-blue-600 flex items-center justify-center transition-colors flex-shrink-0"
+                >
+                  <RefreshCw size={14} className={loadingStats ? "animate-spin" : ""} />
+                </button>
               </div>
 
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                   <thead>
                     <tr className="border-b border-slate-100 dark:border-slate-800 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
-                      <th className="pb-2.5 font-bold">Nama Modul</th>
-                      <th className="pb-2.5 font-bold text-center">Jumlah Surat</th>
+                      <th className="pb-2.5 font-bold">Kategori Surat</th>
+                      <th className="pb-2.5 font-bold text-center">Distribusi</th>
+                      <th className="pb-2.5 font-bold text-center">Jumlah</th>
                       <th className="pb-2.5 font-bold text-right pr-2">Status</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-xs">
-                    {cards.map((item) => (
-                      <tr key={item.id} className="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition-colors">
-                        <td className="py-2.5">
-                          <div className="flex items-center gap-2.5">
-                            <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${item.iconBg} flex-shrink-0`}>
-                              {item.icon}
+                    {cards.map((item) => {
+                      const Icon = item.icon;
+                      const percentage = totalSurat > 0 ? Math.round((item.count / totalSurat) * 100) : 0;
+                      return (
+                        <tr
+                          key={item.id}
+                          onClick={() => router.push(item.path)}
+                          className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors cursor-pointer group"
+                        >
+                          <td className="py-3">
+                            <div className="flex items-center gap-3">
+                              <div className="w-8 h-8 rounded-xl bg-blue-50 dark:bg-blue-950/60 border border-blue-100 dark:border-blue-900/60 text-blue-600 dark:text-blue-400 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
+                                <Icon size={16} />
+                              </div>
+                              <span className="font-bold text-slate-800 dark:text-slate-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                                {item.title}
+                              </span>
                             </div>
-                            <span className="font-bold text-slate-800 dark:text-slate-200">
-                              {item.title}
+                          </td>
+                          <td className="py-3 px-2 text-center w-36">
+                            <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2 overflow-hidden">
+                              <div
+                                className="bg-gradient-to-r from-blue-600 to-cyan-500 h-2 rounded-full transition-all duration-500"
+                                style={{ width: `${Math.max(percentage, totalSurat > 0 ? 4 : 0)}%` }}
+                              />
+                            </div>
+                            <span className="text-[10px] text-slate-400 font-semibold mt-1 inline-block">
+                              {percentage}%
                             </span>
-                          </div>
-                        </td>
-                        <td className="py-2.5 font-semibold text-slate-700 dark:text-slate-300 text-center">
-                          {loadingStats ? "..." : item.count.toLocaleString("id-ID")}
-                        </td>
-                        <td className="py-2.5 text-right pr-2">
-                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10.5px] font-bold bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400 border border-emerald-200/50">
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                            Aktif
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
+                          </td>
+                          <td className="py-3 font-extrabold text-slate-800 dark:text-slate-200 text-center">
+                            {loadingStats ? "..." : item.count.toLocaleString("id-ID")}
+                          </td>
+                          <td className="py-3 text-right pr-2">
+                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10.5px] font-bold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400 border border-emerald-200/60">
+                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                              Aktif
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
