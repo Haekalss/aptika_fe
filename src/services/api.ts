@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000/api",
+  baseURL: process.env.NEXT_PUBLIC_API_URL || "https://aptika-be.wasmer.dev/api",
 });
 
 // ✅ Auto-attach token ke setiap request
@@ -2854,5 +2854,87 @@ export const updateScreeningKaryawan = async (
 
 export const deleteScreeningKaryawan = async (id: number) => {
   const res = await api.delete(`/smki/screening-karyawan/${id}`);
+  return res.data;
+};
+
+// ─── SMKI NOTULEN MANAGEMENT REVIEW (API) ─────────────────────
+export interface SmkiNotulenPesertaItem {
+  id?: number;
+  smki_notulen_id?: number;
+  pegawai_id?: number | null;
+  nama: string;
+  jabatan: string;
+  urutan?: number;
+}
+
+export interface SmkiNotulenAgendaItem {
+  id?: number;
+  smki_notulen_id?: number;
+  nomor_agenda: number;
+  agenda_item: string;
+  clause_iso?: string;
+  outcomes?: string;
+  actions_output?: string;
+  pic?: string;
+  tgl_penyelesaian?: string;
+}
+
+export interface SmkiNotulenData {
+  id?: number;
+  nomor_notulen: string;
+  no_dokumen?: string;
+  no_revisi?: string;
+  tanggal_berlaku?: string;
+  judul_formulir?: string;
+  judul_rapat: string;
+  tanggal: string;
+  waktu_mulai: string;
+  waktu_selesai: string;
+  zona_waktu?: string;
+  tempat: string;
+  notulis: string;
+  koordinator_smki: string;
+  tujuan?: string;
+  tindak_lanjut?: string;
+  pesertas?: SmkiNotulenPesertaItem[];
+  agendas?: SmkiNotulenAgendaItem[];
+  created_at?: string;
+  updated_at?: string;
+}
+
+export const getSmkiNotulenLookup = async () => {
+  const res = await api.get("/smki/notulen/lookup");
+  return res.data;
+};
+
+export const getSmkiNotulenList = async (params?: { search?: string; tahun?: string | number; page?: number; per_page?: number }) => {
+  const res = await api.get("/smki/notulen", { params });
+  return res.data;
+};
+
+export const getSmkiNotulenById = async (id: number | string) => {
+  const res = await api.get(`/smki/notulen/${id}`);
+  return res.data;
+};
+
+export const createSmkiNotulen = async (data: Partial<SmkiNotulenData>) => {
+  const res = await api.post("/smki/notulen", data);
+  return res.data;
+};
+
+export const updateSmkiNotulen = async (id: number | string, data: Partial<SmkiNotulenData>) => {
+  const res = await api.put(`/smki/notulen/${id}`, data);
+  return res.data;
+};
+
+export const deleteSmkiNotulen = async (id: number | string) => {
+  const res = await api.delete(`/smki/notulen/${id}`);
+  return res.data;
+};
+
+export const exportSmkiNotulenDocx = async (id: number | string) => {
+  const res = await api.get(`/smki/notulen/${id}/export-docx`, {
+    responseType: "blob",
+  });
   return res.data;
 };

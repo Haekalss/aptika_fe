@@ -37,7 +37,7 @@ body {
   background: #f8fafc;
   color: #0f2540;
   font-family: var(--font-plus-jakarta);
-  min-height: 100vh;
+  min-height: 100dvh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

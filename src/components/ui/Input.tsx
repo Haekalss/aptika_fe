@@ -13,10 +13,16 @@ export interface InputProps
 
 const Input = React.forwardRef<HTMLInputElement | HTMLTextAreaElement, InputProps>(
   ({ className = "", type = "text", label, error, helperText, leftIcon, rightIcon, textarea, rows = 3, ...props }, ref) => {
+    const generatedId = React.useId();
+    const inputId = props.id ?? generatedId;
+    const describedBy = [
+      props["aria-describedby"],
+      error ? `${inputId}-error` : helperText ? `${inputId}-hint` : undefined,
+    ].filter(Boolean).join(" ") || undefined;
     return (
       <div className="w-full flex flex-col gap-1.5 text-left">
         {label && (
-          <label className="text-xs font-semibold text-slate-700 dark:text-slate-200 tracking-wide select-none">
+          <label htmlFor={inputId} className="text-xs font-semibold text-slate-700 dark:text-slate-200 tracking-wide select-none">
             {label}
           </label>
         )}
@@ -41,7 +47,10 @@ const Input = React.forwardRef<HTMLInputElement | HTMLTextAreaElement, InputProp
                 ${className}
               `}
               ref={ref as React.Ref<HTMLTextAreaElement>}
-              {...(props as any)}
+              {...(props as unknown as React.TextareaHTMLAttributes<HTMLTextAreaElement>)}
+              id={inputId}
+              aria-invalid={error ? true : props["aria-invalid"]}
+              aria-describedby={describedBy}
             />
           ) : (
             <input
@@ -58,6 +67,9 @@ const Input = React.forwardRef<HTMLInputElement | HTMLTextAreaElement, InputProp
               `}
               ref={ref as React.Ref<HTMLInputElement>}
               {...props}
+              id={inputId}
+              aria-invalid={error ? true : props["aria-invalid"]}
+              aria-describedby={describedBy}
             />
           )}
 
@@ -68,9 +80,9 @@ const Input = React.forwardRef<HTMLInputElement | HTMLTextAreaElement, InputProp
           )}
         </div>
         {error ? (
-          <p className="text-xs font-medium text-red-500 tracking-wide mt-0.5">{error}</p>
+          <p id={`${inputId}-error`} className="text-xs font-medium text-red-500 tracking-wide mt-0.5">{error}</p>
         ) : helperText ? (
-          <p className="text-xs text-slate-400 dark:text-slate-400 mt-0.5">{helperText}</p>
+          <p id={`${inputId}-hint`} className="text-xs text-slate-400 dark:text-slate-400 mt-0.5">{helperText}</p>
         ) : null}
       </div>
     );

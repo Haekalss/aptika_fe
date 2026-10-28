@@ -7,8 +7,10 @@ import Dropdown from "@/components/ui/Dropdown";
 import { useRouter, usePathname } from "next/navigation";
 import { logout } from "@/services/api";
 import { useTaskStore } from "@/store/useTaskStore";
+import { useAuthStore } from "@/store/useAuthStore";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
 import { useTheme } from "@/components/providers/ThemeProvider";
+import { runGuardedNavigation } from "@/utils/guardedNavigation";
 
 export interface HeaderProps {
   title: string;
@@ -29,15 +31,16 @@ export default function Header({ title, subtitle, showBrand = false }: HeaderPro
   const userName = currentUser?.name || "User";
   const isAdmin = currentUser?.role === "admin";
 
-  const handleLogout = async () => {
-    try {
-      await logout();
-      document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+  const handleLogout = () => runGuardedNavigation(async () => {
+    try { 
+      await logout(); 
     } catch {}
+    useAuthStore.getState().clearAuth();
+    document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     router.push("/");
-  };
+  });
 
   const isIkiPage = pathname.startsWith("/integrasiinteroperabilitas") ||
                     pathname.startsWith("/pengelolaanaplikasi") ||
@@ -72,14 +75,14 @@ export default function Header({ title, subtitle, showBrand = false }: HeaderPro
       ? [
           {
             label: "Admin Panel",
-            onClick: () => router.push("/admin"),
+            onClick: () => runGuardedNavigation(() => router.push("/admin")),
             icon: <ShieldCog size={14} className="text-amber-500" />,
           },
         ]
       : []),
     {
       label: "Profil Saya",
-      onClick: () => router.push("/profile"),
+      onClick: () => runGuardedNavigation(() => router.push("/profile")),
       icon: <User size={14} />,
     },
     {
@@ -96,7 +99,7 @@ export default function Header({ title, subtitle, showBrand = false }: HeaderPro
       {showBrand ? (
         <div
           className="flex items-center gap-2.5 cursor-pointer group flex-shrink-0"
-          onClick={() => router.push("/dashboard")}
+          onClick={() => runGuardedNavigation(() => router.push("/dashboard"))}
           title="Kembali ke Beranda"
         >
           <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-[#0b2146] via-[#163868] to-[#1d4ed8] flex items-center justify-center text-white font-extrabold text-sm shadow-md group-hover:scale-105 transition-transform">
@@ -136,7 +139,7 @@ export default function Header({ title, subtitle, showBrand = false }: HeaderPro
             return (
               <button
                 key={item.label}
-                onClick={() => router.push(item.path)}
+                onClick={() => runGuardedNavigation(() => router.push(item.path))}
                 className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all ${
                   isActive
                     ? "bg-blue-50 text-blue-600 border border-blue-200/70 font-bold dark:bg-blue-950/60 dark:text-blue-400 dark:border-blue-900 shadow-2xs"
@@ -153,16 +156,14 @@ export default function Header({ title, subtitle, showBrand = false }: HeaderPro
 
       {/* Right Controls */}
       <div className="flex items-center gap-2.5 flex-shrink-0">
-
-
         <NotificationBell />
 
         {isAdmin && (
           <button
             type="button"
-            onClick={() => router.push("/admin")}
+            onClick={() => runGuardedNavigation(() => router.push("/admin"))}
             className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-extrabold bg-amber-50 hover:bg-amber-100 text-amber-800 dark:bg-amber-950/80 dark:hover:bg-amber-900 dark:text-amber-300 transition-all border border-amber-200/90 dark:border-amber-700/80 group"
-            title="Admin Panel"
+            title="Masuk ke Halaman Khusus Admin Panel"
           >
             <ShieldCog size={13} className="text-amber-600 dark:text-amber-400 group-hover:rotate-45 transition-transform duration-300" />
             <span>Admin Panel</span>

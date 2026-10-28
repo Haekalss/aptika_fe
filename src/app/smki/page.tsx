@@ -22,6 +22,12 @@ import {
   DatabaseBackup,
   Users,
   Search,
+  MessageSquare,
+  FileCheck,
+  Video,
+  Siren,
+  GitPullRequest,
+  Usb,
 } from "lucide-react";
 import ServiceRouteGuard from "@/components/auth/ServiceRouteGuard";
 
@@ -136,22 +142,64 @@ const smkiCards: SmkiServiceCard[] = [
     icon: CalendarRange,
   },
   {
-    title: "Formulir Pelaporan Insiden",
-    desc: "Kelola pencatatan insiden keamanan informasi (FR-016), kronologi kejadian, analisis dampak, dan status penanganan insiden secara terstruktur.",
-    path: "/smki/pelaporan-insiden",
-    icon: ShieldAlert,
-  },
-  {
     title: "Formulir Laporan Kerusakan",
-    desc: "Kelola formulir laporan kerusakan perangkat fasilitas data center (FR-024) beserta rincian tindakan perbaikan.",
+    desc: "Kelola formulir laporan kerusakan perangkat fasilitas data center (FR-024), kronologi kejadian, tingkat dampak, serta rencana penanganan teknis.",
     path: "/smki/laporan-kerusakan",
     icon: ServerCog,
   },
   {
     title: "Screening Karyawan Outsourcing",
-    desc: "Kelola berita acara verifikasi administrasi tenaga alih daya, 5 item checklist kepatuhan, serta cetak dokumen resmi format FR-012.",
+    desc: "Kelola berita acara verifikasi administrasi tenaga alih daya, 5 item checklist kepatuhan, serta cetak dokumen resmi format FR-012/KOM.03.05/SANDIKAMI.",
     path: "/smki/screening-karyawan",
     icon: Users,
+  },
+  {
+    title: "Formulir Pemeriksaan CCTV",
+    desc: "Pemeriksaan berkala perangkat & rekaman CCTV ruang server (FR-037), verifikasi visual kamera, status operasional, serta ekspor dokumen.",
+    path: "/smki/pemeriksaan-cctv",
+    icon: Video,
+  },
+  {
+    title: "Pelaporan Insiden Keamanan",
+    desc: "Pelaporan, penanganan cepat, analisis dampak dan tindak lanjut insiden keamanan informasi sesuai ketentuan formulir FR-016.",
+    path: "/smki/pelaporan-insiden",
+    icon: Siren,
+  },
+  {
+    title: "Daftar Aset SDM",
+    desc: "Kelola inventarisasi aset sumber daya manusia SMKI, klasifikasi peran & tanggung jawab, riwayat pelatihan, serta ekspor dokumen resmi.",
+    path: "/smki/daftar-aset-sdm",
+    icon: Users,
+  },
+  {
+    title: "Formulir Perubahan IT",
+    desc: "Pengajuan Request for Change (RFC), analisis dampak risiko, persetujuan CAB, dan dokumentasi perubahan IT sesuai format SMKI (FR-031).",
+    path: "/smki/perubahan-it",
+    icon: GitPullRequest,
+  },
+  {
+    title: "Formulir Komunikasi SMKI",
+    desc: "Pencatatan dan pemantauan agenda komunikasi internal dan eksternal SMKI (FR-010): pesan kunci, media rilis, target audiens, dan evaluasi hasil.",
+    path: "/smki/komunikasi",
+    icon: MessageSquare,
+  },
+  {
+    title: "Tindakan Perbaikan & Pencegahan",
+    desc: "Pencatatan temuan ketidaksesuaian, analisis akar masalah (root cause), serta monitoring rencana tindakan korektif & preventif format FR-009.",
+    path: "/smki/tindakan-perbaikan",
+    icon: ClipboardCheck,
+  },
+  {
+    title: "Daftar Removable Media",
+    desc: "Pencatatan inventaris media penyimpanan lepas pasang (Flashdisk, HDD Eksternal), hak akses otorisasi, penanggung jawab, dan formulir FR-025.",
+    path: "/smki/removable-media",
+    icon: Usb,
+  },
+  {
+    title: "Notulen Management Review",
+    desc: "Dokumentasi rapat tinjauan manajemen SMKI (FR-011), pembahasan klausul ISO 27001:2013 Clause 9.3, keputusan tindak lanjut, dan cetak berita acara.",
+    path: "/smki/notulen",
+    icon: FileCheck,
   },
 ];
 
@@ -161,182 +209,81 @@ export default function SmkiPage() {
 
   const filteredCards = useMemo(() => {
     if (!searchQuery.trim()) return smkiCards;
-    const query = searchQuery.toLowerCase();
+    const q = searchQuery.toLowerCase().trim();
     return smkiCards.filter(
       (c) =>
-        c.title.toLowerCase().includes(query) ||
-        c.desc.toLowerCase().includes(query)
+        c.title.toLowerCase().includes(q) ||
+        c.desc.toLowerCase().includes(q)
     );
   }, [searchQuery]);
 
   return (
     <ServiceRouteGuard requiredService="SMKI">
-      <div className="flex flex-col gap-6 pb-10 font-sans">
-        {/* ── HERO BANNER SMKI (Thematic Cyber Security Radar & Shield Halo) ── */}
-        <div
-          className="relative overflow-hidden rounded-3xl shadow-xl"
-          style={{
-            background:
-              "linear-gradient(135deg, #2e0854 0%, #4c1d95 38%, #6d28d9 72%, #8b5cf6 100%)",
-          }}
-        >
-          {/* Top Shimmer Beam Violet */}
-          <div className="absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-violet-300/70 to-transparent pointer-events-none z-20" />
-
-          {/* Hex / Cyber Mesh Dot Texture */}
+      <div className="flex flex-col gap-8 pb-16">
+        {/* Hero Banner: Ungu Violet Khas SMKI dengan ornamen Cyber Security Radar */}
+        <div className="relative overflow-hidden bg-gradient-to-r from-violet-950 via-purple-900 to-indigo-950 rounded-3xl p-7 sm:p-10 text-white shadow-xl shadow-purple-950/20 border border-purple-800/40">
+          {/* Cyber mesh / Circuit dot matrix */}
           <div
             className="absolute inset-0 opacity-[0.16] pointer-events-none"
             style={{
-              backgroundImage: "radial-gradient(circle, rgba(192,132,252,0.35) 1px, transparent 1px)",
-              backgroundSize: "20px 20px",
+              backgroundImage: "radial-gradient(#c084fc 1px, transparent 1px)",
+              backgroundSize: "18px 18px",
             }}
           />
 
-          {/* Ambient Security Glow Orbs */}
-          <div className="absolute top-0 right-0 w-80 h-80 rounded-full bg-fuchsia-500/15 -translate-y-1/2 translate-x-1/4 blur-3xl pointer-events-none" />
-          <div className="absolute bottom-0 left-1/3 w-64 h-64 rounded-full bg-cyan-300/15 translate-y-1/2 blur-2xl pointer-events-none" />
-          <div className="absolute -left-10 -top-10 w-48 h-48 rounded-full bg-violet-400/10 blur-xl pointer-events-none" />
+          {/* Glowing cyber shield aura */}
+          <div className="absolute -left-12 -top-12 w-64 h-64 rounded-full bg-violet-500/25 blur-3xl pointer-events-none animate-pulse duration-1000" />
+          <div className="absolute right-0 -bottom-16 w-80 h-80 rounded-full bg-fuchsia-600/20 blur-3xl pointer-events-none" />
 
           {/* Concentric Cyber Radar Rings & Target Reticle */}
-          <div className="absolute right-24 top-1/2 -translate-y-1/2 w-80 h-80 rounded-full border border-violet-400/20 border-dashed pointer-events-none" />
-          <div className="absolute right-36 top-1/2 -translate-y-1/2 w-56 h-56 rounded-full border border-fuchsia-300/20 pointer-events-none" />
-
-          {/* Cyber Sparkle Nodes */}
-          <div className="absolute right-72 top-5 pointer-events-none opacity-80 animate-pulse">
-            <svg className="w-3.5 h-3.5 text-violet-200" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z" />
-            </svg>
+          <div className="absolute right-8 top-1/2 -translate-y-1/2 w-80 h-80 rounded-full border border-purple-400/20 pointer-events-none hidden md:block">
+            <div className="absolute inset-6 rounded-full border border-dashed border-violet-400/25 animate-spin-slow" />
+            <div className="absolute inset-16 rounded-full border border-purple-300/20" />
+            <div className="absolute inset-28 rounded-full border border-violet-400/30" />
+            {/* Target crosshairs */}
+            <div className="absolute top-0 bottom-0 left-1/2 w-[1px] bg-purple-400/15" />
+            <div className="absolute left-0 right-0 top-1/2 h-[1px] bg-purple-400/15" />
           </div>
 
-          <div className="relative z-10 flex flex-col xl:flex-row xl:items-center justify-between gap-6 px-7 py-7 sm:px-9">
-            {/* Left: Icon + Text */}
-            <div className="flex items-start sm:items-center gap-5 max-w-2xl">
-              {/* Glowing Shield Halo */}
-              <div className="relative flex-shrink-0 mt-0.5 sm:mt-0">
-                <div className="absolute -inset-2 bg-gradient-to-r from-violet-400 to-fuchsia-500 rounded-2xl blur-md opacity-60" />
-                <div className="relative w-16 h-16 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center border border-white/40 shadow-xl shadow-purple-950/40">
-                  <ShieldCheck size={34} className="text-white drop-shadow-sm" />
-                </div>
-              </div>
+          {/* Cyber sparkle nodes */}
+          <div className="absolute top-6 right-1/4 w-1.5 h-1.5 rounded-full bg-violet-300 shadow-[0_0_8px_#c084fc] pointer-events-none" />
+          <div className="absolute bottom-8 right-1/3 w-2 h-2 rounded-full bg-fuchsia-300 shadow-[0_0_10px_#f472b6] pointer-events-none animate-ping duration-1000" />
 
-              <div>
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 backdrop-blur-md border border-white/25 text-xs font-bold text-violet-200 tracking-wide mb-2.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-violet-300 animate-pulse" />
-                  <span>STANDAR KEAMANAN INFORMASI & TATA KELOLA SIBER</span>
-                </div>
-                <h1 className="text-2xl sm:text-3xl lg:text-[32px] font-extrabold text-white tracking-tight leading-tight drop-shadow-sm">
-                  SMKI Diskominfo Jawa Barat
-                </h1>
-                <p className="text-xs sm:text-[13px] text-violet-100/95 mt-2 leading-relaxed font-normal">
-                  Pusat tata kelola, inventarisasi software resmi, kepatuhan lisensi, hardening aset, dan penerbitan dokumen standardisasi keamanan informasi di lingkungan Pemerintah Provinsi Jawa Barat.
-                </p>
+          <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="max-w-2xl">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/20 border border-purple-400/30 text-purple-200 text-xs font-semibold mb-3.5 backdrop-blur-sm">
+                <ShieldCheck size={14} className="text-purple-300" />
+                <span>STANDAR KEAMANAN INFORMASI & TATA KELOLA SIBER</span>
               </div>
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-white mb-3">
+                Sistem Manajemen Keamanan Informasi (SMKI)
+              </h1>
+              <p className="text-sm sm:text-[15px] text-purple-200/90 leading-relaxed max-w-xl font-normal">
+                Pusat tata kelola, inventarisasi software resmi, kepatuhan lisensi, hardening aset, dan penerbitan dokumen standardisasi keamanan informasi di lingkungan Pemerintah Daerah Provinsi Jawa Barat.
+              </p>
             </div>
 
-            {/* Right: Ilustrasi Khusus SMKI */}
-            <div className="hidden md:flex items-center justify-end flex-shrink-0 pr-2 select-none pointer-events-none">
-              <svg width="360" height="122" viewBox="0 0 360 122" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                  <linearGradient id="smkiVaultGrad" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0%" stopColor="#2e1065" stopOpacity="0.92" />
-                    <stop offset="100%" stopColor="#5b21b6" stopOpacity="0.88" />
-                  </linearGradient>
-                  <linearGradient id="smkiShieldGlow" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#c084fc" />
-                    <stop offset="100%" stopColor="#7c3aed" />
-                  </linearGradient>
-                </defs>
-
-                {/* Outer Radar Rings */}
-                <circle cx="72" cy="61" r="46" stroke="white" strokeOpacity="0.14" strokeWidth="1.2" strokeDasharray="4 4" />
-                <circle cx="72" cy="61" r="34" stroke="#7dd3fc" strokeOpacity="0.28" strokeWidth="1.5" />
-                <circle cx="72" cy="61" r="24" fill="white" fillOpacity="0.12" />
-
-                {/* 3D Security Shield Core */}
-                <g transform="translate(72, 61)">
-                  <path
-                    d="M0,-24 L20,-16 V-2 C20,13 11,22 0,26 C-11,22 -20,13 -20,-2 V-16 L0,-24 Z"
-                    fill="url(#smkiShieldGlow)"
-                    stroke="white"
-                    strokeWidth="2"
-                  />
-                  <path
-                    d="M-6,0 L-1.5,4.5 L7.5,-4.5"
-                    stroke="white"
-                    strokeWidth="3"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </g>
-
-                {/* Connection Line */}
-                <path d="M118 61 H134" stroke="#7dd3fc" strokeWidth="1.8" strokeDasharray="3 3" />
-                <circle cx="126" cy="61" r="3" fill="#38bdf8" />
-
-                {/* Main Security Board */}
-                <rect x="134" y="10" width="208" height="102" rx="12" fill="url(#smkiVaultGrad)" stroke="white" strokeOpacity="0.35" strokeWidth="1.5" />
-
-                {/* Top Window Bar */}
-                <circle cx="147" cy="21" r="2.8" fill="#f87171" />
-                <circle cx="156" cy="21" r="2.8" fill="#fbbf24" />
-                <circle cx="165" cy="21" r="2.8" fill="#34d399" />
-                <text x="176" y="23.5" fontSize="7" fontWeight="700" fill="#bae6fd" letterSpacing="0.5">SMKI SECURITY AUDIT</text>
-                <rect x="292" y="16" width="38" height="11" rx="5.5" fill="#10b981" fillOpacity="0.25" stroke="#34d399" strokeWidth="0.8" />
-                <text x="299" y="23.5" fontSize="6.5" fontWeight="700" fill="#6ee7b7">SECURE</text>
-                <line x1="134" y1="30" x2="342" y2="30" stroke="white" strokeOpacity="0.12" />
-
-                {/* Left Nodes */}
-                <rect x="144" y="37" width="82" height="20" rx="5" fill="white" fillOpacity="0.1" stroke="white" strokeOpacity="0.15" />
-                <circle cx="154" cy="47" r="3.5" fill="#34d399" />
-                <rect x="162" y="43" width="38" height="3.5" rx="1.75" fill="white" fillOpacity="0.85" />
-                <rect x="162" y="49" width="24" height="3" rx="1.5" fill="#93c5fd" fillOpacity="0.7" />
-                <rect x="208" y="44" width="12" height="6" rx="3" fill="#38bdf8" fillOpacity="0.4" />
-
-                <rect x="144" y="61" width="82" height="20" rx="5" fill="white" fillOpacity="0.1" stroke="white" strokeOpacity="0.15" />
-                <circle cx="154" cy="71" r="3.5" fill="#38bdf8" />
-                <rect x="162" y="67" width="42" height="3.5" rx="1.75" fill="white" fillOpacity="0.85" />
-                <rect x="162" y="73" width="28" height="3" rx="1.5" fill="#93c5fd" fillOpacity="0.7" />
-                <rect x="208" y="68" width="12" height="6" rx="3" fill="#34d399" fillOpacity="0.4" />
-
-                <rect x="144" y="85" width="82" height="19" rx="5" fill="white" fillOpacity="0.1" stroke="white" strokeOpacity="0.15" />
-                <circle cx="154" cy="94.5" r="3.5" fill="#a78bfa" />
-                <rect x="162" y="90.5" width="34" height="3.5" rx="1.75" fill="white" fillOpacity="0.85" />
-                <rect x="162" y="96.5" width="22" height="3" rx="1.5" fill="#93c5fd" fillOpacity="0.7" />
-                <rect x="208" y="91.5" width="12" height="6" rx="3" fill="#a78bfa" fillOpacity="0.4" />
-
-                {/* Right Panel: Lock & Meter */}
-                <rect x="234" y="37" width="98" height="67" rx="7" fill="white" fillOpacity="0.08" stroke="white" strokeOpacity="0.15" />
-
-                <circle cx="256" cy="57" r="13" fill="#1d4ed8" stroke="#60a5fa" strokeWidth="1.2" />
-                <path d="M252 55 V52 C252 49.5 260 49.5 260 52 V55" stroke="white" strokeWidth="1.8" fill="none" strokeLinecap="round" />
-                <rect x="250" y="55" width="12" height="9" rx="2.5" fill="#fbbf24" />
-                <circle cx="256" cy="59.5" r="1.3" fill="#0f2952" />
-
-                <text x="274" y="53" fontSize="11" fontWeight="800" fill="white">99.4%</text>
-                <text x="274" y="62" fontSize="6" fontWeight="600" fill="#93c5fd">KEPATUHAN</text>
-
-                <text x="242" y="77" fontSize="6" fontWeight="600" fill="#e0f2fe">Hardening Aset</text>
-                <rect x="242" y="80" width="82" height="4.5" rx="2.25" fill="white" fillOpacity="0.15" />
-                <rect x="242" y="80" width="74" height="4.5" rx="2.25" fill="#34d399" />
-
-                <text x="242" y="92" fontSize="6" fontWeight="600" fill="#e0f2fe">Audit &amp; Rekaman</text>
-                <rect x="242" y="95" width="82" height="4.5" rx="2.25" fill="white" fillOpacity="0.15" />
-                <rect x="242" y="95" width="68" height="4.5" rx="2.25" fill="#38bdf8" />
-              </svg>
+            <div className="flex flex-col gap-2.5 flex-shrink-0 self-start md:self-auto">
+              <div className="flex items-center gap-2.5 bg-white/10 backdrop-blur-md px-4 py-2.5 rounded-2xl border border-white/15 text-xs font-semibold shadow-inner">
+                <Building2 size={16} className="text-purple-300" />
+                <span>Bidang: <strong className="text-white">APTIKA</strong></span>
+              </div>
+              <div className="flex items-center gap-2.5 bg-white/10 backdrop-blur-md px-4 py-2.5 rounded-2xl border border-white/15 text-xs font-semibold shadow-inner">
+                <ShieldCheck size={16} className="text-emerald-300" />
+                <span>Status Layanan: <strong className="text-emerald-300 font-bold">Aktif &amp; Beroperasi</strong></span>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* ── MODUL LAYANAN SMKI (Warna Seragam Tema Violet SMKI) ── */}
-        <div className="bg-white/60 dark:bg-[#071733]/80 backdrop-blur-md rounded-3xl p-6 shadow-sm border border-white/70 dark:border-slate-800">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-            <div className="flex items-center gap-3.5">
-              <div className="w-11 h-11 rounded-2xl bg-violet-100 dark:bg-violet-950/60 flex items-center justify-center flex-shrink-0 shadow-sm text-violet-600 dark:text-violet-400">
-                <ShieldCheck size={22} />
-              </div>
+        {/* Section Header & Pencarian */}
+        <div className="flex flex-col gap-5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="w-1.5 h-7 rounded-full bg-gradient-to-b from-violet-600 to-purple-600" />
               <div>
-                <h2 className="text-lg font-extrabold text-slate-900 dark:text-white leading-tight">
-                  Katalog Layanan SMKI
+                <h2 className="text-lg font-extrabold text-slate-800 dark:text-white">
+                  Daftar Layanan &amp; Formulir SMKI
                 </h2>
                 <p className="text-xs sm:text-[13px] text-slate-500 dark:text-slate-400 mt-0.5">
                   Akses cepat ke {smkiCards.length} formulir dan modul tata kelola keamanan informasi

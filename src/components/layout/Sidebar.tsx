@@ -23,11 +23,27 @@ import {
   ShieldAlert,
   Laptop,
   Box,
+  Building2,
+  CalendarCheck,
+  FileCheck,
+  MessageSquare,
+  ClipboardCheck,
+  Server,
+  ServerCog,
+  ScrollText,
+  MonitorSmartphone,
+  Cctv,
+  DatabaseBackup,
+  GitPullRequest,
+  Siren,
+  Video,
+  Usb,
 } from "lucide-react";
 import Avatar from "@/components/ui/Avatar";
 import { useSidebarStore } from "@/store/useSidebarStore";
 import { useTaskStore } from "@/store/useTaskStore";
 import { useAuthStore } from "@/store/useAuthStore";
+import { runGuardedNavigation } from "@/utils/guardedNavigation";
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -246,10 +262,70 @@ export default function Sidebar() {
                 iconColor: "text-amber-600 bg-amber-50 border border-amber-200/60",
               },
               {
+                name: "Hak Akses TI",
+                key: "smki/hak-akses-ti",
+                icon: ShieldCog,
+                iconColor: "text-cyan-600 bg-cyan-50 border border-cyan-200/60",
+              },
+              {
                 name: "Daftar Rekaman",
                 key: "smki/daftar-rekaman",
                 icon: FileText,
                 iconColor: "text-purple-600 bg-purple-50 border border-purple-200/60",
+              },
+              {
+                name: "Komunikasi",
+                key: "smki/komunikasi",
+                icon: MessageSquare,
+                iconColor: "text-emerald-600 bg-emerald-50 border border-emerald-200/60",
+              },
+              {
+                name: "Log Perubahan",
+                key: "smki/log-perubahan",
+                icon: FileText,
+                iconColor: "text-emerald-600 bg-emerald-50 border border-emerald-200/60",
+              },
+              {
+                name: "Daftar Penyedia",
+                key: "smki/daftar-penyedia",
+                icon: Building2,
+                iconColor: "text-emerald-600 bg-emerald-50 border border-emerald-200/60",
+              },
+              {
+                name: "Evaluasi Kepatuhan",
+                key: "smki/evaluasi-kepatuhan",
+                icon: ClipboardCheck,
+                iconColor: "text-sky-600 bg-sky-50 border border-sky-200/60",
+              },
+              {
+                name: "Review Log",
+                key: "smki/review-log",
+                icon: ScrollText,
+                iconColor: "text-orange-600 bg-orange-50 border border-orange-200/60",
+              },
+              {
+                name: "Perangkat Pribadi (BYOD)",
+                key: "smki/perangkat-pribadi",
+                icon: MonitorSmartphone,
+                iconColor: "text-indigo-600 bg-indigo-50 border border-indigo-200/60",
+              },
+              {
+                name: "Review CCTV",
+                key: "smki/reviu-cctv",
+                icon: Cctv,
+                iconColor: "text-rose-600 bg-rose-50 border border-rose-200/60",
+              },
+              {
+                name: "Evaluasi DRP",
+                key: "smki/evaluasi-drp",
+                icon: DatabaseBackup,
+                iconColor: "text-violet-600 bg-violet-50 border border-violet-200/60",
+              },
+              {
+                name: "Checklist CCTV",
+                key: "smki/pemeriksaan-cctv",
+                icon: Video,
+                iconColor: "text-rose-600 bg-rose-50 border border-rose-200/60",
               },
               {
                 name: "Daftar Aset TI",
@@ -258,42 +334,121 @@ export default function Sidebar() {
                 iconColor: "text-blue-600 bg-blue-50 border border-blue-200/60",
               },
               {
+                name: "Daftar Removable Media",
+                key: "smki/removable-media",
+                icon: Usb,
+                iconColor: "text-emerald-600 bg-emerald-50 border border-emerald-200/60",
+              },
+              {
+                name: "Aset Sistem Info",
+                key: "smki/aset-sistem-informasi",
+                icon: Database,
+                iconColor: "text-indigo-600 bg-indigo-50 border border-indigo-200/60",
+              },
+              {
                 name: "Penghancuran Media",
                 key: "smki/berita-acara",
                 icon: FileText,
                 iconColor: "text-emerald-600 bg-emerald-50 border border-emerald-200/60",
               },
+              {
+                name: "Rencana Audit",
+                key: "smki/rencana-audit",
+                icon: CalendarCheck,
+                iconColor: "text-teal-600 bg-teal-50 border border-teal-200/60",
+              },
+              {
+                name: "Laporan Audit",
+                key: "smki/laporan-audit",
+                icon: FileCheck,
+                iconColor: "text-emerald-600 bg-emerald-50 border border-emerald-200/60",
+              },
+              {
+                name: "Notulen",
+                key: "smki/notulen",
+                icon: FileText,
+                iconColor: "text-emerald-600 bg-emerald-50 border border-emerald-200/60",
+              },
+              {
+                name: "Formulir Tahunan",
+                key: "smki/laporan-audit-tahunan",
+                icon: FileText,
+                iconColor: "text-emerald-600 bg-emerald-50 border border-emerald-200/60",
+              },
+              {
+                name: "Laporan Kerusakan DC",
+                key: "smki/laporan-kerusakan",
+                icon: ServerCog,
+                iconColor: "text-red-600 bg-red-50 border border-red-200/60",
+              },
+              {
+                name: "Screening Karyawan",
+                key: "smki/screening-karyawan",
+                icon: Users,
+                iconColor: "text-emerald-600 bg-emerald-50 border border-emerald-200/60",
+              },
+              {
+                name: "Tindakan Perbaikan & Pencegahan",
+                key: "smki/tindakan-perbaikan",
+                icon: ClipboardCheck,
+                iconColor: "text-emerald-600 bg-emerald-50 border border-emerald-200/60",
+              },
+              {
+                name: "Daftar Aset SDM",
+                key: "smki/daftar-aset-sdm",
+                icon: Users,
+                iconColor: "text-indigo-600 bg-indigo-50 border border-indigo-200/60",
+              },
+              {
+                name: "Perubahan IT",
+                key: "smki/perubahan-it",
+                icon: GitPullRequest,
+                iconColor: "text-orange-600 bg-orange-50 border border-orange-200/60",
+              },
+              {
+                name: "Pelaporan Insiden",
+                key: "smki/pelaporan-insiden",
+                icon: Siren,
+                iconColor: "text-rose-600 bg-rose-50 border border-rose-200/60",
+              },
             ],
           },
         ]
       : []),
+    {
+      type: "single" as const,
+      name: "Data Master",
+      key: "master",
+      icon: Database,
+      iconColor: "text-cyan-600 bg-cyan-50 border border-cyan-200/60",
+    },
   ];
 
   const handleTeamClick = (key: string) => {
-    setOpenMobile(false);
-    if (key === "dashboard") {
-      router.push("/dashboard");
-    } else if (key === "administrasisurat" || key === "manajementugasdigital" || key === "smki" || key === "daftar-aset-ti") {
-      router.push(`/${key}`);
-    } else if (key.includes("/")) {
-      router.push(`/${key}`);
-    } else {
-      router.push(`/${key}/dashboard`);
-    }
+    runGuardedNavigation(() => {
+      setOpenMobile(false);
+      if (key === "dashboard") {
+        router.push("/dashboard");
+      } else if (key === "administrasisurat" || key === "manajementugasdigital" || key === "smki" || key === "daftar-aset-ti" || key === "master" || key.includes("/")) {
+        router.push(`/${key}`);
+      } else {
+        router.push(`/${key}/dashboard`);
+      }
+    });
   };
 
-  const handleLogout = async () => {
+  const handleLogout = () => runGuardedNavigation(async () => {
     try {
       await logout();
-      useAuthStore.getState().clearAuth();
-      if (typeof document !== "undefined") {
-        document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
-      }
     } catch {}
+    useAuthStore.getState().clearAuth();
+    if (typeof document !== "undefined") {
+      document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+    }
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     router.push("/");
-  };
+  });
 
   return (
     <>
@@ -319,10 +474,10 @@ export default function Sidebar() {
       {/* Sidebar Navigation - Adaptive Light/Dark Theme */}
       <aside
         className={`
-        fixed inset-y-0 left-0 z-40 flex flex-col h-screen
+        fixed inset-y-0 left-0 z-40 flex flex-col h-dvh min-h-0
         bg-white text-[#0b2146] border-r border-slate-200 shadow-sm
         dark:bg-[#071733] dark:text-white dark:border-slate-800/80
-        transition-all duration-300 ease-in-out lg:translate-x-0 lg:sticky lg:top-0 lg:flex-shrink-0
+        transition-all duration-300 ease-in-out lg:translate-x-0 lg:sticky lg:top-0 lg:flex-shrink-0 lg:h-full
         print:hidden
         ${isCollapsed ? "w-[76px]" : "w-[260px]"}
         ${isOpenMobile ? "translate-x-0" : "-translate-x-full"}
@@ -347,7 +502,7 @@ export default function Sidebar() {
               <div className="flex items-center justify-between w-full">
                 <div
                   className="cursor-pointer flex-grow animate-in fade-in duration-200"
-                  onClick={() => router.push("/dashboard")}
+                  onClick={() => runGuardedNavigation(() => router.push("/dashboard"))}
                 >
                   <h1 className="text-[15px] font-extrabold tracking-wide uppercase text-[#0b2146] dark:text-white">
                     Aptika Tools
@@ -355,6 +510,7 @@ export default function Sidebar() {
                 </div>
                 <button
                   onClick={toggleCollapsed}
+                  suppressHydrationWarning
                   className="flex p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 hover:text-[#0b2146] dark:hover:text-white transition-all ml-2"
                   title="Collapse Sidebar"
                 >
@@ -480,7 +636,7 @@ export default function Sidebar() {
                                 : sub.key === "daftar-aset-ti"
                                 ? pathname === "/daftar-aset-ti" || pathname === "/smki/daftar-aset-ti"
                                 : sub.key.includes("/")
-                                ? pathname === `/${sub.key}`
+                                ? pathname === `/${sub.key}` || pathname.startsWith(`/${sub.key}/`)
                                 : activeSegment === sub.key;
                             return (
                               <button
@@ -526,7 +682,7 @@ export default function Sidebar() {
         >
           <div
             className={`flex items-center gap-3 px-2 cursor-pointer group ${isCollapsed ? "justify-center" : ""}`}
-            onClick={() => router.push("/profile")}
+            onClick={() => runGuardedNavigation(() => router.push("/profile"))}
             title="Ke Profil Saya"
           >
             <Avatar name={userName} src={currentUser?.avatar_url || currentUser?.avatar} size="sm" />
@@ -558,4 +714,4 @@ export default function Sidebar() {
       </aside>
     </>
   );
-}
+}

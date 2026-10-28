@@ -40,6 +40,7 @@ export const config = {
     "/dashboard",
     "/dashboard/:path*",
     "/spd/:path*",
+    "/smki/:path*",
     "/rekayasaaplikasi/:path*",
     "/integrasiinteroperabilitas/:path*",
     "/smartjabar/:path*",
@@ -48,5 +49,6 @@ export const config = {
     "/pengelolaanaplikasi/:path*",
     "/manajementugasdigital/:path*",
     "/admin/:path*",
+    "/daftar-aset-ti/:path*",
   ],
 };

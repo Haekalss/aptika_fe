@@ -35,7 +35,9 @@ export default function BuktiThumb({
   size?: "sm" | "md";
   onPreview?: () => void;
 }) {
-  if (isImageFile(nama, src)) {
+  const [imgError, setImgError] = useState(false);
+
+  if (isImageFile(nama, src) && !imgError) {
     const cls = size === "sm" ? "w-12 h-12" : "w-16 h-16";
     return (
       <button
@@ -45,18 +47,37 @@ export default function BuktiThumb({
         className="shrink-0 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700 hover:ring-2 hover:ring-blue-500/50 transition-all"
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={src} alt={nama ?? "Lampiran"} className={`${cls} object-cover`} />
+        <img
+          src={src}
+          alt={nama ?? "Lampiran"}
+          onError={() => setImgError(true)}
+          className={`${cls} object-cover`}
+        />
       </button>
     );
   }
+
+  // Fallback: file gambar yang gagal dimuat (mis. file hilang dari storage).
+  const isImage = isImageFile(nama, src);
   return (
     <button
       type="button"
       onClick={onPreview}
-      title={nama ?? "Lampiran"}
-      className="w-10 h-10 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center border border-blue-200 dark:border-blue-800 shrink-0 hover:ring-2 hover:ring-blue-500/50 transition-all"
+      title={
+        isImage
+          ? "Preview tidak tersedia — file mungkin tidak ada di server"
+          : nama ?? "Lampiran"
+      }
+      className={`rounded-lg flex flex-col items-center justify-center gap-0.5 border shrink-0 transition-all ${
+        isImage
+          ? "w-16 h-16 bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-800"
+          : "w-10 h-10 bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800 hover:ring-2 hover:ring-blue-500/50"
+      }`}
     >
-      <FileText size={16} />
+      <FileText size={isImage ? 16 : 16} />
+      {isImage && (
+        <span className="text-[8px] font-bold leading-none">no preview</span>
+      )}
     </button>
   );
 }

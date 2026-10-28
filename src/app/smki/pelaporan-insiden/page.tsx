@@ -157,7 +157,7 @@ export default function PelaporanInsidenPage() {
           )}
         </div>
         <InsidenDetailModal
-          key={detailId ?? "closed"}
+          key={`detail-${detailId ?? "closed"}`}
           id={detailId}
           onClose={() => setDetailId(null)}
           onEdit={(id) => { setDetailId(null); router.push(`/smki/pelaporan-insiden/edit/${id}`); }}
@@ -169,7 +169,7 @@ export default function PelaporanInsidenPage() {
           onPick={(id) => { setPickOpen(false); setExportId(id); }}
         />
         <InsidenExportModal
-          key={exportId ?? "closed"}
+          key={`export-${exportId ?? "closed"}`}
           isOpen={exportId != null}
           onClose={() => { if (!exporting) setExportId(null); }}
           onExport={handleDoExport}

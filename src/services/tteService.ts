@@ -64,7 +64,7 @@ export const getTteImageUrl = (
   pegawaiId: number | string,
   unit?: string
 ): string => {
-  const base = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000/api";
+  const base = process.env.NEXT_PUBLIC_API_URL || "https://aptika-be.wasmer.dev/api";
   const qs = unit ? `?unit=${encodeURIComponent(unit)}` : "";
   return `${base}/tte/spesimen/${pegawaiId}${qs}`;
 };

@@ -7,7 +7,7 @@ import {
 } from "lucide-react";
 
 // URL API Backend (menyesuaikan dengan port Laravel default, bisa diganti jika pakai env)
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://aptika-be.wasmer.dev/api";
 
 export default function AsetSistemInformasiPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
