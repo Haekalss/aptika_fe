@@ -24,6 +24,10 @@ import {
   CalendarRange,
   ServerCog,
   Users,
+  Video,
+  GitPullRequest,
+  MessageSquare,
+  Usb,
 } from "lucide-react";
 
 const smkiNavItems = [
@@ -174,6 +178,55 @@ const smkiNavItems = [
     desc: "Kelola berita acara verifikasi administrasi keamanan tenaga alih daya, checklist kepatuhan NDA & latar belakang, serta cetak dokumen resmi FR-012.",
     path: "/smki/screening-karyawan",
     icon: Users,
+  },
+  {
+    label: "Pemeriksaan CCTV",
+    title: "Formulir Pemeriksaan CCTV (FR-037)",
+    desc: "Pemeriksaan berkala perangkat & rekaman CCTV ruang server, checklist kondisi fisik, dan ekspor formulir FR-037.",
+    path: "/smki/pemeriksaan-cctv",
+    icon: Video,
+  },
+  {
+    label: "Daftar Aset SDM",
+    title: "Daftar Aset Sumber Daya Manusia",
+    desc: "Inventarisasi aset SDM SMKI, klasifikasi peran & tanggung jawab, riwayat pelatihan, serta ekspor dokumen resmi.",
+    path: "/smki/daftar-aset-sdm",
+    icon: Users,
+  },
+  {
+    label: "Perubahan IT",
+    title: "Formulir Perubahan IT SMKI (FR-031)",
+    desc: "Pengajuan Request for Change (RFC), analisis dampak risiko, persetujuan CAB, dan dokumentasi perubahan IT sesuai SMKI.",
+    path: "/smki/perubahan-it",
+    icon: GitPullRequest,
+  },
+  {
+    label: "Komunikasi SMKI",
+    title: "Formulir Komunikasi SMKI (FR-010)",
+    desc: "Pencatatan dan pemantauan agenda komunikasi internal dan eksternal SMKI: pesan kunci, media rilis, target audiens, dan evaluasi hasil.",
+    path: "/smki/komunikasi",
+    icon: MessageSquare,
+  },
+  {
+    label: "Tindakan Perbaikan",
+    title: "Tindakan Perbaikan & Pencegahan (FR-009)",
+    desc: "Pencatatan temuan ketidaksesuaian, analisis akar masalah (root cause), serta monitoring rencana tindakan korektif & preventif format FR-009.",
+    path: "/smki/tindakan-perbaikan",
+    icon: ClipboardCheck,
+  },
+  {
+    label: "Removable Media",
+    title: "Daftar Removable Media (FR-025)",
+    desc: "Inventarisasi media penyimpanan lepas pasang (Flashdisk, HDD Eksternal), hak akses otorisasi, penanggung jawab, dan formulir FR-025.",
+    path: "/smki/removable-media",
+    icon: Usb,
+  },
+  {
+    label: "Notulen Management Review",
+    title: "Notulen Management Review (FR-011)",
+    desc: "Dokumentasi rapat tinjauan manajemen SMKI, pembahasan klausul ISO 27001 Clause 9.3, keputusan tindak lanjut, dan cetak berita acara.",
+    path: "/smki/notulen",
+    icon: FileCheck,
   },
 ];
 
