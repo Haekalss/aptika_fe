@@ -141,29 +141,57 @@ export default function IkiReportLayout({
 
         {/* ── KONTEN UTAMA IKI REPORT (Banner + Isi Asli) ── */}
         <div className="flex-1 min-w-0 w-full flex flex-col gap-5 pb-8">
-          {/* ── HERO BANNER IKI REPORT (Warna senada dengan logo IKI Report di Dashboard: Rose) ── */}
+          {/* ── HERO BANNER IKI REPORT (Analytics Metrics Grid & Crimson Trend Aura) ── */}
           <div
-            className="relative overflow-hidden rounded-3xl shadow-lg print:hidden"
+            className="relative overflow-hidden rounded-3xl shadow-xl print:hidden"
             style={{
               background:
-                "linear-gradient(135deg, #881337 0%, #9f1239 38%, #e11d48 74%, #f43f5e 100%)",
+                "linear-gradient(135deg, #700c2a 0%, #9f1239 38%, #e11d48 74%, #f43f5e 100%)",
             }}
           >
-            {/* Decorative background circles */}
-            <div className="absolute top-0 right-0 w-72 h-72 rounded-full bg-white/10 -translate-y-1/2 translate-x-1/4 blur-2xl pointer-events-none" />
-            <div className="absolute bottom-0 left-1/3 w-56 h-56 rounded-full bg-amber-300/15 translate-y-1/2 blur-2xl pointer-events-none" />
-            <div className="absolute -left-10 -top-10 w-44 h-44 rounded-full bg-white/5 pointer-events-none" />
+            {/* Top Shimmer Beam Rose */}
+            <div className="absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-rose-200/80 to-transparent pointer-events-none z-20" />
+
+            {/* Analytics Coordinate Pulse Texture */}
+            <div
+              className="absolute inset-0 opacity-[0.16] pointer-events-none"
+              style={{
+                backgroundImage: "radial-gradient(circle, rgba(254,205,211,0.4) 1px, transparent 1px)",
+                backgroundSize: "20px 20px",
+              }}
+            />
+
+            {/* Ambient Crimson Glow Orbs */}
+            <div className="absolute top-0 right-0 w-80 h-80 rounded-full bg-pink-400/20 -translate-y-1/2 blur-3xl pointer-events-none" />
+            <div className="absolute bottom-0 left-1/3 w-64 h-64 rounded-full bg-amber-300/15 translate-y-1/2 blur-2xl pointer-events-none" />
+
+            {/* Metric Trend Circles */}
+            <div className="absolute right-20 top-1/2 -translate-y-1/2 w-80 h-80 rounded-full border border-rose-300/15 pointer-events-none" />
+            <div className="absolute right-36 top-1/2 -translate-y-1/2 w-56 h-56 rounded-full border border-pink-200/20 pointer-events-none" />
+
+            {/* Sparkle KPI Metric Nodes */}
+            <div className="absolute right-64 top-6 pointer-events-none opacity-80 animate-pulse">
+              <svg className="w-3.5 h-3.5 text-rose-200" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z" />
+              </svg>
+            </div>
 
             <div className="relative z-10 flex flex-col xl:flex-row xl:items-center justify-between gap-6 px-7 py-7 sm:px-9">
               {/* Left: Icon + Text */}
               <div className="flex items-start sm:items-center gap-5 max-w-2xl">
-                <div className="w-16 h-16 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center flex-shrink-0 border border-white/30 shadow-lg">
-                  <BannerIcon size={34} className="text-white drop-shadow-sm" />
+                {/* Crimson Trend Glowing Halo */}
+                <div className="relative flex-shrink-0 mt-0.5 sm:mt-0">
+                  <div className="absolute -inset-2 bg-gradient-to-r from-rose-400 to-pink-500 rounded-2xl blur-md opacity-60" />
+                  <div className="relative w-16 h-16 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center border border-white/40 shadow-xl shadow-rose-950/40">
+                    <BannerIcon size={34} className="text-white drop-shadow-sm" />
+                  </div>
                 </div>
+
                 <div>
-                  <p className="text-xs sm:text-sm font-semibold text-rose-200 mb-1">
-                    Selamat Datang di IKI Report
-                  </p>
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 backdrop-blur-md border border-white/25 text-xs font-bold text-rose-200 tracking-wide mb-2.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-rose-300 animate-pulse" />
+                    <span>REKAPITULASI CAPAIAN KINERJA APARATUR</span>
+                  </div>
                   <h1 className="text-2xl sm:text-3xl lg:text-[32px] font-extrabold text-white tracking-tight leading-tight drop-shadow-sm">
                     {title}
                   </h1>

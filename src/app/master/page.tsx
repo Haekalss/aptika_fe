@@ -372,23 +372,44 @@ export default function MasterDataPage() {
 
   return (
     <div className="flex flex-col gap-6 pb-8 font-sans">
-      {/* ── Hero Banner Data Master (Cyan Theme) ── */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#083344] via-[#0e7490] to-[#06b6d4] p-7 sm:p-8 text-white shadow-xl min-h-[195px] flex items-center">
+      {/* ── Hero Banner Data Master (Binary Data Blocks & Cyan Database Glow) ── */}
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#082f49] via-[#0e7490] to-[#0891b2] p-7 sm:p-8 text-white shadow-xl min-h-[195px] flex items-center">
+        {/* Top Shimmer Beam Cyan */}
+        <div className="absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-cyan-200/80 to-transparent pointer-events-none z-20" />
+
+        {/* Digital Data Stream Binary Blocks Pattern */}
         <div
-          className="absolute inset-0 opacity-20 pointer-events-none"
+          className="absolute inset-0 opacity-[0.14] pointer-events-none"
           style={{
-            backgroundImage: "radial-gradient(rgba(255,255,255,0.3) 1px, transparent 1px)",
+            backgroundImage: "linear-gradient(to right, rgba(6,182,212,0.2) 1px, transparent 1px), linear-gradient(to bottom, rgba(6,182,212,0.2) 1px, transparent 1px)",
             backgroundSize: "20px 20px",
           }}
         />
-        <div className="absolute -right-16 -bottom-16 w-72 h-72 rounded-full bg-cyan-200/20 blur-3xl pointer-events-none" />
-        <div className="absolute left-1/3 -top-14 w-56 h-56 rounded-full bg-teal-300/15 blur-2xl pointer-events-none" />
+
+        {/* Ambient Teal Glow Orbs */}
+        <div className="absolute -right-16 -bottom-16 w-80 h-80 rounded-full bg-cyan-300/25 blur-3xl pointer-events-none" />
+        <div className="absolute left-1/3 -top-14 w-64 h-64 rounded-full bg-teal-300/20 blur-2xl pointer-events-none" />
+
+        {/* Relational Database Circles */}
+        <div className="absolute right-24 top-1/2 -translate-y-1/2 w-72 h-72 rounded-full border border-cyan-300/15 pointer-events-none" />
+        <div className="absolute right-40 top-1/2 -translate-y-1/2 w-48 h-48 rounded-full border border-teal-200/20 border-dashed pointer-events-none" />
+
+        {/* Data Stream Sparkle */}
+        <div className="absolute right-72 top-6 pointer-events-none opacity-80 animate-pulse">
+          <svg className="w-3.5 h-3.5 text-cyan-200" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z" />
+          </svg>
+        </div>
 
         <div className="relative z-10 w-full flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           {/* Left: Icon Box + Title & Subtitle */}
           <div className="flex items-start gap-4 sm:gap-5 max-w-2xl">
-            <div className="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-lg flex-shrink-0 mt-0.5">
-              <Database size={30} className="text-white" />
+            {/* Glowing Database Halo */}
+            <div className="relative flex-shrink-0 mt-0.5">
+              <div className="absolute -inset-2 bg-gradient-to-r from-cyan-400 to-teal-400 rounded-2xl blur-md opacity-55" />
+              <div className="relative w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-md border border-white/40 flex items-center justify-center shadow-xl shadow-cyan-950/40">
+                <Database size={30} className="text-white drop-shadow-sm" />
+              </div>
             </div>
             <div>
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 border border-white/25 text-[11px] font-bold tracking-wider uppercase text-cyan-50 mb-2">

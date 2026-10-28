@@ -172,29 +172,58 @@ export default function SmkiPage() {
   return (
     <ServiceRouteGuard requiredService="SMKI">
       <div className="flex flex-col gap-6 pb-10 font-sans">
-        {/* ── HERO BANNER SMKI ── */}
+        {/* ── HERO BANNER SMKI (Thematic Cyber Security Radar & Shield Halo) ── */}
         <div
-          className="relative overflow-hidden rounded-3xl shadow-lg"
+          className="relative overflow-hidden rounded-3xl shadow-xl"
           style={{
             background:
-              "linear-gradient(135deg, #3b0764 0%, #4c1d95 38%, #6d28d9 72%, #8b5cf6 100%)",
+              "linear-gradient(135deg, #2e0854 0%, #4c1d95 38%, #6d28d9 72%, #8b5cf6 100%)",
           }}
         >
-          {/* Decorative background circles */}
-          <div className="absolute top-0 right-0 w-72 h-72 rounded-full bg-white/10 -translate-y-1/2 translate-x-1/4 blur-2xl pointer-events-none" />
-          <div className="absolute bottom-0 left-1/3 w-56 h-56 rounded-full bg-cyan-300/15 translate-y-1/2 blur-2xl pointer-events-none" />
-          <div className="absolute -left-10 -top-10 w-44 h-44 rounded-full bg-white/5 pointer-events-none" />
+          {/* Top Shimmer Beam Violet */}
+          <div className="absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-violet-300/70 to-transparent pointer-events-none z-20" />
+
+          {/* Hex / Cyber Mesh Dot Texture */}
+          <div
+            className="absolute inset-0 opacity-[0.16] pointer-events-none"
+            style={{
+              backgroundImage: "radial-gradient(circle, rgba(192,132,252,0.35) 1px, transparent 1px)",
+              backgroundSize: "20px 20px",
+            }}
+          />
+
+          {/* Ambient Security Glow Orbs */}
+          <div className="absolute top-0 right-0 w-80 h-80 rounded-full bg-fuchsia-500/15 -translate-y-1/2 translate-x-1/4 blur-3xl pointer-events-none" />
+          <div className="absolute bottom-0 left-1/3 w-64 h-64 rounded-full bg-cyan-300/15 translate-y-1/2 blur-2xl pointer-events-none" />
+          <div className="absolute -left-10 -top-10 w-48 h-48 rounded-full bg-violet-400/10 blur-xl pointer-events-none" />
+
+          {/* Concentric Cyber Radar Rings & Target Reticle */}
+          <div className="absolute right-24 top-1/2 -translate-y-1/2 w-80 h-80 rounded-full border border-violet-400/20 border-dashed pointer-events-none" />
+          <div className="absolute right-36 top-1/2 -translate-y-1/2 w-56 h-56 rounded-full border border-fuchsia-300/20 pointer-events-none" />
+
+          {/* Cyber Sparkle Nodes */}
+          <div className="absolute right-72 top-5 pointer-events-none opacity-80 animate-pulse">
+            <svg className="w-3.5 h-3.5 text-violet-200" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z" />
+            </svg>
+          </div>
 
           <div className="relative z-10 flex flex-col xl:flex-row xl:items-center justify-between gap-6 px-7 py-7 sm:px-9">
             {/* Left: Icon + Text */}
             <div className="flex items-start sm:items-center gap-5 max-w-2xl">
-              <div className="w-16 h-16 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center flex-shrink-0 border border-white/30 shadow-lg">
-                <ShieldCheck size={34} className="text-white drop-shadow-sm" />
+              {/* Glowing Shield Halo */}
+              <div className="relative flex-shrink-0 mt-0.5 sm:mt-0">
+                <div className="absolute -inset-2 bg-gradient-to-r from-violet-400 to-fuchsia-500 rounded-2xl blur-md opacity-60" />
+                <div className="relative w-16 h-16 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center border border-white/40 shadow-xl shadow-purple-950/40">
+                  <ShieldCheck size={34} className="text-white drop-shadow-sm" />
+                </div>
               </div>
+
               <div>
-                <p className="text-xs sm:text-sm font-semibold text-violet-200 mb-1">
-                  Selamat Datang di
-                </p>
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 backdrop-blur-md border border-white/25 text-xs font-bold text-violet-200 tracking-wide mb-2.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-violet-300 animate-pulse" />
+                  <span>STANDAR KEAMANAN INFORMASI & TATA KELOLA SIBER</span>
+                </div>
                 <h1 className="text-2xl sm:text-3xl lg:text-[32px] font-extrabold text-white tracking-tight leading-tight drop-shadow-sm">
                   SMKI Diskominfo Jawa Barat
                 </h1>

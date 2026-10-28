@@ -1152,25 +1152,61 @@ export default function MagangDashboard() {
   return (
     <div className="flex flex-col gap-6 pb-6 font-sans">
 
-      {/* ── HERO BANNER ── */}
+      {/* ── HERO BANNER MAGANG (Golden Bokeh, Sunburst Glow & Academy Halo) ── */}
       <div
-        className="relative overflow-hidden rounded-3xl shadow-lg"
+        className="relative overflow-hidden rounded-3xl shadow-xl"
         style={{
-          background: "linear-gradient(135deg, #b45309 0%, #d97706 38%, #f59e0b 74%, #fbbf24 100%)",
+          background: "linear-gradient(135deg, #92400e 0%, #b45309 30%, #d97706 65%, #f59e0b 100%)",
         }}
       >
-        {/* Decorative background circles */}
-        <div className="absolute top-0 right-0 w-72 h-72 rounded-full bg-white/10 -translate-y-1/2 translate-x-1/4 blur-2xl pointer-events-none" />
-        <div className="absolute bottom-0 left-1/3 w-56 h-56 rounded-full bg-cyan-300/15 translate-y-1/2 blur-2xl pointer-events-none" />
-        <div className="absolute -left-10 -top-10 w-44 h-44 rounded-full bg-white/5 pointer-events-none" />
+        {/* Top Shimmer Beam Golden */}
+        <div className="absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-amber-200/80 to-transparent pointer-events-none z-20" />
+
+        {/* Warm Golden Bokeh Dot Texture */}
+        <div
+          className="absolute inset-0 opacity-[0.20] pointer-events-none"
+          style={{
+            backgroundImage: "radial-gradient(circle, rgba(254,240,138,0.45) 1.5px, transparent 1.5px)",
+            backgroundSize: "22px 22px",
+          }}
+        />
+
+        {/* Sunburst Ambient Warm Orbs */}
+        <div className="absolute top-0 right-10 w-80 h-80 rounded-full bg-yellow-300/20 -translate-y-1/2 blur-3xl pointer-events-none" />
+        <div className="absolute bottom-0 left-1/4 w-72 h-72 rounded-full bg-amber-400/25 translate-y-1/2 blur-3xl pointer-events-none" />
+
+        {/* Floating Sunburst Orbital Contours */}
+        <div className="absolute right-16 top-1/2 -translate-y-1/2 w-80 h-80 rounded-full border border-yellow-200/20 pointer-events-none" />
+        <div className="absolute right-28 top-1/2 -translate-y-1/2 w-60 h-60 rounded-full border border-amber-200/25 pointer-events-none" />
+
+        {/* Golden Sparkle Stars */}
+        <div className="absolute right-80 top-5 pointer-events-none opacity-90 animate-pulse">
+          <svg className="w-4 h-4 text-yellow-200" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z" />
+          </svg>
+        </div>
+        <div className="absolute right-16 bottom-4 pointer-events-none opacity-80 animate-pulse" style={{ animationDelay: "1.2s" }}>
+          <svg className="w-3.5 h-3.5 text-amber-200" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z" />
+          </svg>
+        </div>
 
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6 px-7 py-7 sm:px-9">
           {/* Left: Icon + Text */}
-          <div className="flex items-center gap-5">
-            <div className="w-16 h-16 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center flex-shrink-0 border border-white/30 shadow-lg">
-              <GraduationCap size={34} className="text-white drop-shadow-sm" />
+          <div className="flex items-start sm:items-center gap-5">
+            {/* Academy Glowing Halo */}
+            <div className="relative flex-shrink-0 mt-0.5 sm:mt-0">
+              <div className="absolute -inset-2 bg-gradient-to-r from-yellow-300 to-amber-500 rounded-2xl blur-md opacity-60" />
+              <div className="relative w-16 h-16 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center border border-white/40 shadow-xl shadow-amber-950/40">
+                <GraduationCap size={34} className="text-white drop-shadow-sm" />
+              </div>
             </div>
+
             <div>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-xs font-bold text-yellow-100 tracking-wide mb-2.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-yellow-300 animate-pulse" />
+                <span>PROGRAM PENGEMBANGAN TALENTA DIGITAL</span>
+              </div>
               <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight drop-shadow-sm">
                 Magang
               </h1>

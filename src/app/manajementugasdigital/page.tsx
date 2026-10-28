@@ -572,16 +572,54 @@ export default function ManajemenTugasDigitalPage() {
 
   return (
     <div className="space-y-6">
-      {/* Hero Banner - Green Gradient */}
-      <div className="relative overflow-hidden rounded-3xl" style={{background: "linear-gradient(135deg, #1a6b3c 0%, #22843f 40%, #2ea04f 70%, #38b860 100%)"}}>
+      {/* ── HERO BANNER MANAJEMEN TUGAS DIGITAL (Blueprint Grid & Sprint Aura) ── */}
+      <div
+        className="relative overflow-hidden rounded-3xl shadow-xl"
+        style={{ background: "linear-gradient(135deg, #0f4c27 0%, #1a6b3c 38%, #2ea04f 72%, #34d399 100%)" }}
+      >
+        {/* Top Shimmer Beam Emerald */}
+        <div className="absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-emerald-300/80 to-transparent pointer-events-none z-20" />
+
+        {/* Blueprint Agile Planning Grid */}
+        <div
+          className="absolute inset-0 opacity-[0.14] pointer-events-none"
+          style={{
+            backgroundImage: "linear-gradient(to right, rgba(255,255,255,0.2) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.2) 1px, transparent 1px)",
+            backgroundSize: "22px 22px",
+          }}
+        />
+
+        {/* Ambient Emerald Glow Orbs */}
+        <div className="absolute top-0 right-10 w-80 h-80 rounded-full bg-emerald-400/20 -translate-y-1/2 blur-3xl pointer-events-none" />
+        <div className="absolute bottom-0 left-1/4 w-64 h-64 rounded-full bg-teal-300/20 translate-y-1/2 blur-2xl pointer-events-none" />
+
+        {/* Milestone Blueprint Rings */}
+        <div className="absolute right-24 top-1/2 -translate-y-1/2 w-80 h-80 rounded-full border border-emerald-300/15 pointer-events-none" />
+        <div className="absolute right-40 top-1/2 -translate-y-1/2 w-52 h-52 rounded-full border border-teal-200/20 border-dashed pointer-events-none" />
+
+        {/* Sparkle Milestone Nodes */}
+        <div className="absolute right-72 top-6 pointer-events-none opacity-80 animate-pulse">
+          <svg className="w-3.5 h-3.5 text-emerald-200" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z" />
+          </svg>
+        </div>
+
         <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-7 sm:p-8">
           {/* Left: Icon + Text */}
-          <div className="flex items-center gap-5">
-            <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center flex-shrink-0 border border-white/30">
-              <ListTodo size={32} className="text-white" />
+          <div className="flex items-start sm:items-center gap-5">
+            {/* Sprint Glowing Halo */}
+            <div className="relative flex-shrink-0 mt-0.5 sm:mt-0">
+              <div className="absolute -inset-2 bg-gradient-to-r from-emerald-300 to-teal-400 rounded-2xl blur-md opacity-60" />
+              <div className="relative w-16 h-16 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center border border-white/40 shadow-xl shadow-emerald-950/40">
+                <ListTodo size={34} className="text-white drop-shadow-sm" />
+              </div>
             </div>
+
             <div>
-              <p className="text-sm font-semibold text-green-200 mb-1">Selamat Datang di</p>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 backdrop-blur-md border border-white/25 text-xs font-bold text-emerald-200 tracking-wide mb-2.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-300 animate-pulse" />
+                <span>MONITORING SPRINT & KOLABORASI DIGITAL</span>
+              </div>
               <h1 className="text-3xl font-extrabold text-white leading-tight drop-shadow-sm">
                 Manajemen Tugas Digital
               </h1>
