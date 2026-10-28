@@ -263,7 +263,9 @@ export default function SmkiLayout({
       <style>{`
         .smki-subpage-content div.rounded-2xl[class*="from-[#064e3b]"]:not(.fixed *),
         .smki-subpage-content div.rounded-2xl[class*="from-[#065f46]"]:not(.fixed *),
-        .smki-subpage-content div.rounded-2xl.p-6[class*="bg-[#059669]"]:not(.fixed *) {
+        .smki-subpage-content div.rounded-2xl.p-6[class*="bg-[#059669]"]:not(.fixed *),
+        .smki-subpage-content header.rounded-2xl[class*="from-emerald-"]:not(.fixed *),
+        .smki-subpage-content div.rounded-2xl[class*="from-emerald-"]:not(.fixed *) {
           display: none !important;
         }
         .smki-subpage-content > div[class*="bg-[#f8fafc]"] {
