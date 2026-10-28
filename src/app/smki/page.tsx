@@ -30,11 +30,6 @@ interface SmkiServiceCard {
   desc: string;
   path: string;
   icon: any;
-  strip: string;
-  glow: string;
-  border: string;
-  text: string;
-  iconShadow: string;
 }
 
 const smkiCards: SmkiServiceCard[] = [
@@ -43,220 +38,120 @@ const smkiCards: SmkiServiceCard[] = [
     desc: "Kelola inventarisasi perangkat lunak resmi, audit lisensi, serta otomatis ekspor formulir input ke dalam template dokumen resmi FR-017.",
     path: "/smki/software-standar",
     icon: Laptop,
-    strip: "from-blue-600 to-sky-400",
-    glow: "hover:shadow-blue-500/20",
-    border: "hover:border-blue-200",
-    text: "text-blue-600",
-    iconShadow: "shadow-blue-500/30",
   },
   {
     title: "Formulir Hardening Aset",
     desc: "Pemeriksaan kepatuhan hardening keamanan perangkat (Laptop/PC/Server), verifikasi auditor, dan ekspor resmi dokumen FR-047.",
     path: "/smki/formulir-hardening",
     icon: ShieldAlert,
-    strip: "from-amber-500 to-yellow-400",
-    glow: "hover:shadow-amber-500/20",
-    border: "hover:border-amber-200",
-    text: "text-amber-500",
-    iconShadow: "shadow-amber-500/30",
   },
   {
     title: "Formulir Daftar Rekaman",
     desc: "Kelola pencatatan dan inventarisasi formulir daftar rekaman dokumen SMKI, klasifikasi tingkat keamanan, masa retensi, dan penetapan pemilik arsip.",
     path: "/smki/daftar-rekaman",
     icon: FileText,
-    strip: "from-purple-600 to-pink-400",
-    glow: "hover:shadow-purple-500/20",
-    border: "hover:border-purple-200",
-    text: "text-purple-600",
-    iconShadow: "shadow-purple-500/30",
   },
   {
     title: "Formulir Daftar Penyedia",
     desc: "Inventarisasi dan verifikasi rekanan penyedia barang/jasa, ruang lingkup pekerjaan, serta status berita acara sesuai standar FR-020.",
     path: "/smki/daftar-penyedia",
     icon: Building2,
-    strip: "from-emerald-600 to-teal-400",
-    glow: "hover:shadow-emerald-500/20",
-    border: "hover:border-emerald-200",
-    text: "text-emerald-600",
-    iconShadow: "shadow-emerald-500/30",
   },
   {
     title: "Daftar Aset TI",
     desc: "Sistem inventarisasi & manajemen aset perangkat keras, monitoring masa pakai, pemantauan dukungan serta ekspor laporan Excel Bidang APTIKA.",
     path: "/daftar-aset-ti",
     icon: Box,
-    strip: "from-sky-600 to-blue-400",
-    glow: "hover:shadow-sky-500/20",
-    border: "hover:border-sky-200",
-    text: "text-sky-600",
-    iconShadow: "shadow-sky-500/30",
   },
   {
     title: "Berita Acara Penghancuran Media",
     desc: "Kelola data berita acara penghancuran media sesuai formulir FR014-SMKI, rincian perangkat, serta ekspor dokumen resmi Word (.docx).",
     path: "/smki/berita-acara",
     icon: FileText,
-    strip: "from-teal-600 to-emerald-400",
-    glow: "hover:shadow-teal-500/20",
-    border: "hover:border-teal-200",
-    text: "text-teal-600",
-    iconShadow: "shadow-teal-500/30",
   },
   {
     title: "Formulir Rencana Audit",
     desc: "Jadwalkan dan kelola rencana audit internal SMKI (F05-SMKI), auditee, auditor, serta ekspor dokumen resmi PDF.",
     path: "/smki/rencana-audit",
     icon: CalendarCheck,
-    strip: "from-violet-600 to-purple-400",
-    glow: "hover:shadow-violet-500/20",
-    border: "hover:border-violet-200",
-    text: "text-violet-600",
-    iconShadow: "shadow-violet-500/30",
   },
   {
     title: "Formulir Hak Akses TI",
     desc: "Kelola permohonan dan verifikasi hak akses sistem informasi (FR-018), penetapan level akses, jenis akses, serta kontrol akses pengguna.",
     path: "/smki/hak-akses-ti",
     icon: Lock,
-    strip: "from-cyan-600 to-teal-400",
-    glow: "hover:shadow-cyan-500/20",
-    border: "hover:border-cyan-200",
-    text: "text-cyan-600",
-    iconShadow: "shadow-cyan-500/30",
   },
   {
     title: "Laporan Audit Internal SMKI",
     desc: "Catat temuan audit internal SMKI (FR-006), kategori temuan (major/minor/OFI), rekomendasi perbaikan, serta ekspor dokumen resmi Word.",
     path: "/smki/laporan-audit",
     icon: ShieldCheck,
-    strip: "from-rose-600 to-pink-400",
-    glow: "hover:shadow-rose-500/20",
-    border: "hover:border-rose-200",
-    text: "text-rose-600",
-    iconShadow: "shadow-rose-500/30",
   },
   {
     title: "Formulir Log Perubahan",
     desc: "Catat pelaksanaan perubahan TI, kondisi sebelum dan sesudah, hasil pengujian, serta tindak lanjut pada formulir FR-032.",
     path: "/smki/log-perubahan",
     icon: FileText,
-    strip: "from-teal-600 to-cyan-400",
-    glow: "hover:shadow-teal-500/20",
-    border: "hover:border-teal-200",
-    text: "text-teal-600",
-    iconShadow: "shadow-teal-500/30",
   },
   {
     title: "Formulir Evaluasi Kepatuhan",
     desc: "Catat dan evaluasi kepatuhan terhadap regulasi dan aturan lain yang mendukung layanan utama, lengkap dengan status dan ekspor dokumen FR-044.",
     path: "/smki/evaluasi-kepatuhan",
     icon: ClipboardCheck,
-    strip: "from-sky-600 to-indigo-400",
-    glow: "hover:shadow-sky-500/20",
-    border: "hover:border-sky-200",
-    text: "text-sky-600",
-    iconShadow: "shadow-sky-500/30",
   },
   {
     title: "Formulir Review Log",
     desc: "Catat hasil review log akses dan aktivitas sistem (FR-040): obyek, periode, rincian user/IP/waktu/durasi, tindak lanjut, serta cetak formulir resmi.",
     path: "/smki/review-log",
     icon: ScrollText,
-    strip: "from-orange-500 to-amber-400",
-    glow: "hover:shadow-orange-500/20",
-    border: "hover:border-orange-200",
-    text: "text-orange-500",
-    iconShadow: "shadow-orange-500/30",
   },
   {
     title: "Formulir BYOD (Perangkat Pribadi)",
     desc: "Kelola surat pernyataan penggunaan perangkat pribadi di unit kerja (FR-045): daftar laptop/PC/tab, merek, nomor seri, serta cetak formulir resmi.",
     path: "/smki/perangkat-pribadi",
     icon: MonitorSmartphone,
-    strip: "from-indigo-600 to-violet-400",
-    glow: "hover:shadow-indigo-500/20",
-    border: "hover:border-indigo-200",
-    text: "text-indigo-600",
-    iconShadow: "shadow-indigo-500/30",
   },
   {
     title: "Formulir Review CCTV",
     desc: "Catat review monitoring dan pemeliharaan CCTV (FR-038): obyek, periode, uraian review, tindak lanjut, target selesai, serta cetak formulir resmi.",
     path: "/smki/reviu-cctv",
     icon: Cctv,
-    strip: "from-rose-600 to-red-400",
-    glow: "hover:shadow-rose-500/20",
-    border: "hover:border-rose-200",
-    text: "text-rose-600",
-    iconShadow: "shadow-rose-500/30",
   },
   {
     title: "Evaluasi dan Pengujian DRP",
     desc: "Laporkan evaluasi pengujian Disaster Recovery Plan (FR-039): persyaratan waktu (RTO), proses, team, check list BCP, serta cetak formulir resmi.",
     path: "/smki/evaluasi-drp",
     icon: DatabaseBackup,
-    strip: "from-violet-600 to-indigo-400",
-    glow: "hover:shadow-violet-500/20",
-    border: "hover:border-violet-200",
-    text: "text-violet-600",
-    iconShadow: "shadow-violet-500/30",
   },
   {
     title: "Aset Sistem Informasi",
     desc: "Inventarisasi aset sistem informasi (FR-036): kode aset, virtualisasi, IP address, spesifikasi, pemilik, serta klasifikasi keamanan informasi.",
     path: "/smki/aset-sistem-informasi",
     icon: Database,
-    strip: "from-indigo-600 to-blue-400",
-    glow: "hover:shadow-indigo-500/20",
-    border: "hover:border-indigo-200",
-    text: "text-indigo-600",
-    iconShadow: "shadow-indigo-500/30",
   },
   {
     title: "Program Tahunan Audit Internal",
     desc: "Kelola formulir program tahunan audit internal (FR-008), penugasan tim auditor, objek auditee, matriks klausul, jadwal 12 bulan, serta ekspor resmi Word (.docx).",
     path: "/smki/laporan-audit-tahunan",
     icon: CalendarRange,
-    strip: "from-teal-600 to-emerald-400",
-    glow: "hover:shadow-teal-500/20",
-    border: "hover:border-teal-200",
-    text: "text-teal-600",
-    iconShadow: "shadow-teal-500/30",
   },
   {
     title: "Formulir Pelaporan Insiden",
     desc: "Kelola pencatatan insiden keamanan informasi (FR-016), kronologi kejadian, analisis dampak, dan status penanganan insiden secara terstruktur.",
     path: "/smki/pelaporan-insiden",
     icon: ShieldAlert,
-    strip: "from-amber-600 to-red-400",
-    glow: "hover:shadow-amber-500/20",
-    border: "hover:border-amber-200",
-    text: "text-amber-600",
-    iconShadow: "shadow-amber-500/30",
   },
   {
     title: "Formulir Laporan Kerusakan",
     desc: "Kelola formulir laporan kerusakan perangkat fasilitas data center (FR-024) beserta rincian tindakan perbaikan.",
     path: "/smki/laporan-kerusakan",
     icon: ServerCog,
-    strip: "from-red-600 to-rose-400",
-    glow: "hover:shadow-red-500/20",
-    border: "hover:border-red-200",
-    text: "text-red-600",
-    iconShadow: "shadow-red-500/30",
   },
   {
     title: "Screening Karyawan Outsourcing",
     desc: "Kelola berita acara verifikasi administrasi tenaga alih daya, 5 item checklist kepatuhan, serta cetak dokumen resmi format FR-012.",
     path: "/smki/screening-karyawan",
     icon: Users,
-    strip: "from-emerald-600 to-green-400",
-    glow: "hover:shadow-emerald-500/20",
-    border: "hover:border-emerald-200",
-    text: "text-emerald-600",
-    iconShadow: "shadow-emerald-500/30",
   },
 ];
 
@@ -403,7 +298,7 @@ export default function SmkiPage() {
           </div>
         </div>
 
-        {/* ── MODUL LAYANAN SMKI (Format Menggigit Serasi Dashboard) ── */}
+        {/* ── MODUL LAYANAN SMKI (Warna Seragam Tema Violet SMKI) ── */}
         <div className="bg-white/60 dark:bg-[#071733]/80 backdrop-blur-md rounded-3xl p-6 shadow-sm border border-white/70 dark:border-slate-800">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
             <div className="flex items-center gap-3.5">
@@ -445,7 +340,7 @@ export default function SmkiPage() {
             </div>
           </div>
 
-          {/* Cards Grid: Sesuai Desain Menggigit Dashboard */}
+          {/* Cards Grid: Seragam Tema Violet SMKI */}
           {filteredCards.length === 0 ? (
             <div className="py-12 text-center text-slate-400">
               <p className="text-sm font-semibold">Tidak ada formulir SMKI yang cocok dengan pencarian "{searchQuery}"</p>
@@ -458,23 +353,19 @@ export default function SmkiPage() {
                   <div
                     key={card.path}
                     onClick={() => router.push(card.path)}
-                    className={`relative overflow-hidden bg-white dark:bg-[#0b1e3d] rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm cursor-pointer hover:-translate-y-1.5 hover:shadow-xl ${card.glow} ${card.border} transition-all duration-300 group flex flex-col min-h-[195px]`}
+                    className="relative overflow-hidden bg-white dark:bg-[#0b1e3d] rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm cursor-pointer hover:-translate-y-1.5 hover:shadow-xl hover:shadow-violet-500/15 hover:border-violet-200 dark:hover:border-violet-800 transition-all duration-300 group flex flex-col min-h-[195px]"
                   >
-                    {/* Strip warna modul */}
-                    <div className={`h-1.5 w-full bg-gradient-to-r ${card.strip}`} />
+                    {/* Strip warna ungu / violet khas SMKI */}
+                    <div className="h-1.5 w-full bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-500" />
 
-                    {/* Ikon watermark */}
-                    <div
-                      className={`absolute -right-5 -bottom-5 opacity-[0.06] group-hover:opacity-[0.14] group-hover:scale-110 group-hover:-rotate-6 transition-all duration-500 pointer-events-none ${card.text}`}
-                    >
+                    {/* Ikon watermark khas SMKI */}
+                    <div className="absolute -right-5 -bottom-5 opacity-[0.06] group-hover:opacity-[0.14] group-hover:scale-110 group-hover:-rotate-6 transition-all duration-500 pointer-events-none text-violet-600 dark:text-violet-400">
                       <WatermarkIcon size={118} strokeWidth={1.5} />
                     </div>
 
                     <div className="relative flex flex-col flex-1 p-5">
                       <div className="flex items-start justify-between gap-3">
-                        <div
-                          className={`w-12 h-12 rounded-2xl flex items-center justify-center bg-gradient-to-br ${card.strip} shadow-lg ${card.iconShadow} text-white group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300`}
-                        >
+                        <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-600 shadow-lg shadow-violet-500/25 text-white group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
                           <WatermarkIcon size={22} className="text-white" />
                         </div>
                       </div>
@@ -487,9 +378,7 @@ export default function SmkiPage() {
                       </p>
 
                       <div className="flex items-center justify-end mt-auto pt-4">
-                        <div
-                          className={`h-9 min-w-[36px] px-2.5 group-hover:px-4 rounded-full flex items-center justify-center gap-1.5 bg-gradient-to-r ${card.strip} text-white shadow-md transition-all duration-300`}
-                        >
+                        <div className="h-9 min-w-[36px] px-2.5 group-hover:px-4 rounded-full flex items-center justify-center gap-1.5 bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 text-white shadow-md shadow-violet-500/20 transition-all duration-300">
                           <span className="text-xs font-bold max-w-0 overflow-hidden group-hover:max-w-[60px] transition-all duration-300 whitespace-nowrap">
                             Buka
                           </span>
