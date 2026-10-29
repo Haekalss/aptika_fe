@@ -32,7 +32,7 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const data = await login(email, password);
+      const data: any = await login(email, password);
       const token =
         data.token ||
         data.access_token ||
