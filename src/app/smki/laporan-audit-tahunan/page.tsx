@@ -209,7 +209,7 @@ export default function LaporanAuditTahunanPage() {
                   : "Tinjau jadwal audit internal SMKI dan unduh dokumen resmi untuk persiapan audit unit kerja."}
               </p>
             </div>
-            {isAdmin && (
+            {(
               <button
                 onClick={() => router.push("/smki/laporan-audit-tahunan/input")}
                 className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#065f46] hover:bg-[#047857] text-white font-semibold text-sm shadow-sm transition-all"

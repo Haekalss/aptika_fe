@@ -63,13 +63,13 @@ function FormulirTahunanInputContent() {
   const { user, isAdminAptika, initialized } = useAuthStore();
   const isAdmin = user?.role === "admin" || isAdminAptika;
 
-  // Proteksi: Hanya admin yang boleh mengakses form input / edit
+  // Proteksi: semua user boleh menambah formulir baru; edit hanya untuk admin
   useEffect(() => {
-    if (initialized && !isAdmin) {
-      alert("Akses ditolak: Pengisian formulir program tahunan audit hanya diperuntukkan bagi Administrator.");
+    if (initialized && !isAdmin && editId) {
+      alert("Akses ditolak: Pengubahan formulir program tahunan audit hanya diperuntukkan bagi Administrator.");
       router.replace("/smki/laporan-audit-tahunan");
     }
-  }, [initialized, isAdmin, router]);
+  }, [initialized, isAdmin, editId, router]);
 
   const [currentStep, setCurrentStep] = useState(1);
   const [isSaving, setIsSaving] = useState(false);
