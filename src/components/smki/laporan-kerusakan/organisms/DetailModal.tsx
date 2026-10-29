@@ -55,6 +55,22 @@ export const DetailModal = memo(({
 
         {/* Modal Body */}
         <div className="p-6 space-y-6">
+          {/* Identitas Dokumen */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 rounded-xl bg-emerald-50/60 border border-emerald-100 text-xs">
+            <div>
+              <span className="text-[10px] font-bold uppercase text-slate-400 block mb-0.5">No. Dokumen</span>
+              <p className="font-semibold text-slate-800">{report.no_dokumen || "F24-SMKI"}</p>
+            </div>
+            <div>
+              <span className="text-[10px] font-bold uppercase text-slate-400 block mb-0.5">No. Revisi</span>
+              <p className="font-semibold text-slate-800">{report.no_revisi || "1.0"}</p>
+            </div>
+            <div>
+              <span className="text-[10px] font-bold uppercase text-slate-400 block mb-0.5">Tanggal Berlaku</span>
+              <p className="font-semibold text-slate-800">{report.tanggal_berlaku || "2022-01-20"}</p>
+            </div>
+          </div>
+
           {/* Info Grid */}
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 p-4 rounded-xl bg-slate-50 border border-slate-200/70 text-xs">
             <div>

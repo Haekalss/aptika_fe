@@ -1,6 +1,7 @@
 import React, { memo, useState, useEffect, useMemo } from "react";
 import { X, Server, CheckCircle2, Loader2, FileDown } from "lucide-react";
 import { DataCenterAssetItem, LaporanKerusakanItem } from "@/services/api";
+import { FormSectionDokumen } from "./FormSectionDokumen";
 import { FormSectionAset } from "./FormSectionAset";
 import { FormSectionKerusakan } from "./FormSectionKerusakan";
 import { FormSectionTindakan } from "./FormSectionTindakan";
@@ -21,6 +22,7 @@ interface LaporanFormModalProps {
   users: UserOption[];
   supervisors?: UserOption[];
   isSupervisor?: boolean;
+  defaultMeta?: { no_dokumen?: string; no_revisi?: string; tanggal_berlaku?: string };
 }
 
 export const LaporanFormModal = memo(({
@@ -32,10 +34,14 @@ export const LaporanFormModal = memo(({
   users,
   supervisors = [],
   isSupervisor = false,
+  defaultMeta,
 }: LaporanFormModalProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [autoExport, setAutoExport] = useState(true);
   const [formData, setFormData] = useState<Partial<LaporanKerusakanItem>>({
+    no_dokumen: "F24-SMKI",
+    no_revisi: "1.0",
+    tanggal_berlaku: "2022-01-20",
     tanggal: new Date().toISOString().split("T")[0],
     jam: "09.30 WIB",
     aset_id: undefined,
@@ -54,6 +60,9 @@ export const LaporanFormModal = memo(({
       setFormData({
         id: editItem.id,
         nomor_laporan: editItem.nomor_laporan,
+        no_dokumen: editItem.no_dokumen || defaultMeta?.no_dokumen || "F24-SMKI",
+        no_revisi: editItem.no_revisi || defaultMeta?.no_revisi || "1.0",
+        tanggal_berlaku: (editItem.tanggal_berlaku || defaultMeta?.tanggal_berlaku || "2022-01-20").substring(0, 10),
         tanggal: editItem.tanggal,
         jam: editItem.jam,
         aset_id: editItem.aset_id,
@@ -68,6 +77,9 @@ export const LaporanFormModal = memo(({
       });
     } else {
       setFormData({
+        no_dokumen: defaultMeta?.no_dokumen || "F24-SMKI",
+        no_revisi: defaultMeta?.no_revisi || "1.0",
+        tanggal_berlaku: defaultMeta?.tanggal_berlaku || "2022-01-20",
         tanggal: new Date().toISOString().split("T")[0],
         jam: "09.30 WIB",
         aset_id: assets.length > 0 ? assets[0].id : undefined,
@@ -81,7 +93,7 @@ export const LaporanFormModal = memo(({
         supervisor_nama: supervisors.length > 0 ? supervisors[0].name : "",
       });
     }
-  }, [editItem, assets, supervisors, isOpen]);
+  }, [editItem, assets, supervisors, isOpen, defaultMeta]);
 
   const selectedAsset = useMemo(() => {
     return assets.find((a) => a.id === Number(formData.aset_id)) || null;
@@ -148,6 +160,14 @@ export const LaporanFormModal = memo(({
 
         {/* Modal Body (Atomic Components Composition) */}
         <form onSubmit={handleSubmit} className="overflow-y-auto p-6 space-y-6 flex-1 text-xs">
+          {/* Section 0: Identitas Dokumen */}
+          <FormSectionDokumen
+            noDokumen={formData.no_dokumen || ""}
+            noRevisi={formData.no_revisi || ""}
+            tanggalBerlaku={formData.tanggal_berlaku || ""}
+            onChange={handleFieldChange}
+          />
+
           {/* Section 1: Aset Data Center */}
           <FormSectionAset
             tanggal={formData.tanggal || ""}

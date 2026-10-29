@@ -51,6 +51,7 @@ export default function SmkiLaporanKerusakanPage() {
   });
   const [assets, setAssets] = useState<DataCenterAssetItem[]>([]);
   const [users, setUsers] = useState<UserOption[]>([]);
+  const [defaultMeta, setDefaultMeta] = useState<{ no_dokumen?: string; no_revisi?: string; tanggal_berlaku?: string } | undefined>(undefined);
   const [supervisors, setSupervisors] = useState<UserOption[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -88,6 +89,7 @@ export default function SmkiLaporanKerusakanPage() {
           setAssets(res.data.assets || []);
           setUsers(res.data.users || []);
           setSupervisors(res.data.supervisors || []);
+          if (res.data.default_meta) setDefaultMeta(res.data.default_meta);
         }
       } catch (err) {
         console.error("Gagal memuat lookup data:", err);
@@ -399,6 +401,7 @@ export default function SmkiLaporanKerusakanPage() {
           users={users}
           supervisors={supervisors}
           isSupervisor={isSupervisor}
+          defaultMeta={defaultMeta}
         />
 
         {/* Modal Detail & Approval Supervisor */}

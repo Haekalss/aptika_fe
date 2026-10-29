@@ -1,7 +1,21 @@
 import axios from "axios";
 
+const REMOTE_API_URL =
+  process.env.NEXT_PUBLIC_API_URL || "https://aptika-be.wasmer.dev/api";
+const LOCAL_API_URL =
+  process.env.NEXT_PUBLIC_API_URL_LOCAL || "http://localhost:8000/api";
+
+// Otomatis: dibuka lewat localhost -> backend lokal; selain itu (online) -> backend online.
+const resolveBaseUrl = () => {
+  if (typeof window !== "undefined") {
+    const host = window.location.hostname;
+    if (host === "localhost" || host === "127.0.0.1") return LOCAL_API_URL;
+  }
+  return REMOTE_API_URL;
+};
+
 export const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || "https://aptika-be.wasmer.dev/api",
+  baseURL: resolveBaseUrl(),
 });
 
 // ✅ Auto-attach token ke setiap request
@@ -2637,6 +2651,9 @@ export interface LaporanKerusakanItem {
   id?: number;
   nomor_laporan?: string;
   tanggal: string; // YYYY-MM-DD
+  no_dokumen?: string;
+  no_revisi?: string;
+  tanggal_berlaku?: string; // YYYY-MM-DD
   jam: string; // "09.30 WIB"
   aset_id: number;
   nama_aset?: string;
