@@ -11,6 +11,7 @@ export default function ManajemenTugasDigitalLayout({
     <MainLayout
       title="Manajemen Tugas Digital"
       subtitle="Kelola proyek, pelacakan tugas, dan kolaborasi tim Aptika"
+      hideSidebar={true}
     >
       {children}
     </MainLayout>

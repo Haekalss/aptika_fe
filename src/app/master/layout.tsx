@@ -11,9 +11,9 @@ export default function MasterLayout({
     <MainLayout
       title="Data Master Sistem"
       subtitle="Kelola referensi sentral kode rekening, alat angkutan, daftar pegawai, dan master NDA"
+      hideSidebar={true}
     >
       {children}
     </MainLayout>
   );
 }
-
