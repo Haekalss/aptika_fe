@@ -16,6 +16,7 @@ import { useFr009Form } from "../hooks/useFr009Form";
 import { toFr009Payload } from "../form";
 import Fr009Header from "../organisms/Fr009Header";
 import IdentitasSection from "../organisms/IdentitasSection";
+import MetadataDokumenSection from "../organisms/MetadataDokumenSection";
 import AnalisisMasalahSection from "../organisms/AnalisisMasalahSection";
 import TindakanTable from "../organisms/TindakanTable";
 import VerifikasiSection from "../organisms/VerifikasiSection";
@@ -26,7 +27,7 @@ function Fr009FormEditor({ id, record, lookup }: { id?: number; record?: Fr009Re
   const router = useRouter();
   const { user } = useAuthStore();
   const mutations = useFr009Mutations();
-  const state = useFr009Form(record, user);
+  const state = useFr009Form(record, user, lookup.template);
   const [message, setMessage] = useState("");
   const saving = useRef(false);
   const [busy, setBusy] = useState(false);
@@ -67,11 +68,10 @@ function Fr009FormEditor({ id, record, lookup }: { id?: number; record?: Fr009Re
   const back = () => runGuardedNavigation(() => router.push("/smki/tindakan-perbaikan"));
   return <div className="max-w-6xl mx-auto space-y-6">
     <Fr009Header title={id ? "Edit Tindakan Perbaikan & Pencegahan" : "Tambah Tindakan Perbaikan & Pencegahan"}><StatusBadge status={state.identity.status === "submitted" ? "Diajukan" : "Draft"} /></Fr009Header>
-      <dl className="grid gap-3 sm:grid-cols-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 text-xs">{[["Kode template", lookup.template.code], ["Revisi", lookup.template.revision], ["Berlaku", lookup.template.effective_date], ["Klasifikasi", lookup.template.classification]].map(([label, value]) => <div key={label}><dt className="text-slate-500 mb-1">{label}</dt><dd className="font-semibold break-words">{value}</dd></div>)}</dl>
       {!canSave && <p role="status" className="rounded-xl bg-amber-50 p-4 text-xs text-amber-800">Laporan ini tidak dapat diubah dengan hak akses Anda.</p>}
-      {state.identity.status === "submitted" && <p className="rounded-xl bg-amber-50 p-4 text-xs text-amber-800">Mengubah konten laporan mengembalikannya ke Draft dan membatalkan verifikasi aktif. Riwayat verifikasi tetap tersimpan; ajukan kembali setelah perubahan.</p>}
+      {state.identity.status === "submitted" && <p className="rounded-xl bg-amber-50 p-4 text-xs text-amber-800">Mengubah konten laporan, termasuk yang sudah Open atau Close, mengembalikannya ke Draft dan membatalkan verifikasi aktif. Riwayat verifikasi tetap tersimpan; ajukan kembali setelah perubahan.</p>}
       {message && <div role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-800"><p>{message}</p>{Object.keys(state.errors).length > 0 && <ul className="list-disc pl-5 mt-2 space-y-1">{Object.entries(state.errors).map(([key, errors]) => <li key={key}>{errors[0]}</li>)}</ul>}</div>}
-      <form onSubmit={(event) => { event.preventDefault(); void save(true); }}><fieldset disabled={busy || !canSave} className="space-y-5"><IdentitasSection form={state.form} lookup={lookup} errors={state.errors} onChange={state.onChange} /><AnalisisMasalahSection form={state.form} lookup={lookup} errors={state.errors} onChange={state.onChange} /><TindakanTable jenis="koreksi" form={state.form} lookup={lookup} errors={state.errors} onChange={state.onChange} disabled={busy || !canSave} /><TindakanTable jenis="tindakan_korektif" form={state.form} lookup={lookup} errors={state.errors} onChange={state.onChange} disabled={busy || !canSave} /><VerifikasiSection record={record} /><PengesahanSection form={state.form} lookup={lookup} errors={state.errors} onChange={state.onChange} /></fieldset></form>
+      <form onSubmit={(event) => { event.preventDefault(); void save(true); }}><fieldset disabled={busy || !canSave} className="space-y-5"><MetadataDokumenSection form={state.form} lookup={lookup} errors={state.errors} onChange={state.onChange} /><IdentitasSection form={state.form} lookup={lookup} errors={state.errors} onChange={state.onChange} /><AnalisisMasalahSection form={state.form} lookup={lookup} errors={state.errors} onChange={state.onChange} /><TindakanTable jenis="koreksi" form={state.form} lookup={lookup} errors={state.errors} onChange={state.onChange} disabled={busy || !canSave} /><TindakanTable jenis="tindakan_korektif" form={state.form} lookup={lookup} errors={state.errors} onChange={state.onChange} disabled={busy || !canSave} /><VerifikasiSection record={record} /><PengesahanSection form={state.form} lookup={lookup} errors={state.errors} onChange={state.onChange} /></fieldset></form>
       <FormActions busy={busy} dirty={state.dirty} canSave={canSave} onDraft={() => void save(false)} onSubmit={() => void save(true)} onBack={back} />
     <ConfirmModal isOpen={!!state.pendingNavigation} onClose={state.cancelNavigation} onConfirm={state.confirmNavigation} title="Tinggalkan perubahan?" message="Perubahan yang belum disimpan akan hilang." confirmText="Tinggalkan halaman" isDanger={false} loading={busy} />
   </div>;

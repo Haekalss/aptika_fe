@@ -7,7 +7,6 @@ interface PdfAssets {
 }
 
 const MARGIN = 25.4;
-const START_Y = 46;
 const FONT = "helvetica";
 const sourceRows: Fr009SourceCode[][] = [
   ["audit_internal", "laporan_insiden"],
@@ -41,28 +40,37 @@ export function createFr009Pdf(report: Fr009Record, lookup: Fr009Lookup, assets:
       }
     }
   };
-  Object.values(lookup.template).forEach(checkText);
+  const metadata = [["No. Dokumen", report.nomor_dokumen], ["No. Revisi", report.nomor_revisi], ["Tanggal Berlaku", dateLabel(report.tanggal_berlaku)]];
+  metadata.forEach(([, value]) => checkText(value));
+  checkText(lookup.template.classification);
   doc.setProperties({ title: "Form Tindakan Perbaikan dan Pencegahan", subject: report.nomor_laporan || "FR-009", creator: "APTIKA Tools" });
   const width = doc.internal.pageSize.getWidth() - MARGIN * 2;
   const height = doc.internal.pageSize.getHeight();
-  const headerPages = new Set<number>();
+  const columns = [1860, 3525, 1800, 2985].map((value) => value / 10170 * width);
+  doc.setFont(FONT, "normal").setFontSize(8);
+  const metadataLines = metadata.map(([label, value]) => ({
+    label: doc.splitTextToSize(label, columns[2] - 3) as string[],
+    value: doc.splitTextToSize(`: ${value}`, columns[3] - 3) as string[],
+  }));
+  const rowHeights = metadataLines.map((row) => Math.max(9, Math.max(row.label.length, row.value.length) * 3.25 + 3));
+  const headerHeight = rowHeights.reduce((total, value) => total + value, 0);
+  const startY = 12.7 + headerHeight + 6.3;
   const logo = doc.getImageProperties(assets.logo);
 
   const header = () => {
-    const page = doc.getCurrentPageInfo().pageNumber;
-    if (headerPages.has(page)) return;
-    headerPages.add(page);
     const y = 12.7;
-    const headerHeight = 27;
     // Column proportions follow the original DOCX header grid.
-    const columns = [1860, 3525, 1800, 2985].map((value) => value / 10170 * width);
     const titleX = MARGIN + columns[0];
     const metaX = titleX + columns[1];
     const valueX = metaX + columns[2];
     doc.setDrawColor(0).setTextColor(0).setLineWidth(0.25);
     doc.rect(MARGIN, y, width, headerHeight);
     for (const x of [titleX, metaX, valueX]) doc.line(x, y, x, y + headerHeight);
-    for (let row = 1; row < 3; row++) doc.line(metaX, y + row * 9, MARGIN + width, y + row * 9);
+    let rowBottom = y;
+    for (const rowHeight of rowHeights.slice(0, -1)) {
+      rowBottom += rowHeight;
+      doc.line(metaX, rowBottom, MARGIN + width, rowBottom);
+    }
     const logoScale = Math.min((columns[0] - 4) / logo.width, 22 / logo.height);
     const logoHeight = logo.height * logoScale;
     const logoWidth = logo.width * logoScale;
@@ -71,14 +79,15 @@ export function createFr009Pdf(report: Fr009Record, lookup: Fr009Lookup, assets:
     const title = doc.splitTextToSize("FORM TINDAKAN PERBAIKAN DAN PENCEGAHAN", columns[1] - 4) as string[];
     doc.text(title, titleX + columns[1] / 2, y + (headerHeight - title.length * 4.8) / 2 + 3.8, { align: "center", lineHeightFactor: 1.14 });
     doc.setFont(FONT, "normal").setFontSize(8);
-    const metadata = [["No. Dokumen", lookup.template.code], ["No. Revisi", lookup.template.revision], ["Tanggal Berlaku", dateLabel(lookup.template.effective_date)]];
-    metadata.forEach(([label, value], row) => {
-      doc.text(doc.splitTextToSize(label, columns[2] - 3), metaX + 1.5, y + row * 9 + 3.5);
-      doc.text(doc.splitTextToSize(`: ${value}`, columns[3] - 3), valueX + 1.5, y + row * 9 + 3.5);
+    let rowTop = y;
+    metadataLines.forEach((row, index) => {
+      doc.text(row.label, metaX + 1.5, rowTop + 3.5);
+      doc.text(row.value, valueX + 1.5, rowTop + 3.5);
+      rowTop += rowHeights[index];
     });
   };
 
-  let cursor = START_Y;
+  let cursor = startY;
   const table = (options: UserOptions) => {
     // Do not silently corrupt characters unsupported by the built-in font.
     for (const row of [...(options.head ?? []), ...(options.body ?? [])]) {
@@ -90,10 +99,9 @@ export function createFr009Pdf(report: Fr009Record, lookup: Fr009Lookup, assets:
     }
     autoTable(doc, {
       startY: cursor, tableWidth: width, theme: "grid", rowPageBreak: "avoid",
-      margin: { top: START_Y, bottom: MARGIN, left: MARGIN, right: MARGIN },
+      margin: { top: startY, bottom: MARGIN, left: MARGIN, right: MARGIN },
       styles: { font: FONT, fontSize: 9, cellPadding: 1.6, textColor: 0, lineColor: 0, lineWidth: options.theme === "plain" ? 0 : 0.15, overflow: "linebreak", valign: "top" },
       headStyles: { fillColor: 255, textColor: 0, fontStyle: "bold", valign: "middle" },
-      willDrawPage: header,
       ...options,
     });
     cursor = (doc as jsPDF & { lastAutoTable: { finalY: number } }).lastAutoTable.finalY;
@@ -177,6 +185,8 @@ export function createFr009Pdf(report: Fr009Record, lookup: Fr009Lookup, assets:
   const pages = doc.getNumberOfPages();
   for (let page = 1; page <= pages; page++) {
     doc.setPage(page);
+    // Draw after tables so their pagination cannot cover the repeated header.
+    header();
     doc.setFont(FONT, "normal").setFontSize(8).setTextColor(0);
     doc.text(`Klasifikasi : ${lookup.template.classification}`, MARGIN, height - 12.7);
     doc.text(`Page ${page} of ${pages}`, MARGIN + width, height - 12.7, { align: "right" });

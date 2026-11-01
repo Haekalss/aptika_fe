@@ -13,6 +13,9 @@ export interface Fr009Action {
 }
 
 export interface Fr009Payload {
+  nomor_dokumen: string;
+  nomor_revisi: string;
+  tanggal_berlaku: string;
   nomor_laporan: string | null;
   id_unit_kerja: number | null;
   area: string;
@@ -23,7 +26,7 @@ export interface Fr009Payload {
   dilaporkan_oleh_nama: string;
   sumber_codes: Fr009SourceCode[];
   sumber_lainnya: string;
-  status_temuan: "Minor" | null;
+  status_temuan: "Minor" | "Major" | null;
   deskripsi: string;
   akar_masalah: string;
   id_auditor: number | null;

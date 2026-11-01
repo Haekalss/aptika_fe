@@ -3,14 +3,14 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { BEFORE_NAVIGATION_EVENT, runGuardedNavigation, type BeforeNavigationDetail } from "@/utils/guardedNavigation";
-import type { Fr009Errors, Fr009Record } from "@/services/smki/tindakanPerbaikan.types";
+import type { Fr009Errors, Fr009Lookup, Fr009Record } from "@/services/smki/tindakanPerbaikan.types";
 import { emptyFr009Form, recordToForm } from "../form";
 import type { Fr009FormIdentity, Fr009FormState } from "../types";
 
-export function useFr009Form(record?: Fr009Record, reporter?: { id: number; name: string } | null) {
+export function useFr009Form(record?: Fr009Record, reporter?: { id: number; name: string } | null, template?: Fr009Lookup["template"]) {
   const router = useRouter();
   // The editor mounts only after fetching; later refetches never replace its draft.
-  const [form, setForm] = useState(() => record ? recordToForm(record) : emptyFr009Form(reporter));
+  const [form, setForm] = useState(() => record ? recordToForm(record) : emptyFr009Form(reporter, template));
   const [identity, setIdentity] = useState<Fr009FormIdentity>(() => record ? { id: record.id, version: record.version, status: record.status } : {});
   const [errors, setErrors] = useState<Fr009Errors>({});
   const [dirty, setDirty] = useState(false);

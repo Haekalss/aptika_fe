@@ -1,4 +1,4 @@
-import type { Fr009ActionType, Fr009Payload, Fr009Record } from "@/services/smki/tindakanPerbaikan.types";
+import type { Fr009ActionType, Fr009Lookup, Fr009Payload, Fr009Record } from "@/services/smki/tindakanPerbaikan.types";
 import type { Fr009FormAction, Fr009FormState } from "./types";
 
 export function createAction(jenis: Fr009ActionType): Fr009FormAction {
@@ -14,10 +14,11 @@ export function orderedFilledActions(items: readonly Fr009FormAction[]): Fr009Fo
   ];
 }
 
-export function emptyFr009Form(reporter?: { id: number; name: string } | null): Fr009FormState {
-  const today = new Date();
-  const localDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+export function emptyFr009Form(reporter?: { id: number; name: string } | null, template?: Fr009Lookup["template"]): Fr009FormState {
+  const localDate = new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Jakarta", year: "numeric", month: "2-digit", day: "2-digit" });
   return {
+    nomor_dokumen: template?.code ?? "FR-009/ KOM.03.05/SANDIKAMI",
+    nomor_revisi: template?.revision ?? "3.0", tanggal_berlaku: localDate,
     nomor_laporan: "", id_unit_kerja: null, area: "", tanggal_laporan: localDate,
     diajukan_kepada_id: null, diajukan_kepada_nama: "", dilaporkan_oleh_id: reporter?.id ?? null,
     dilaporkan_oleh_nama: reporter?.name ?? "", sumber_codes: [], sumber_lainnya: "", status_temuan: null,
@@ -38,6 +39,7 @@ export function recordToForm(record: Fr009Record): Fr009FormState {
 export function toFr009Payload(form: Fr009FormState): Fr009Payload {
   const order: Record<Fr009ActionType, number> = { koreksi: 0, tindakan_korektif: 0 };
   return {
+    nomor_dokumen: form.nomor_dokumen.trim(), nomor_revisi: form.nomor_revisi.trim(), tanggal_berlaku: form.tanggal_berlaku,
     nomor_laporan: form.nomor_laporan?.trim() || null,
     id_unit_kerja: form.id_unit_kerja, area: (form.area ?? "").trim(), tanggal_laporan: form.tanggal_laporan || null,
     diajukan_kepada_id: form.diajukan_kepada_id, diajukan_kepada_nama: (form.diajukan_kepada_nama ?? "").trim(),
