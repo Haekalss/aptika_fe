@@ -1,5 +1,7 @@
 "use client";
 
+import { Suspense } from "react";
+import { Loader2 } from "lucide-react";
 import { useParams } from "next/navigation";
 import ServiceRouteGuard from "@/components/auth/ServiceRouteGuard";
 import { useAuthStore } from "@/store/useAuthStore";
@@ -28,11 +30,27 @@ export default function EvaluasiPenyediaDetailPage() {
   const isAssignedAdmin =
     user?.role === "admin" && !!record && record.admin_id === user?.id;
 
+  let content: React.ReactNode;
   if (record?.status === "diajukan" && isAssignedAdmin) {
-    return <EvaluasiPenyediaTinjauTemplate />;
+    content = <EvaluasiPenyediaTinjauTemplate />;
+  } else if (record?.status === "diajukan" || record?.status === "selesai") {
+    content = <EvaluasiPenyediaDetailTemplate />;
+  } else {
+    content = <EvaluasiPenyediaWizardTemplate />;
   }
-  if (record?.status === "diajukan" || record?.status === "selesai") {
-    return <EvaluasiPenyediaDetailTemplate />;
-  }
-  return <EvaluasiPenyediaWizardTemplate />;
+
+  return (
+    <Suspense
+      fallback={
+        <ServiceRouteGuard requiredService="SMKI">
+          <div className="py-24 text-center">
+            <Loader2 className="w-8 h-8 animate-spin text-emerald-600 mx-auto mb-3" />
+            <p className="text-sm text-slate-500">Memuat evaluasi...</p>
+          </div>
+        </ServiceRouteGuard>
+      }
+    >
+      {content}
+    </Suspense>
+  );
 }
