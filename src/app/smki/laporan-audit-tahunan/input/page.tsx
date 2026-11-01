@@ -78,6 +78,7 @@ function FormulirTahunanInputContent() {
   // Master Lookup data
   const [masterAuditors, setMasterAuditors] = useState<any[]>([]);
   const [masterBidang, setMasterBidang] = useState<any[]>([]);
+  const [masterPegawai, setMasterPegawai] = useState<any[]>([]);
   const [klausulOptions, setKlausulOptions] = useState<string[]>([
     "Klausul 4 (Konteks Organisasi)",
     "Klausul 5 (Kepemimpinan)",
@@ -125,6 +126,21 @@ function FormulirTahunanInputContent() {
         if (res?.data) {
           if (res.data.auditors?.length) setMasterAuditors(res.data.auditors);
           if (res.data.bidang_auditee?.length) setMasterBidang(res.data.bidang_auditee);
+          if (res.data.pegawai?.length) {
+            setMasterPegawai(res.data.pegawai);
+            if (!editId) {
+              const kabid = res.data.pegawai.find(
+                (p: any) => p.role === "kabid" || p.jabatan?.toLowerCase().includes("kepala bidang")
+              );
+              if (kabid) {
+                setFormData((prev) => ({
+                  ...prev,
+                  disahkan_oleh: prev.disahkan_oleh || kabid.nama,
+                  jabatan_pengesah: prev.jabatan_pengesah || kabid.jabatan,
+                }));
+              }
+            }
+          }
           if (res.data.standard_clauses?.length) setKlausulOptions(res.data.standard_clauses);
         }
       } catch (err) {
@@ -133,6 +149,17 @@ function FormulirTahunanInputContent() {
     };
     fetchLookup();
   }, []);
+
+  // Default Penyusun dari User Login bila form baru
+  useEffect(() => {
+    if (!editId && user?.name) {
+      setFormData((prev) => ({
+        ...prev,
+        disusun_oleh: prev.disusun_oleh || user.name,
+        jabatan_penyusun: prev.jabatan_penyusun || user.position || "Pengelola SMKI",
+      }));
+    }
+  }, [editId, user]);
 
   // Load existing data if edit mode
   useEffect(() => {
@@ -341,6 +368,7 @@ function FormulirTahunanInputContent() {
               formData={formData}
               onChange={updateFormData}
               masterAuditors={masterAuditors}
+              masterPegawai={masterPegawai}
             />
           )}
 
@@ -369,7 +397,11 @@ function FormulirTahunanInputContent() {
           )}
 
           {currentStep === 6 && (
-            <Step6Pengesah formData={formData} onChange={updateFormData} />
+            <Step6Pengesah
+              formData={formData}
+              onChange={updateFormData}
+              masterPegawai={masterPegawai}
+            />
           )}
 
           {/* Footer Navigation */}

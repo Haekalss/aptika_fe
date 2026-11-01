@@ -61,7 +61,7 @@ export const FormSectionAset = memo(({
 
       <div>
         <label className="block text-xs font-bold text-slate-700 mb-1.5">
-          Pilih Aset Terdaftar <span className="text-rose-500">*</span>
+          Pilih Aset Terdaftar (Daftar Aset TI / Data Center) <span className="text-rose-500">*</span>
         </label>
         <select
           value={asetId || ""}
@@ -69,7 +69,7 @@ export const FormSectionAset = memo(({
           className="w-full text-xs bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 outline-none focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600"
           required
         >
-          <option value="">-- Pilih Perangkat Data Center --</option>
+          <option value="">-- Pilih Aset TI / Perangkat Data Center --</option>
           {assets.map((asset) => (
             <option key={asset.id} value={asset.id}>
               {asset.nama_aset} ({asset.kode_aset}) - {asset.lokasi_rak || "Data Center"}

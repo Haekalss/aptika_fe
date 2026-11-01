@@ -38,6 +38,7 @@ import {
   Building2,
 } from "lucide-react";
 import ServiceRouteGuard from "@/components/auth/ServiceRouteGuard";
+import TteSpecimen from "@/components/smki/TteSpecimen";
 import { useAuthStore } from "@/store/useAuthStore";
 import {
   getSmkiFormulirHardeningList,
@@ -2127,17 +2128,16 @@ export default function FormulirHardeningPage() {
 
                         {/* Kanan: Spesimen Pembuat / Auditor */}
                         <div>
-                          <span className="block text-[10px] text-slate-400 dark:text-slate-500 uppercase font-bold tracking-wider mb-1">
+                          <span className="block text-[10px] text-slate-400 dark:text-slate-500 uppercase font-bold tracking-wider mb-2">
                             SPESIMEN PEMBUAT / AUDITOR
                           </span>
-                          <span className="font-bold text-xs text-slate-900 dark:text-white block">
-                            {selectedForm.nama_auditor || "Tim IT Security"}
-                          </span>
-                          {selectedForm.nip_auditor && (
-                            <span className="text-[10px] text-slate-400 dark:text-slate-500 block font-mono mt-0.5">
-                              {selectedForm.jabatan_auditor ? `${selectedForm.jabatan_auditor.toUpperCase()} / ` : ""}NIP. {selectedForm.nip_auditor}
-                            </span>
-                          )}
+                          <div className="mt-1">
+                            <TteSpecimen
+                              nip={selectedForm.nip_auditor}
+                              nama={selectedForm.nama_auditor || "Tim IT Security SMKI"}
+                              width={280}
+                            />
+                          </div>
                         </div>
                       </div>
                     </div>
