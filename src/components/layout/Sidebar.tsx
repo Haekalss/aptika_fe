@@ -292,6 +292,12 @@ export default function Sidebar() {
                 iconColor: "text-emerald-600 bg-emerald-50 border border-emerald-200/60",
               },
               {
+                name: "Evaluasi Penyedia",
+                key: "smki/evaluasi-penyedia",
+                icon: ClipboardCheck,
+                iconColor: "text-emerald-600 bg-emerald-50 border border-emerald-200/60",
+              },
+              {
                 name: "Evaluasi Kepatuhan",
                 key: "smki/evaluasi-kepatuhan",
                 icon: ClipboardCheck,

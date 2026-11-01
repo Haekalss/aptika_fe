@@ -75,6 +75,13 @@ const smkiNavItems = [
     icon: Building2,
   },
   {
+    label: "Evaluasi Penyedia",
+    title: "Formulir Evaluasi Kinerja Penyedia Barang/Jasa (FR-021)",
+    desc: "Penilaian kinerja penyedia barang/jasa, perhitungan nilai otomatis, rekomendasi, dan pengesahan digital (TTE) oleh Evaluator dan Atasan.",
+    path: "/smki/evaluasi-penyedia",
+    icon: ClipboardCheck,
+  },
+  {
     label: "Daftar Aset TI",
     title: "Daftar Aset Teknologi Informasi",
     desc: "Sistem inventarisasi dan manajemen aset perangkat keras TI, monitoring masa pakai, pemantauan kondisi perangkat, serta ekspor laporan resmi Bidang APTIKA.",
