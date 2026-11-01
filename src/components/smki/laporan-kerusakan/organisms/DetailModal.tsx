@@ -2,6 +2,7 @@ import React, { memo } from "react";
 import { X, Server, Clock, ShieldCheck, CheckCircle, FileDown } from "lucide-react";
 import { LaporanKerusakanItem } from "@/services/api";
 import { StatusBadge } from "../atoms/StatusBadge";
+import TteSpecimen from "@/components/smki/TteSpecimen";
 
 interface DetailModalProps {
   isOpen: boolean;
@@ -164,9 +165,6 @@ export const DetailModal = memo(({
                 <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
                   Disusun Oleh (Pelapor)
                 </span>
-                <p className="font-bold text-slate-800 text-sm">
-                  {report.pelapor_nama || "Teknisi Data Center"}
-                </p>
                 <p className="text-[11px] text-slate-500">
                   Tanggal Lapor: {report.tanggal}, {report.jam}
                 </p>
@@ -175,6 +173,9 @@ export const DetailModal = memo(({
                     <CheckCircle className="w-3 h-3 text-emerald-700" />
                     Tercatat Sistem
                   </span>
+                </div>
+                <div className="pt-2">
+                  <TteSpecimen nama={report.pelapor_nama || "Teknisi Data Center"} width={280} />
                 </div>
               </div>
 
@@ -187,9 +188,6 @@ export const DetailModal = memo(({
                 <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
                   Mengetahui (Supervisor / Pejabat)
                 </span>
-                <p className="font-bold text-slate-800 text-sm">
-                  {report.supervisor_nama || "Belum Ditentukan"}
-                </p>
                 <p className="text-[11px] text-slate-500">
                   {report.status === "Closed" && report.validated_at
                     ? `Disahkan pada: ${new Date(report.validated_at).toLocaleString("id-ID")}`
@@ -205,6 +203,14 @@ export const DetailModal = memo(({
                     <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold bg-amber-100 text-amber-800">
                       <Clock className="w-3 h-3 text-amber-700" />
                       Draft / Menunggu Validasi
+                    </span>
+                  )}
+                </div>
+                <div className="pt-2">
+                  <TteSpecimen nama={report.supervisor_nama || "Supervisor SMKI"} width={280} />
+                  {report.status !== "Closed" && (
+                    <span className="text-[10px] text-amber-700/80 italic block mt-1">
+                      * Pratinjau spesimen TTE (resmi disahkan saat status Closed).
                     </span>
                   )}
                 </div>
