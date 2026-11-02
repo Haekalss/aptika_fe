@@ -2381,6 +2381,128 @@ export interface HakAksesTiLookupData {
   };
 }
 
+// ============================================================
+// SMKI: HAK AKSES FISIK (FR-019)
+// ============================================================
+
+export interface HakAksesFisikItem {
+  id?: number;
+  nomor_dokumen: string;
+  tanggal_pengajuan: string;
+  pegawai_id?: number | null;
+  nama_pemohon: string;
+  nip?: string | null;
+  jabatan?: string | null;
+  unit_kerja?: string | null;
+  no_handphone?: string | null;
+  email?: string | null;
+  jenis_permintaan?: "Pendaftaran" | "Penutupan" | string;
+  sifat_akses?: "Permanen" | "Sementara" | string;
+  waktu_akses?: string;
+  waktu_akses_lainnya?: string | null;
+  berlaku_sampai?: string | null;
+  ruangan_akses?: string[];
+  keperluan_alasan?: string[];
+  keperluan_lainnya?: string | null;
+  status_pengajuan?: "Pending" | "Approved" | "Rejected" | string;
+  catatan?: string | null;
+  pemohon_nama?: string | null;
+  pemohon_nip?: string | null;
+  atasan_nama?: string | null;
+  atasan_nip?: string | null;
+  penanggung_jawab_nama?: string | null;
+  penanggung_jawab_nip?: string | null;
+  agen_nama?: string | null;
+  agen_nip?: string | null;
+  header_no_dokumen?: string | null;
+  header_no_revisi?: string | null;
+  header_tanggal_berlaku?: string | null;
+  is_deleted?: boolean;
+  created_at?: string;
+  updated_at?: string;
+  pegawai?: {
+    id: number;
+    nama: string;
+    nip: string;
+    jabatan: string;
+    pangkat?: string;
+  };
+}
+
+export interface HakAksesFisikLookupData {
+  pegawai: {
+    id: number;
+    nama: string;
+    nip: string;
+    jabatan: string;
+    pangkat?: string;
+    role?: string;
+  }[];
+  ruangan: {
+    id?: number;
+    kode_ruangan?: string;
+    nama_ruangan: string;
+    deskripsi_area?: string;
+  }[];
+  keperluan_options: string[];
+  default_header: {
+    no_dokumen: string;
+    no_revisi: string;
+    tanggal_berlaku: string;
+  };
+  next_nomor_dokumen: string;
+}
+
+export const getHakAksesFisikList = async (params?: {
+  search?: string;
+  jenis_permintaan?: string;
+  sifat_akses?: string;
+  status?: string;
+  page?: number;
+  per_page?: number;
+}) => {
+  const res = await api.get("/smki/hak-akses-fisik", { params });
+  return res.data;
+};
+
+export const getHakAksesFisikDetail = async (id: number | string) => {
+  const res = await api.get(`/smki/hak-akses-fisik/${id}`);
+  return res.data;
+};
+
+export const getHakAksesFisikLookup = async () => {
+  const res = await api.get("/smki/hak-akses-fisik/lookup");
+  return res.data;
+};
+
+export const createHakAksesFisik = async (payload: Partial<HakAksesFisikItem>) => {
+  const res = await api.post("/smki/hak-akses-fisik", payload);
+  return res.data;
+};
+
+export const updateHakAksesFisik = async (id: number | string, payload: Partial<HakAksesFisikItem>) => {
+  const res = await api.put(`/smki/hak-akses-fisik/${id}`, payload);
+  return res.data;
+};
+
+export const deleteHakAksesFisik = async (id: number | string) => {
+  const res = await api.delete(`/smki/hak-akses-fisik/${id}`);
+  return res.data;
+};
+
+export const exportHakAksesFisikDocx = async (params?: {
+  id?: number | string;
+  no_dokumen?: string;
+  no_revisi?: string;
+  tanggal_berlaku?: string;
+}) => {
+  const res = await api.get("/smki/hak-akses-fisik/export-docx", {
+    params,
+    responseType: "blob",
+  });
+  return res.data;
+};
+
 export const getHakAksesTiList = async (params?: {
   search?: string;
   status?: string;
