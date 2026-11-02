@@ -28,6 +28,7 @@ import {
   GitPullRequest,
   MessageSquare,
   Usb,
+  KeyRound,
 } from "lucide-react";
 
 const smkiNavItems = [
@@ -52,6 +53,13 @@ const smkiNavItems = [
     desc: "Pemeriksaan kepatuhan hardening keamanan perangkat teknologi informasi (Laptop/PC/Server) verifikasi auditor, dan ekspor dokumen resmi FR-047.",
     path: "/smki/formulir-hardening",
     icon: ShieldAlert,
+  },
+  {
+    label: "Form Hak Akses Fisik",
+    title: "Formulir Hak Akses Fisik (FR-019)",
+    desc: "Kelola data pengajuan dan izin hak akses fisik ruangan terbatas sesuai formulir FR-019 SMKI dengan mudah dan terstruktur.",
+    path: "/smki/hak-akses-fisik",
+    icon: KeyRound,
   },
   {
     label: "Hak Akses TI",
