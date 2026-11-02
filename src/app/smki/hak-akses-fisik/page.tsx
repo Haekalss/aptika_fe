@@ -253,6 +253,7 @@ export default function HakAksesFisikPage() {
               <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
               <input
                 type="text"
+                suppressHydrationWarning
                 value={search}
                 onChange={(e) => {
                   setSearch(e.target.value);
@@ -265,6 +266,8 @@ export default function HakAksesFisikPage() {
 
             {/* Button Ekspor (DOCX/PDF) */}
             <button
+              type="button"
+              suppressHydrationWarning
               onClick={() => {
                 setExportSingleId(null);
                 setIsExportOpen(true);
@@ -277,6 +280,8 @@ export default function HakAksesFisikPage() {
 
             {/* Button + Tambah Data */}
             <button
+              type="button"
+              suppressHydrationWarning
               onClick={handleOpenCreate}
               className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold text-xs shadow-md shadow-emerald-700/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
             >
