@@ -14,6 +14,7 @@ import {
   exportSmkiLaporanAuditDocx,
   SmkiLaporanAudit,
 } from "@/services/api";
+import TteSpecimen from "@/components/smki/TteSpecimen";
 
 export default function PrintLaporanAuditPage() {
   const router = useRouter();
@@ -350,20 +351,22 @@ export default function PrintLaporanAuditPage() {
           </div>
         </div>
 
-        {/* Tanda Tangan Section - Matching Mockup Page 6 */}
+        {/* Tanda Tangan Section - Standar Spesimen TTE */}
         <div className="pt-6 text-[10pt] break-inside-avoid">
           <div className="grid grid-cols-2 text-center gap-12">
             <div>
               <p>Bandung, {todayFormatted}</p>
-              <p className="font-medium mt-1">Auditor,</p>
-              <div className="h-20" />
-              <p className="font-bold underline">({auditorName})</p>
+              <p className="font-medium mt-1 mb-2">Auditor,</p>
+              <div className="flex justify-center">
+                <TteSpecimen nama={auditorName} width={260} />
+              </div>
             </div>
             <div>
               <p>Bandung, {todayFormatted}</p>
-              <p className="font-medium mt-1">Auditee,</p>
-              <div className="h-20" />
-              <p className="font-bold underline">({auditeeName})</p>
+              <p className="font-medium mt-1 mb-2">Auditee,</p>
+              <div className="flex justify-center">
+                <TteSpecimen nama={auditeeName} width={260} />
+              </div>
             </div>
           </div>
         </div>
