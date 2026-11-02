@@ -302,6 +302,7 @@ export default function Home() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
+                  suppressHydrationWarning
                   className="w-full bg-transparent text-xs text-slate-800 placeholder-slate-400 font-medium outline-none pt-0.5"
                 />
               </div>
@@ -322,6 +323,7 @@ export default function Home() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
+                  suppressHydrationWarning
                   className="w-full bg-transparent text-xs text-slate-800 placeholder-slate-400 font-medium outline-none pt-0.5"
                 />
               </div>

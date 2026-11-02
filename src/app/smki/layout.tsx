@@ -295,6 +295,7 @@ export default function SmkiLayout({
           {/* Header Tombol Dropdown SMKI */}
           <button
             type="button"
+            suppressHydrationWarning
             onClick={() => setIsDropdownOpen((prev) => !prev)}
             className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-slate-800 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-all border border-transparent"
           >
@@ -326,6 +327,7 @@ export default function SmkiLayout({
                   <button
                     key={item.path}
                     type="button"
+                    suppressHydrationWarning
                     onClick={() => router.push(item.path)}
                     className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-left text-[12.5px] transition-all ${
                       isActive

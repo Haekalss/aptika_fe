@@ -139,6 +139,8 @@ export default function Header({ title, subtitle, showBrand = false }: HeaderPro
             return (
               <button
                 key={item.label}
+                type="button"
+                suppressHydrationWarning
                 onClick={() => runGuardedNavigation(() => router.push(item.path))}
                 className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all ${
                   isActive
