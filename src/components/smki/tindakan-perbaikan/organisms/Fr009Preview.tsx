@@ -1,4 +1,5 @@
 import StatusBadge from "@/components/ui/StatusBadge";
+import TteSpecimen from "@/components/smki/TteSpecimen";
 import type { Fr009Action, Fr009ActionType, Fr009Lookup, Fr009Record } from "@/services/smki/tindakanPerbaikan.types";
 import FormSection from "./FormSection";
 import VerifikasiSection from "./VerifikasiSection";
@@ -29,6 +30,30 @@ export default function Fr009Preview({ record, lookup }: { record: Fr009Record; 
     <FormSection number={2} title="Masalah & Akar Masalah"><dl className="space-y-5"><Value label="Sumber masalah" value={record.sumber_codes.map((code) => lookup.sources.find((source) => source.code === code)?.label ?? code).join(", ")} />{record.sumber_codes.includes("lainnya") && <Value label="Penjelasan lainnya" value={record.sumber_lainnya} />}<Value label="Deskripsi Masalah / Potensial Masalah" value={record.deskripsi} /><div><dt className="text-xs text-slate-500 mb-1">Status temuan</dt><dd>{record.status_temuan ? <StatusBadge status={record.status_temuan} /> : "—"}</dd></div><Value label="Akar Masalah" value={record.akar_masalah} /></dl></FormSection>
     {(["koreksi", "tindakan_korektif"] as const).map((jenis, index) => <FormSection key={jenis} number={index + 3} title={jenis === "koreksi" ? "Koreksi (Perbaikan Seketika)" : "Tindakan Korektif"} hint={jenis === "tindakan_korektif" ? "Supaya ketidaksesuaian tidak terjadi kembali." : undefined}><PreviewActions items={record.items} jenis={jenis} /></FormSection>)}
     <VerifikasiSection record={record} lookup={lookup} allowVerify />
-    <FormSection number={6} title="Auditor & Atasan Terkait"><dl className="grid gap-5 md:grid-cols-2"><Value label="Auditor" value={isAuditSource(record.sumber_codes) ? record.auditor_nama : "Tidak diperlukan untuk sumber non-audit"} /><Value label="Atasan terkait" value={record.atasan_nama} /></dl><p className="mt-4 text-xs text-slate-500">Nama pada dokumen bukan bukti tanda tangan elektronik. Akun pelaksana verifikasi dicatat terpisah.</p></FormSection>
+    <FormSection number={6} title="Pengesahan & Spesimen TTE (Auditor & Atasan Terkait)">
+      <div className="grid gap-6 md:grid-cols-2 pt-2">
+        <div className="space-y-3 p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30">
+          <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider block">
+            Pihak Auditor
+          </span>
+          {isAuditSource(record.sumber_codes) && record.auditor_nama ? (
+            <TteSpecimen nama={record.auditor_nama} width={280} />
+          ) : (
+            <p className="text-xs text-slate-500 italic py-4">Tidak diperlukan untuk sumber non-audit</p>
+          )}
+        </div>
+
+        <div className="space-y-3 p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30">
+          <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider block">
+            Atasan Terkait
+          </span>
+          {record.atasan_nama ? (
+            <TteSpecimen nama={record.atasan_nama} width={280} />
+          ) : (
+            <p className="text-xs text-slate-500 italic py-4">Nama atasan belum ditentukan</p>
+          )}
+        </div>
+      </div>
+    </FormSection>
   </div>;
 }
