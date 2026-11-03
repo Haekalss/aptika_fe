@@ -131,6 +131,12 @@ const smkiCards: SmkiServiceCard[] = [
     icon: DatabaseBackup,
   },
   {
+    title: "Daftar Aset Virtualisasi",
+    desc: "Kelola formulir FR-035: inventaris instance virtualisasi, IP/hostname, spesifikasi, pemilik, klasifikasi keamanan, dan ekspor dokumen.",
+    path: "/smki/formulir-daftar-aset-virtualisasi",
+    icon: ServerCog,
+  },
+  {
     title: "Aset Sistem Informasi",
     desc: "Inventarisasi aset sistem informasi (FR-036): kode aset, virtualisasi, IP address, spesifikasi, pemilik, serta klasifikasi keamanan informasi.",
     path: "/smki/aset-sistem-informasi",
