@@ -28,6 +28,7 @@ import {
   Siren,
   GitPullRequest,
   Usb,
+  Layers,
 } from "lucide-react";
 import ServiceRouteGuard from "@/components/auth/ServiceRouteGuard";
 
@@ -200,6 +201,12 @@ const smkiCards: SmkiServiceCard[] = [
     desc: "Dokumentasi rapat tinjauan manajemen SMKI (FR-011), pembahasan klausul ISO 27001:2013 Clause 9.3, keputusan tindak lanjut, dan cetak berita acara.",
     path: "/smki/notulen",
     icon: FileCheck,
+  },
+  {
+    title: "Formulir Aset Informasi",
+    desc: "Pendataan formulir resmi FR-028 aset informasi unit kerja, aset intangible, dan evaluasi matriks risiko CIA (Kerahasiaan, Integritas, Ketersediaan).",
+    path: "/smki/aset-informasi",
+    icon: Layers,
   },
 ];
 
