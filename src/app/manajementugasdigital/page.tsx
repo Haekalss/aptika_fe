@@ -24,14 +24,19 @@ import {
   ArrowRight,
   User,
   Users,
-  LockKeyhole
+  LockKeyhole,
+  ListTodo,
+  SlidersHorizontal,
+  Search
 } from "lucide-react";
 import Link from "next/link";
+
 import { SearchBar } from "@/components/ui/SearchBar";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Table, Column } from "@/components/ui/Table";
 import { Avatar } from "@/components/ui/Avatar";
+import Dropdown from "@/components/ui/Dropdown";
 import { Pagination } from "@/components/ui/Pagination";
 import { Modal } from "@/components/ui/Modal";
 import { Input } from "@/components/ui/Input";
@@ -369,7 +374,7 @@ export default function ManajemenTugasDigitalPage() {
         };
         return (
           <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 flex-shrink-0 border border-blue-100 dark:border-blue-500/20">
+            <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-green-50 dark:bg-green-500/10 text-green-600 dark:text-green-400 flex-shrink-0 border border-green-100 dark:border-green-500/20">
               <Icon size={18} />
             </div>
             <div className="flex flex-col text-left">
@@ -400,7 +405,7 @@ export default function ManajemenTugasDigitalPage() {
         const bName = row.bidang?.name || "";
         return (
           <div className="flex flex-col">
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-extrabold bg-indigo-50 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/20 w-fit">
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-extrabold bg-green-100 dark:bg-green-500/15 text-green-700 dark:text-green-300 border border-green-200 dark:border-green-500/20 w-fit">
               <Building2 size={11} />
               {bCode}
             </span>
@@ -568,23 +573,287 @@ export default function ManajemenTugasDigitalPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header Banner / Action Bar */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-white dark:bg-[#0b1630] border border-slate-200 dark:border-slate-800/80 rounded-2xl p-5 shadow-sm transition-colors duration-200">
-        <div className="flex items-center gap-3">
-          <div className="w-11 h-11 rounded-xl bg-orange-50 dark:bg-orange-500/15 border border-orange-200 dark:border-orange-500/25 flex items-center justify-center flex-shrink-0">
-            <Layers size={22} className="text-orange-600 dark:text-orange-400" />
+      {/* ── HERO BANNER MANAJEMEN TUGAS DIGITAL (Blueprint Grid & Sprint Aura) ── */}
+      <div
+        className="relative overflow-hidden rounded-3xl shadow-xl"
+        style={{ background: "linear-gradient(135deg, #0f4c27 0%, #1a6b3c 38%, #2ea04f 72%, #34d399 100%)" }}
+      >
+        {/* Top Shimmer Beam Emerald */}
+        <div className="absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-emerald-300/80 to-transparent pointer-events-none z-20" />
+
+        {/* Blueprint Agile Planning Grid */}
+        <div
+          className="absolute inset-0 opacity-[0.14] pointer-events-none"
+          style={{
+            backgroundImage: "linear-gradient(to right, rgba(255,255,255,0.2) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.2) 1px, transparent 1px)",
+            backgroundSize: "22px 22px",
+          }}
+        />
+
+        {/* Ambient Emerald Glow Orbs */}
+        <div className="absolute top-0 right-10 w-80 h-80 rounded-full bg-emerald-400/20 -translate-y-1/2 blur-3xl pointer-events-none" />
+        <div className="absolute bottom-0 left-1/4 w-64 h-64 rounded-full bg-teal-300/20 translate-y-1/2 blur-2xl pointer-events-none" />
+
+        {/* Milestone Blueprint Rings */}
+        <div className="absolute right-24 top-1/2 -translate-y-1/2 w-80 h-80 rounded-full border border-emerald-300/15 pointer-events-none" />
+        <div className="absolute right-40 top-1/2 -translate-y-1/2 w-52 h-52 rounded-full border border-teal-200/20 border-dashed pointer-events-none" />
+
+        {/* Sparkle Milestone Nodes */}
+        <div className="absolute right-72 top-6 pointer-events-none opacity-80 animate-pulse">
+          <svg className="w-3.5 h-3.5 text-emerald-200" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z" />
+          </svg>
+        </div>
+
+        <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-7 sm:p-8">
+          {/* Left: Icon + Text */}
+          <div className="flex items-start sm:items-center gap-5">
+            {/* Sprint Glowing Halo */}
+            <div className="relative flex-shrink-0 mt-0.5 sm:mt-0">
+              <div className="absolute -inset-2 bg-gradient-to-r from-emerald-300 to-teal-400 rounded-2xl blur-md opacity-60" />
+              <div className="relative w-16 h-16 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center border border-white/40 shadow-xl shadow-emerald-950/40">
+                <ListTodo size={34} className="text-white drop-shadow-sm" />
+              </div>
+            </div>
+
+            <div>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 backdrop-blur-md border border-white/25 text-xs font-bold text-emerald-200 tracking-wide mb-2.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-300 animate-pulse" />
+                <span>MONITORING SPRINT & KOLABORASI DIGITAL</span>
+              </div>
+              <h1 className="text-3xl font-extrabold text-white leading-tight drop-shadow-sm">
+                Manajemen Tugas Digital
+              </h1>
+              <p className="text-sm text-green-100 mt-1.5 max-w-md opacity-90">
+                Kelola proyek, pelacakan tugas, dan kolaborasi tim Aptika.
+              </p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-base font-extrabold text-slate-800 dark:text-white">
-              Manajemen Tugas & Proyek Digital
-            </h1>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-              Kelola proyek, tetapkan tugas, dan pantau progres kerja di seluruh unit kerja Diskominfo Jabar.
-            </p>
+
+          {/* Right: Kanban Illustration */}
+          <div className="hidden md:flex items-center justify-end flex-shrink-0 pr-4">
+            <svg width="340" height="110" viewBox="0 0 340 110" fill="none" xmlns="http://www.w3.org/2000/svg" className="opacity-90">
+              {/* Plant left */}
+              <ellipse cx="18" cy="108" rx="14" ry="5" fill="#1a6b3c" opacity="0.4"/>
+              <rect x="16" y="75" width="4" height="33" rx="2" fill="#2d8c50" opacity="0.7"/>
+              <ellipse cx="18" cy="75" rx="12" ry="8" fill="#38b860" opacity="0.6"/>
+              <ellipse cx="9" cy="83" rx="9" ry="6" fill="#4eca74" opacity="0.5" transform="rotate(-30 9 83)"/>
+              <ellipse cx="27" cy="82" rx="9" ry="6" fill="#4eca74" opacity="0.5" transform="rotate(30 27 82)"/>
+
+              {/* Kanban Board Background */}
+              <rect x="42" y="8" width="260" height="92" rx="10" fill="white" opacity="0.18"/>
+
+              {/* Column: To Do */}
+              <rect x="52" y="16" width="72" height="76" rx="7" fill="white" opacity="0.22"/>
+              <text x="62" y="29" fontSize="7" fontWeight="700" fill="white" opacity="0.9">TO DO</text>
+              <rect x="58" y="33" width="60" height="16" rx="4" fill="white" opacity="0.35"/>
+              <rect x="58" y="53" width="60" height="16" rx="4" fill="white" opacity="0.25"/>
+              <rect x="58" y="73" width="60" height="14" rx="4" fill="white" opacity="0.2"/>
+              <circle cx="63" cy="41" r="3" fill="#fbbf24" opacity="0.9"/>
+              <rect x="69" y="39" width="35" height="4" rx="2" fill="white" opacity="0.8"/>
+              <circle cx="63" cy="61" r="3" fill="#60a5fa" opacity="0.9"/>
+              <rect x="69" y="59" width="28" height="4" rx="2" fill="white" opacity="0.8"/>
+
+              {/* Column: In Progress */}
+              <rect x="132" y="16" width="72" height="76" rx="7" fill="white" opacity="0.22"/>
+              <text x="138" y="29" fontSize="6" fontWeight="700" fill="#fbbf24" opacity="0.95">IN PROGRESS</text>
+              <rect x="138" y="33" width="60" height="16" rx="4" fill="white" opacity="0.35"/>
+              <rect x="138" y="53" width="60" height="16" rx="4" fill="white" opacity="0.25"/>
+              <circle cx="143" cy="41" r="3" fill="#f97316" opacity="0.9"/>
+              <rect x="149" y="39" width="35" height="4" rx="2" fill="white" opacity="0.8"/>
+              <circle cx="143" cy="61" r="3" fill="#a78bfa" opacity="0.9"/>
+              <rect x="149" y="59" width="25" height="4" rx="2" fill="white" opacity="0.8"/>
+
+              {/* Column: Done */}
+              <rect x="212" y="16" width="72" height="76" rx="7" fill="white" opacity="0.22"/>
+              <text x="222" y="29" fontSize="7" fontWeight="700" fill="#86efac" opacity="0.95">DONE</text>
+              <rect x="218" y="33" width="60" height="16" rx="4" fill="white" opacity="0.35"/>
+              <rect x="218" y="53" width="60" height="16" rx="4" fill="white" opacity="0.25"/>
+              <rect x="218" y="73" width="60" height="14" rx="4" fill="white" opacity="0.2"/>
+              <circle cx="223" cy="41" r="3" fill="#34d399" opacity="0.9"/>
+              <rect x="229" y="39" width="35" height="4" rx="2" fill="white" opacity="0.8"/>
+              <circle cx="223" cy="61" r="3" fill="#34d399" opacity="0.9"/>
+              <rect x="229" y="59" width="28" height="4" rx="2" fill="white" opacity="0.8"/>
+
+              {/* Plant right */}
+              <ellipse cx="322" cy="108" rx="14" ry="5" fill="#1a6b3c" opacity="0.4"/>
+              <rect x="320" y="68" width="4" height="40" rx="2" fill="#2d8c50" opacity="0.7"/>
+              <ellipse cx="322" cy="68" rx="14" ry="10" fill="#38b860" opacity="0.6"/>
+              <ellipse cx="310" cy="76" rx="10" ry="7" fill="#4eca74" opacity="0.5" transform="rotate(-25 310 76)"/>
+              <ellipse cx="334" cy="75" rx="10" ry="7" fill="#4eca74" opacity="0.5" transform="rotate(25 334 75)"/>
+            </svg>
           </div>
         </div>
 
-        <div className="flex items-center gap-2 self-start lg:self-auto flex-wrap">
+        {/* Decorative circles */}
+        <div className="absolute top-0 right-0 w-64 h-64 rounded-full bg-white/5 -translate-y-1/2 translate-x-1/4 pointer-events-none"/>
+        <div className="absolute bottom-0 left-1/3 w-48 h-48 rounded-full bg-white/5 translate-y-1/2 pointer-events-none"/>
+
+      </div>
+
+      {/* ── METRIC SUMMARY CARDS (Sprint & Proyek Overview) ── */}
+      {(() => {
+        const totalP = projects.length;
+        const activeP = projects.filter((p) => p.status === "active").length;
+        const completedP = projects.filter((p) => p.status === "completed").length;
+        const archivedP = projects.filter((p) => p.status === "archived").length;
+
+        return (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4.5">
+            {/* Total Proyek */}
+            <div
+              onClick={() => { setSelectedStatusFilter("ALL"); setCurrentPage(1); }}
+              className={`relative overflow-hidden bg-white/70 dark:bg-[#071733]/90 backdrop-blur-md rounded-2xl p-5 shadow-sm border transition-all cursor-pointer select-none group hover:-translate-y-0.5 ${
+                selectedStatusFilter === "ALL"
+                  ? "border-emerald-500 shadow-md ring-2 ring-emerald-500/20 bg-white dark:bg-slate-800/90"
+                  : "border-slate-200/80 dark:border-slate-800 hover:border-slate-300"
+              }`}
+            >
+              <div className="h-1 w-full absolute top-0 left-0 bg-gradient-to-r from-emerald-600 to-teal-400" />
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                  Total Proyek
+                </span>
+                <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-800/60 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform shadow-2xs">
+                  <Layers size={19} />
+                </div>
+              </div>
+              <div className="mt-3 flex items-baseline gap-2">
+                <h3 className="text-2xl font-black text-slate-900 dark:text-white leading-tight">{totalP}</h3>
+                <span className="text-[11px] font-semibold text-slate-400 dark:text-slate-400">proyek</span>
+              </div>
+              <p className="mt-2 text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                Seluruh proyek tim
+              </p>
+            </div>
+
+            {/* Proyek Aktif */}
+            <div
+              onClick={() => { setSelectedStatusFilter("active"); setCurrentPage(1); }}
+              className={`relative overflow-hidden bg-white/70 dark:bg-[#071733]/90 backdrop-blur-md rounded-2xl p-5 shadow-sm border transition-all cursor-pointer select-none group hover:-translate-y-0.5 ${
+                selectedStatusFilter === "active"
+                  ? "border-teal-500 shadow-md ring-2 ring-teal-500/20 bg-white dark:bg-slate-800/90"
+                  : "border-slate-200/80 dark:border-slate-800 hover:border-slate-300"
+              }`}
+            >
+              <div className="h-1 w-full absolute top-0 left-0 bg-gradient-to-r from-teal-500 to-cyan-400" />
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                  Proyek Berjalan
+                </span>
+                <div className="w-10 h-10 rounded-xl bg-teal-50 dark:bg-teal-950/60 text-teal-600 dark:text-teal-400 border border-teal-200/60 dark:border-teal-800/60 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform shadow-2xs">
+                  <Clock size={19} />
+                </div>
+              </div>
+              <div className="mt-3 flex items-baseline gap-2">
+                <h3 className="text-2xl font-black text-slate-900 dark:text-white leading-tight">{activeP}</h3>
+                <span className="text-[11px] font-semibold text-slate-400 dark:text-slate-400">aktif</span>
+              </div>
+              <p className="mt-2 text-[11px] text-teal-600 dark:text-teal-400 font-semibold flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-teal-500 animate-pulse" />
+                Sprint berjalan
+              </p>
+            </div>
+
+            {/* Proyek Selesai */}
+            <div
+              onClick={() => { setSelectedStatusFilter("completed"); setCurrentPage(1); }}
+              className={`relative overflow-hidden bg-white/70 dark:bg-[#071733]/90 backdrop-blur-md rounded-2xl p-5 shadow-sm border transition-all cursor-pointer select-none group hover:-translate-y-0.5 ${
+                selectedStatusFilter === "completed"
+                  ? "border-blue-500 shadow-md ring-2 ring-blue-500/20 bg-white dark:bg-slate-800/90"
+                  : "border-slate-200/80 dark:border-slate-800 hover:border-slate-300"
+              }`}
+            >
+              <div className="h-1 w-full absolute top-0 left-0 bg-gradient-to-r from-blue-500 to-indigo-400" />
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                  Proyek Selesai
+                </span>
+                <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-200/60 dark:border-blue-800/60 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform shadow-2xs">
+                  <CheckCircle2 size={19} />
+                </div>
+              </div>
+              <div className="mt-3 flex items-baseline gap-2">
+                <h3 className="text-2xl font-black text-slate-900 dark:text-white leading-tight">{completedP}</h3>
+                <span className="text-[11px] font-semibold text-slate-400 dark:text-slate-400">tuntas</span>
+              </div>
+              <p className="mt-2 text-[11px] text-blue-600 dark:text-blue-400 font-semibold flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+                Target tercapai
+              </p>
+            </div>
+
+            {/* Proyek Arsip */}
+            <div
+              onClick={() => { setSelectedStatusFilter("archived"); setCurrentPage(1); }}
+              className={`relative overflow-hidden bg-white/70 dark:bg-[#071733]/90 backdrop-blur-md rounded-2xl p-5 shadow-sm border transition-all cursor-pointer select-none group hover:-translate-y-0.5 ${
+                selectedStatusFilter === "archived"
+                  ? "border-slate-500 shadow-md ring-2 ring-slate-500/20 bg-white dark:bg-slate-800/90"
+                  : "border-slate-200/80 dark:border-slate-800 hover:border-slate-300"
+              }`}
+            >
+              <div className="h-1 w-full absolute top-0 left-0 bg-gradient-to-r from-slate-400 to-slate-500" />
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                  Proyek Arsip
+                </span>
+                <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200/60 dark:border-slate-700 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform shadow-2xs">
+                  <Archive size={19} />
+                </div>
+              </div>
+              <div className="mt-3 flex items-baseline gap-2">
+                <h3 className="text-2xl font-black text-slate-900 dark:text-white leading-tight">{archivedP}</h3>
+                <span className="text-[11px] font-semibold text-slate-400 dark:text-slate-400">diarsipkan</span>
+              </div>
+              <p className="mt-2 text-[11px] text-slate-500 dark:text-slate-400 font-semibold flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-slate-400" />
+                Histori arsip tugas
+              </p>
+            </div>
+          </div>
+        );
+      })()}
+
+      {/* Filter Bar */}
+      <div className="flex flex-col md:flex-row md:items-center gap-3 bg-white dark:bg-[#0b1630] border border-slate-200 dark:border-slate-800/80 rounded-2xl px-4 py-3 shadow-sm">
+        {/* Search */}
+        <div className="flex items-center gap-2 flex-1 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2">
+          <Search size={15} className="text-slate-400 flex-shrink-0" />
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => { setSearch(e.target.value); setCurrentPage(1); }}
+            placeholder="Cari nama proyek, deskripsi, PM, bidang..."
+            className="flex-1 bg-transparent text-xs text-slate-700 dark:text-slate-200 placeholder-slate-400 outline-none"
+          />
+          {search && (
+            <button onClick={() => setSearch("")} className="text-slate-400 hover:text-slate-600 text-xs font-bold">✕</button>
+          )}
+        </div>
+
+        {/* Filters right side */}
+        <div className="flex items-center gap-2 flex-wrap">
+          {/* Bidang Filter */}
+          {(isAdmin || bidangsList.length > 0) && (
+            <div className="flex items-center gap-1.5 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 bg-white dark:bg-slate-800 text-xs">
+              <Calendar size={13} className="text-green-600 dark:text-green-400 flex-shrink-0" />
+              <select
+                value={selectedBidangFilter}
+                onChange={(e) => { setSelectedBidangFilter(e.target.value); setCurrentPage(1); }}
+                className="text-xs font-semibold text-slate-700 dark:text-slate-200 bg-transparent focus:outline-none"
+              >
+                <option value="ALL">Semua Bidang / Unit Kerja</option>
+                {bidangsList.map((b) => (
+                  <option key={b.id} value={String(b.id)}>{b.code} — {b.name}</option>
+                ))}
+              </select>
+            </div>
+          )}
+
+
+
+          {/* Tambah Proyek Baru button */}
           {currentUser && (
             <Button
               onClick={() => {
@@ -597,65 +866,12 @@ export default function ManajemenTugasDigitalPage() {
                 setNewProjStatus("active");
                 setIsModalOpen(true);
               }}
-              className="bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs h-10 px-4 rounded-xl shadow-md shadow-orange-500/20 flex items-center gap-1.5"
+              className="bg-green-600 hover:bg-green-700 text-white font-bold text-xs h-9 px-4 rounded-xl flex items-center gap-1.5 shadow-sm shadow-green-600/20 flex-shrink-0"
             >
-              <Plus size={16} />
+              <Plus size={14} />
               Tambah Proyek Baru
             </Button>
           )}
-        </div>
-      </div>
-
-      {/* Filter and Search Bar */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white dark:bg-[#0b1630] border border-slate-200 dark:border-slate-800/80 rounded-2xl p-4 shadow-sm transition-colors duration-200">
-        <SearchBar
-          value={search}
-          onChange={(e) => {
-            setSearch(e.target.value);
-            setCurrentPage(1);
-          }}
-          onClear={() => setSearch("")}
-          placeholder="Cari nama proyek, deskripsi, PM, bidang..."
-          className="max-w-md bg-slate-50/70 dark:bg-slate-900/50"
-        />
-
-        <div className="flex items-center gap-2 flex-wrap">
-          {/* Bidang Filter (Especially for Super Admin / Cross-Bidang Admin) */}
-          {(isAdmin || bidangsList.length > 0) && (
-            <div className="flex items-center gap-1.5 text-xs">
-              <Building2 size={14} className="text-slate-400" />
-              <select
-                value={selectedBidangFilter}
-                onChange={(e) => {
-                  setSelectedBidangFilter(e.target.value);
-                  setCurrentPage(1);
-                }}
-                className="text-xs font-semibold px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-              >
-                <option value="ALL">Semua Bidang / Unit Kerja</option>
-                {bidangsList.map((b) => (
-                  <option key={b.id} value={String(b.id)}>
-                    {b.code} — {b.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
-
-          {/* Status Filter */}
-          <select
-            value={selectedStatusFilter}
-            onChange={(e) => {
-              setSelectedStatusFilter(e.target.value);
-              setCurrentPage(1);
-            }}
-            className="text-xs font-semibold px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-          >
-            <option value="ALL">Semua Status</option>
-            <option value="active">Aktif</option>
-            <option value="completed">Selesai</option>
-            <option value="archived">Arsip</option>
-          </select>
         </div>
       </div>
 
@@ -675,7 +891,16 @@ export default function ManajemenTugasDigitalPage() {
         </Card>
       ) : (
         <Card
-          title={`Daftar Proyek (${filteredProjects.length} Proyek)`}
+          title={
+            <div className="flex items-center gap-2">
+              <div className="w-9 h-9 rounded-xl bg-green-600 flex items-center justify-center">
+                <ListTodo size={18} className="text-white" />
+              </div>
+              <span className="text-sm font-bold text-slate-800 dark:text-slate-100">
+                Daftar Proyek ({filteredProjects.length} Proyek)
+              </span>
+            </div>
+          }
           headerActions={
             <button 
               onClick={() => fetchProjects()} 

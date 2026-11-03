@@ -20,6 +20,7 @@ import {
   FileDown,
 } from "lucide-react";
 import ServiceRouteGuard from "@/components/auth/ServiceRouteGuard";
+import TteSpecimen from "@/components/smki/TteSpecimen";
 import {
   getSmkiLaporanAuditDetail,
   exportSmkiLaporanAuditDocx,
@@ -346,6 +347,34 @@ export default function DetailLaporanAuditPage() {
               Tidak ada rincian temuan pada laporan audit ini.
             </div>
           )}
+        </div>
+
+        {/* Section 3: PENGESAHAN & SPESIMEN TTE */}
+        <div className="space-y-4">
+          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-600">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+            <span>PENGESAHAN & SPESIMEN TTE</span>
+          </div>
+
+          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {/* Auditor */}
+              <div className="space-y-3">
+                <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider block">
+                  Pihak Auditor (Pemeriksa)
+                </span>
+                <TteSpecimen nama={report.auditor || "Auditor Internal"} width={280} />
+              </div>
+
+              {/* Auditee */}
+              <div className="space-y-3">
+                <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider block">
+                  Pihak Auditee (Unit Kerja Terperiksa)
+                </span>
+                <TteSpecimen nama={report.auditee || "Pihak Auditee"} width={280} />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </ServiceRouteGuard>

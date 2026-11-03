@@ -11,6 +11,7 @@ export default function MagangLayout({
     <MainLayout
       title="Magang"
       subtitle="Dashboard monitoring dan pendataan Magang"
+      hideSidebar={true}
     >
       {children}
     </MainLayout>

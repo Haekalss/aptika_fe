@@ -1,6 +1,6 @@
 "use client";
 
-import MainLayout from "@/components/layout/MainLayout";
+import IkiReportLayout from "@/components/layout/IkiReportLayout";
 
 export default function SidebarJabarLayout({
   children,
@@ -8,11 +8,11 @@ export default function SidebarJabarLayout({
   children: React.ReactNode;
 }) {
   return (
-    <MainLayout
+    <IkiReportLayout
       title="Sidebar Jabar"
       subtitle="Kelola konfigurasi widget & menu Sidebar Jawa Barat"
     >
       {children}
-    </MainLayout>
+    </IkiReportLayout>
   );
 }

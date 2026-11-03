@@ -5,7 +5,7 @@ import { FormPerubahanIT, StatusType } from './types';
 import DetailView from './DetailView';
 import { getPerubahanItList, getPerubahanItById } from '@/services/api';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://aptika-be.wasmer.dev/api';
 
 function inferStatus(r: FormPerubahanIT): StatusType {
   if (r.status) {

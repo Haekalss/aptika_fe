@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/useAuthStore";
 import { showToast } from "@/components/ui/Toast";
@@ -12,6 +12,8 @@ interface Props {
   requireAdmin?: boolean;
 }
 
+const subscribeToHydration = () => () => {};
+
 export default function ServiceRouteGuard({
   children,
   requiredService,
@@ -19,13 +21,9 @@ export default function ServiceRouteGuard({
   requireAdmin,
 }: Props) {
   const router = useRouter();
-  const [mounted, setMounted] = useState(false);
+  const mounted = useSyncExternalStore(subscribeToHydration, () => true, () => false);
   const { loading, initialized, user, isAdminAptika, hasServicePermission, fetchProfile } =
     useAuthStore();
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   useEffect(() => {
     if (mounted && !initialized && !loading) {
@@ -35,6 +33,11 @@ export default function ServiceRouteGuard({
 
   useEffect(() => {
     if (!mounted || loading || !initialized) return;
+
+    if (!user) {
+      router.replace("/login");
+      return;
+    }
 
     // Cek hak akses admin (seluruh admin bidang)
     if (requireAdmin && user?.role !== "admin" && !isAdminAptika) {
@@ -65,6 +68,15 @@ export default function ServiceRouteGuard({
         </div>
       </div>
     );
+  }
+
+  const accessDenied = !user
+    || (requireAdmin && user.role !== "admin" && !isAdminAptika)
+    || (requireAdminAptika && !isAdminAptika && user.role !== "admin")
+    || (requiredService && !hasServicePermission(requiredService));
+
+  if (accessDenied) {
+    return <p role="status" className="p-6 text-sm text-slate-500">Akses tidak tersedia. Mengalihkan halaman...</p>;
   }
 
   return <>{children}</>;

@@ -1,5 +1,6 @@
 import * as React from "react";
 import { X } from "lucide-react";
+import { useDialog } from "./useDialog";
 
 export interface ModalProps {
   isOpen: boolean;
@@ -18,17 +19,8 @@ export default function Modal({
   footer,
   size = "md",
 }: ModalProps) {
-  // Lock scroll when modal is open
-  React.useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [isOpen]);
+  const dialogRef = useDialog(isOpen, onClose);
+  const titleId = React.useId();
 
   if (!isOpen) return null;
 
@@ -49,6 +41,11 @@ export default function Modal({
 
       {/* Modal Box */}
       <div
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+        tabIndex={-1}
         className={`
           relative w-full ${sizeClasses[size]} bg-white dark:bg-[#0d1d36] rounded-2xl shadow-xl border border-slate-100 dark:border-slate-800
           overflow-hidden flex flex-col max-h-[90vh] z-10 animate-in fade-in zoom-in-95 duration-200
@@ -56,10 +53,12 @@ export default function Modal({
       >
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-slate-800">
-          <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
+          <h3 id={titleId} className="text-base font-bold text-slate-900 dark:text-slate-100">
             {title || "Konfirmasi"}
           </h3>
           <button
+            type="button"
+            aria-label="Tutup dialog"
             onClick={onClose}
             className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
           >

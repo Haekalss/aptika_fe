@@ -16,6 +16,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { LaporanAuditTahunanData } from "@/services/api";
+import TteSpecimen from "@/components/smki/TteSpecimen";
 import { StatusBadge } from "../atoms/StatusBadge";
 
 interface DetailModalProps {
@@ -258,19 +259,21 @@ export const DetailModal: React.FC<DetailModalProps> = memo(({
             <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/70 space-y-1">
               <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider flex items-center gap-1.5">
                 <UserCheck className="w-3.5 h-3.5 text-emerald-600" />
-                <span>Disusun Oleh</span>
+                <span>Disusun Oleh (Lead Auditor)</span>
               </span>
-              <p className="font-bold text-slate-800 text-sm">{item.disusun_oleh || "-"}</p>
-              <p className="text-slate-500 text-xs">{item.jabatan_penyusun || "-"}</p>
+              <div className="pt-2">
+                <TteSpecimen nama={item.disusun_oleh || "Lead Auditor SMKI"} width={280} />
+              </div>
             </div>
 
             <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/70 space-y-1">
               <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider flex items-center gap-1.5">
                 <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                <span>Disahkan Oleh</span>
+                <span>Disahkan Oleh (Top Management)</span>
               </span>
-              <p className="font-bold text-slate-800 text-sm">{item.disahkan_oleh || "-"}</p>
-              <p className="text-slate-500 text-xs">{item.jabatan_pengesah || "-"}</p>
+              <div className="pt-2">
+                <TteSpecimen nama={item.disahkan_oleh || "Top Management SMKI"} width={280} />
+              </div>
             </div>
           </div>
         </div>

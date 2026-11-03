@@ -1,7 +1,21 @@
 import axios from "axios";
 
+const REMOTE_API_URL =
+  process.env.NEXT_PUBLIC_API_URL || "https://aptika-be.wasmer.dev/api";
+const LOCAL_API_URL =
+  process.env.NEXT_PUBLIC_API_URL_LOCAL || "http://localhost:8000/api";
+
+// Otomatis: dibuka lewat localhost -> backend lokal; selain itu (online) -> backend online.
+const resolveBaseUrl = () => {
+  if (typeof window !== "undefined") {
+    const host = window.location.hostname;
+    if (host === "localhost" || host === "127.0.0.1") return LOCAL_API_URL;
+  }
+  return REMOTE_API_URL;
+};
+
 export const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000/api",
+  baseURL: resolveBaseUrl(),
 });
 
 // ✅ Auto-attach token ke setiap request
@@ -2367,6 +2381,129 @@ export interface HakAksesTiLookupData {
   };
 }
 
+
+// ============================================================
+// SMKI: HAK AKSES FISIK (FR-019)
+// ============================================================
+
+export interface HakAksesFisikItem {
+  id?: number;
+  nomor_dokumen: string;
+  tanggal_pengajuan: string;
+  pegawai_id?: number | null;
+  nama_pemohon: string;
+  nip?: string | null;
+  jabatan?: string | null;
+  unit_kerja?: string | null;
+  no_handphone?: string | null;
+  email?: string | null;
+  jenis_permintaan?: "Pendaftaran" | "Penutupan" | string;
+  sifat_akses?: "Permanen" | "Sementara" | string;
+  waktu_akses?: string;
+  waktu_akses_lainnya?: string | null;
+  berlaku_sampai?: string | null;
+  ruangan_akses?: string[];
+  keperluan_alasan?: string[];
+  keperluan_lainnya?: string | null;
+  status_pengajuan?: "Pending" | "Approved" | "Rejected" | string;
+  catatan?: string | null;
+  pemohon_nama?: string | null;
+  pemohon_nip?: string | null;
+  atasan_nama?: string | null;
+  atasan_nip?: string | null;
+  penanggung_jawab_nama?: string | null;
+  penanggung_jawab_nip?: string | null;
+  agen_nama?: string | null;
+  agen_nip?: string | null;
+  header_no_dokumen?: string | null;
+  header_no_revisi?: string | null;
+  header_tanggal_berlaku?: string | null;
+  is_deleted?: boolean;
+  created_at?: string;
+  updated_at?: string;
+  pegawai?: {
+    id: number;
+    nama: string;
+    nip: string;
+    jabatan: string;
+    pangkat?: string;
+  };
+}
+
+export interface HakAksesFisikLookupData {
+  pegawai: {
+    id: number;
+    nama: string;
+    nip: string;
+    jabatan: string;
+    pangkat?: string;
+    role?: string;
+  }[];
+  ruangan: {
+    id?: number;
+    kode_ruangan?: string;
+    nama_ruangan: string;
+    deskripsi_area?: string;
+  }[];
+  keperluan_options: string[];
+  default_header: {
+    no_dokumen: string;
+    no_revisi: string;
+    tanggal_berlaku: string;
+  };
+  next_nomor_dokumen: string;
+}
+
+export const getHakAksesFisikList = async (params?: {
+  search?: string;
+  jenis_permintaan?: string;
+  sifat_akses?: string;
+  status?: string;
+  page?: number;
+  per_page?: number;
+}) => {
+  const res = await api.get("/smki/hak-akses-fisik", { params });
+  return res.data;
+};
+
+export const getHakAksesFisikDetail = async (id: number | string) => {
+  const res = await api.get(`/smki/hak-akses-fisik/${id}`);
+  return res.data;
+};
+
+export const getHakAksesFisikLookup = async () => {
+  const res = await api.get("/smki/hak-akses-fisik/lookup");
+  return res.data;
+};
+
+export const createHakAksesFisik = async (payload: Partial<HakAksesFisikItem>) => {
+  const res = await api.post("/smki/hak-akses-fisik", payload);
+  return res.data;
+};
+
+export const updateHakAksesFisik = async (id: number | string, payload: Partial<HakAksesFisikItem>) => {
+  const res = await api.put(`/smki/hak-akses-fisik/${id}`, payload);
+  return res.data;
+};
+
+export const deleteHakAksesFisik = async (id: number | string) => {
+  const res = await api.delete(`/smki/hak-akses-fisik/${id}`);
+  return res.data;
+};
+
+export const exportHakAksesFisikDocx = async (params?: {
+  id?: number | string;
+  no_dokumen?: string;
+  no_revisi?: string;
+  tanggal_berlaku?: string;
+}) => {
+  const res = await api.get("/smki/hak-akses-fisik/export-docx", {
+    params,
+    responseType: "blob",
+  });
+  return res.data;
+};
+
 export const getHakAksesTiList = async (params?: {
   search?: string;
   status?: string;
@@ -2602,3 +2739,342 @@ export const exportLaporanAuditTahunanDocx = async (id: number | string) => {
   return res.data;
 };
 
+// ========================================================
+// DATA CENTER: LAPORAN KERUSAKAN
+// ========================================================
+
+export interface DataCenterAssetItem {
+  id: number;
+  kode_aset: string;
+  nama_aset: string;
+  kategori?: string;
+  lokasi_rak?: string;
+  status_operasional?: string;
+  penanggung_jawab_default?: string;
+  penanggung_jawab_id?: number | null;
+}
+
+export interface LaporanKerusakanHistoryItem {
+  id: number;
+  laporan_id: number;
+  user_id?: number;
+  action: string;
+  status_from?: string;
+  status_to?: string;
+  catatan?: string;
+  created_at: string;
+  user?: {
+    id: number;
+    name: string;
+    email: string;
+  };
+}
+
+export interface LaporanKerusakanItem {
+  id?: number;
+  nomor_laporan?: string;
+  tanggal: string; // YYYY-MM-DD
+  no_dokumen?: string;
+  no_revisi?: string;
+  tanggal_berlaku?: string; // YYYY-MM-DD
+  jam: string; // "09.30 WIB"
+  aset_id: number;
+  nama_aset?: string;
+  kode_aset?: string;
+  lokasi_rak?: string;
+  jenis_kerusakan: string;
+  penyebab?: string;
+  uraian_tindakan?: string;
+  target_selesai?: string;
+  tanggal_selesai_aktual?: string;
+  pelapor_id?: number;
+  pelapor_nama?: string;
+  penanggung_jawab_id?: number | null;
+  penanggung_jawab_nama?: string;
+  supervisor_id?: number | null;
+  supervisor_nama?: string;
+  status: "Baru" | "Diproses" | "Selesai" | "Closed" | string;
+  catatan_validasi?: string;
+  validated_at?: string;
+  created_at?: string;
+  updated_at?: string;
+  asset?: DataCenterAssetItem;
+  histories?: LaporanKerusakanHistoryItem[];
+}
+
+export interface LaporanKerusakanStats {
+  total: number;
+  baru: number;
+  diproses: number;
+  selesai: number;
+}
+
+export const getLaporanKerusakanList = async (params?: {
+  status?: string;
+  search?: string;
+  tanggal?: string;
+  per_page?: number;
+  page?: number;
+}) => {
+  const res = await api.get("/smki/laporan-kerusakan", { params });
+  return res.data;
+};
+
+export const getLaporanKerusakanLookup = async () => {
+  const res = await api.get("/smki/laporan-kerusakan/lookup");
+  return res.data;
+};
+
+export const getLaporanKerusakanById = async (id: number | string) => {
+  const res = await api.get(`/smki/laporan-kerusakan/${id}`);
+  return res.data;
+};
+
+export const createLaporanKerusakan = async (payload: Partial<LaporanKerusakanItem>) => {
+  const res = await api.post("/smki/laporan-kerusakan", payload);
+  return res.data;
+};
+
+export const updateLaporanKerusakan = async (
+  id: number | string,
+  payload: Partial<LaporanKerusakanItem>
+) => {
+  const res = await api.put(`/smki/laporan-kerusakan/${id}`, payload);
+  return res.data;
+};
+
+export const assignTeknisiLaporanKerusakan = async (
+  id: number | string,
+  payload: { penanggung_jawab_id: number; target_selesai: string; catatan?: string }
+) => {
+  const res = await api.patch(`/smki/laporan-kerusakan/${id}/assign`, payload);
+  return res.data;
+};
+
+export const validateLaporanKerusakan = async (
+  id: number | string,
+  payload: { valid: boolean; catatan_validasi?: string }
+) => {
+  const res = await api.patch(`/smki/laporan-kerusakan/${id}/validate`, payload);
+  return res.data;
+};
+
+export const deleteLaporanKerusakan = async (id: number | string) => {
+  const res = await api.delete(`/smki/laporan-kerusakan/${id}`);
+  return res.data;
+};
+
+export const exportLaporanKerusakanDocx = async (id: number | string) => {
+  const res = await api.get(`/smki/laporan-kerusakan/${id}/export-docx`, {
+    responseType: "blob",
+  });
+  return res.data;
+};
+
+export const exportBatchLaporanKerusakanDocx = async (params?: {
+  status?: string;
+  search?: string;
+}) => {
+  const res = await api.get("/smki/laporan-kerusakan/export-docx", {
+    params,
+    responseType: "blob",
+  });
+  return res.data;
+};
+
+// ─── SMKI: SCREENING KARYAWAN OUTSOURCING (FR-012/KOM.03.05/SANDIKAMI) ────────
+export interface JabatanItem {
+  id_jabatan: number;
+  nama_jabatan: string;
+}
+
+export interface MasterBidangItem {
+  id_bidang: number;
+  nama_bidang: string;
+}
+
+export interface ItemScreeningItem {
+  id_item: number;
+  nama_item: string;
+}
+
+export interface DetailScreeningItem {
+  id_detail?: number;
+  id_screening?: number;
+  id_item: number;
+  status: "Ada" | "Tidak";
+  keterangan: string | null;
+  kesimpulan?: string | null;
+  catatan?: string | null;
+  item?: ItemScreeningItem;
+}
+
+export interface ScreeningKaryawanItem {
+  id_screening: number;
+  nama_karyawan: string;
+  id_jabatan: number;
+  id_bidang: number;
+  tahun: number;
+  id_detail?: number | null;
+  tanggal_screening: string;
+  kesimpulan: "Perlu melengkapi administrasi" | "Administrasi Lengkap";
+  catatan?: string | null;
+  created_at?: string;
+  updated_at?: string;
+  jabatan?: JabatanItem;
+  bidang?: MasterBidangItem;
+  details?: DetailScreeningItem[];
+}
+
+export interface ScreeningKaryawanStats {
+  total_screening: number;
+  total_karyawan: number;
+  tahun_periode: number;
+  status_lengkap: number;
+  status_perlu_melengkapi: number;
+}
+
+export interface ScreeningKaryawanLookupData {
+  jabatan: JabatanItem[];
+  bidang: MasterBidangItem[];
+  items: ItemScreeningItem[];
+  tahun_options: number[];
+  kesimpulan_options: string[];
+}
+
+export interface ScreeningKaryawanPayload {
+  nama_karyawan: string;
+  id_jabatan: number;
+  id_bidang: number;
+  tahun: number;
+  tanggal_screening: string;
+  kesimpulan: string;
+  catatan?: string | null;
+  details: {
+    id_item: number;
+    status: "Ada" | "Tidak";
+    keterangan?: string | null;
+  }[];
+}
+
+export const getScreeningKaryawanList = async (params?: {
+  search?: string;
+  tahun?: string | number;
+  id_bidang?: string | number;
+  kesimpulan?: string;
+  page?: number;
+  per_page?: number;
+}) => {
+  const res = await api.get("/smki/screening-karyawan", { params });
+  return res.data;
+};
+
+export const getScreeningKaryawanLookup = async () => {
+  const res = await api.get("/smki/screening-karyawan/lookup");
+  return res.data;
+};
+
+export const getScreeningKaryawanDetail = async (id: number) => {
+  const res = await api.get(`/smki/screening-karyawan/${id}`);
+  return res.data;
+};
+
+export const createScreeningKaryawan = async (payload: ScreeningKaryawanPayload) => {
+  const res = await api.post("/smki/screening-karyawan", payload);
+  return res.data;
+};
+
+export const updateScreeningKaryawan = async (
+  id: number,
+  payload: Partial<ScreeningKaryawanPayload>
+) => {
+  const res = await api.put(`/smki/screening-karyawan/${id}`, payload);
+  return res.data;
+};
+
+export const deleteScreeningKaryawan = async (id: number) => {
+  const res = await api.delete(`/smki/screening-karyawan/${id}`);
+  return res.data;
+};
+
+// ─── SMKI NOTULEN MANAGEMENT REVIEW (API) ─────────────────────
+export interface SmkiNotulenPesertaItem {
+  id?: number;
+  smki_notulen_id?: number;
+  pegawai_id?: number | null;
+  nama: string;
+  jabatan: string;
+  urutan?: number;
+}
+
+export interface SmkiNotulenAgendaItem {
+  id?: number;
+  smki_notulen_id?: number;
+  nomor_agenda: number;
+  agenda_item: string;
+  clause_iso?: string;
+  outcomes?: string;
+  actions_output?: string;
+  pic?: string;
+  tgl_penyelesaian?: string;
+}
+
+export interface SmkiNotulenData {
+  id?: number;
+  nomor_notulen: string;
+  no_dokumen?: string;
+  no_revisi?: string;
+  tanggal_berlaku?: string;
+  judul_formulir?: string;
+  judul_rapat: string;
+  tanggal: string;
+  waktu_mulai: string;
+  waktu_selesai: string;
+  zona_waktu?: string;
+  tempat: string;
+  notulis: string;
+  koordinator_smki: string;
+  tujuan?: string;
+  tindak_lanjut?: string;
+  pesertas?: SmkiNotulenPesertaItem[];
+  agendas?: SmkiNotulenAgendaItem[];
+  created_at?: string;
+  updated_at?: string;
+}
+
+export const getSmkiNotulenLookup = async () => {
+  const res = await api.get("/smki/notulen/lookup");
+  return res.data;
+};
+
+export const getSmkiNotulenList = async (params?: { search?: string; tahun?: string | number; page?: number; per_page?: number }) => {
+  const res = await api.get("/smki/notulen", { params });
+  return res.data;
+};
+
+export const getSmkiNotulenById = async (id: number | string) => {
+  const res = await api.get(`/smki/notulen/${id}`);
+  return res.data;
+};
+
+export const createSmkiNotulen = async (data: Partial<SmkiNotulenData>) => {
+  const res = await api.post("/smki/notulen", data);
+  return res.data;
+};
+
+export const updateSmkiNotulen = async (id: number | string, data: Partial<SmkiNotulenData>) => {
+  const res = await api.put(`/smki/notulen/${id}`, data);
+  return res.data;
+};
+
+export const deleteSmkiNotulen = async (id: number | string) => {
+  const res = await api.delete(`/smki/notulen/${id}`);
+  return res.data;
+};
+
+export const exportSmkiNotulenDocx = async (id: number | string) => {
+  const res = await api.get(`/smki/notulen/${id}/export-docx`, {
+    responseType: "blob",
+  });
+  return res.data;
+};

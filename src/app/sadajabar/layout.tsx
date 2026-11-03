@@ -1,6 +1,6 @@
 "use client";
 
-import MainLayout from "@/components/layout/MainLayout";
+import IkiReportLayout from "@/components/layout/IkiReportLayout";
 
 export default function SadaJabarLayout({
   children,
@@ -8,11 +8,11 @@ export default function SadaJabarLayout({
   children: React.ReactNode;
 }) {
   return (
-    <MainLayout
+    <IkiReportLayout
       title="Sada Jabar"
       subtitle="Satu Data Jawa Barat - Layanan metadata & statistik sektoral"
     >
       {children}
-    </MainLayout>
+    </IkiReportLayout>
   );
 }

@@ -324,7 +324,7 @@ export default function EditLaporanPage() {
               </div>
             </div>
             <InsidenExportModal
-              key={exportOpen ? `open-${id}` : "closed"}
+              key={`edit-export-${exportOpen ? id : "closed"}`}
               isOpen={exportOpen}
               onClose={() => { if (!exporting) setExportOpen(false); }}
               onExport={handleDoExport}
