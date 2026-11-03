@@ -103,7 +103,12 @@ export default function EvaluasiPenyediaTinjauTemplate() {
                 Tinjauan Evaluasi — {record.penyedia?.nama_penyedia}
               </h1>
               <p className="text-xs text-slate-500">
-                Evaluator: {record.evaluator?.name ?? "—"} · Siklus {record.siklus}
+                Evaluator (Perwakilan Vendor):{" "}
+                {record.ttd_evaluator_nama ??
+                  record.penyedia?.contact_person ??
+                  record.penyedia?.nama_penyedia ??
+                  "—"}{" "}
+                · Siklus {record.siklus}
               </p>
             </div>
             <div className="flex items-center gap-2">

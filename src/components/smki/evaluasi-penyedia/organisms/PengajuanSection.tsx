@@ -14,6 +14,7 @@ export default function PengajuanSection({
   ajukanBusy,
   disabled,
   onKembali,
+  mode = "ajukan",
 }: {
   record: Fr021Evaluasi | null | undefined;
   form: Fr021FormState;
@@ -22,22 +23,49 @@ export default function PengajuanSection({
   ajukanBusy?: boolean;
   disabled?: boolean;
   onKembali?: () => void;
+  /** ajukan = pembuat mengajukan; lihat = read-only. */
+  mode?: "ajukan" | "lihat";
 }) {
   const adminsQuery = useFr021AdminOptions();
   const admins = adminsQuery.data ?? [];
 
+  // Evaluator = perwakilan vendor dari Langkah 1 (otomatis, tanpa akun login).
+  const vendorNama =
+    form.penyedia_nama || record?.penyedia?.nama_penyedia || null;
+  const vendorKontak =
+    form.contact_person || record?.penyedia?.contact_person || null;
   const evaluatorSigned = Boolean(record?.tanggal_ttd_evaluator);
+  const adminSigned = Boolean(record?.tanggal_ttd_admin);
   const locked = disabled || record?.status === "diajukan" || record?.status === "selesai";
 
   return (
     <div className="space-y-4">
+      {/* Evaluator (perwakilan penyedia jasa) */}
+      <div>
+        <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1 uppercase tracking-wide">
+          Evaluator (Perwakilan Penyedia Jasa)
+        </label>
+        <div className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 px-3 py-2 text-sm text-slate-700 dark:text-slate-100">
+          <p className="font-semibold">{vendorNama ?? "—"}</p>
+          <p className="text-xs text-slate-500">
+            {vendorKontak ?? "—"}
+            {form.email || record?.penyedia?.email
+              ? ` · ${form.email || record?.penyedia?.email}`
+              : ""}
+          </p>
+        </div>
+        <p className="mt-1 text-[11px] text-slate-400">
+          Otomatis dari penyedia jasa yang diisi pada Langkah 1.
+        </p>
+      </div>
+
       {/* TTE Evaluator */}
       <TteBlock
         label="Evaluator"
         status={evaluatorSigned ? "sudah" : "belum"}
-        nama={record?.ttd_evaluator_nama ?? null}
-        nip={record?.ttd_evaluator_nip ?? null}
-        tanggal={record?.tanggal_ttd_evaluator ?? null}
+        nama={record?.ttd_evaluator_nama ?? vendorKontak}
+        nip={evaluatorSigned ? record?.ttd_evaluator_nip : null}
+        tanggal={evaluatorSigned ? record?.tanggal_ttd_evaluator : null}
       />
 
       {/* Pilih Atasan */}
@@ -64,17 +92,33 @@ export default function PengajuanSection({
         {adminsQuery.isLoading && (
           <p className="mt-1 text-[11px] text-slate-400">Memuat daftar Atasan...</p>
         )}
+        {adminsQuery.isError && (
+          <p className="mt-1 text-[11px] text-red-500">
+            Gagal memuat daftar Atasan. Coba muat ulang halaman.
+          </p>
+        )}
+        {!adminsQuery.isLoading && !adminsQuery.isError && admins.length === 0 && (
+          <p className="mt-1 text-[11px] text-amber-600">
+            Tidak ada akun Admin yang tersedia. Pastikan ada akun Admin (role=admin, aktif)
+            di sistem, lalu muat ulang.
+          </p>
+        )}
       </div>
 
-      {/* TTE Mengetahui (pratinjau) */}
+      {/* TTE Mengetahui (pratinjau sebelum diajukan, status nyata sesudahnya) */}
       <TteBlock
         label="Mengetahui (Atasan)"
-        status="belum"
-        nama={admins.find((a) => a.id === form.admin_id)?.name ?? null}
-        tanggal={null}
+        status={adminSigned ? "sudah" : "belum"}
+        nama={
+          adminSigned
+            ? record?.ttd_admin_nama
+            : (admins.find((a) => a.id === form.admin_id)?.name ?? null)
+        }
+        nip={adminSigned ? record?.ttd_admin_nip : null}
+        tanggal={adminSigned ? record?.tanggal_ttd_admin : null}
       />
 
-      {!locked && (
+      {!locked && mode === "ajukan" && (
         <div className="flex flex-wrap items-center justify-between gap-2 pt-2">
           {onKembali && (
             <Button type="button" variant="outline" onClick={onKembali}>
@@ -86,9 +130,15 @@ export default function PengajuanSection({
             onClick={onAjukan}
             disabled={!form.admin_id || ajukanBusy}
           >
-            {ajukanBusy ? "Mengajukan..." : "Tandatangani & Ajukan"}
+            {ajukanBusy ? "Mengajukan..." : "Ajukan ke Atasan"}
           </Button>
         </div>
+      )}
+
+      {!locked && mode === "lihat" && (
+        <p className="text-xs text-slate-500">
+          Anda hanya dapat melihat evaluasi ini.
+        </p>
       )}
     </div>
   );

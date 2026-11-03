@@ -2,7 +2,6 @@ import type {
   Fr021Errors,
   Fr021Master,
   Fr021SifatPekerjaan,
-  Fr021Status,
 } from "@/services/smki/evaluasiPenyedia.types";
 
 /** Satu baris penilaian saat masih diedit (skala boleh belum dipilih). */
@@ -13,7 +12,7 @@ export interface Fr021PenilaianDraft {
 
 /**
  * State form gabungan Step 1–4.
- * Identifikasi + penilaian + pilihan Atasan + catatan tinjauan.
+ * Identifikasi + penilaian + pilihan Atasan.
  */
 export interface Fr021FormState {
   penyedia_id: number | null;
@@ -31,7 +30,6 @@ export interface Fr021FormState {
   tempat: string;
   penilaian: Fr021PenilaianDraft[];
   admin_id: number | null;
-  catatan_tinjauan: string;
   version?: number;
 }
 
@@ -42,11 +40,4 @@ export interface Fr021SectionProps {
   errors: Fr021Errors;
   onChange: (changes: Partial<Fr021FormState>) => void;
   disabled?: boolean;
-}
-
-/** Identitas record yang sedang diedit (untuk mode create/edit). */
-export interface Fr021FormIdentity {
-  id?: number;
-  version?: number;
-  status?: Fr021Status;
 }

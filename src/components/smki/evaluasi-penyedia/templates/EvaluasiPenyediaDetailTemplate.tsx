@@ -55,10 +55,9 @@ export default function EvaluasiPenyediaDetailTemplate() {
         sifat_pekerjaan: "pengadaan_baru",
         sifat_pekerjaan_lainnya: "",
         tanggal_evaluasi: "",
-        tempat: "",
-        penilaian: [],
-        admin_id: null,
-        catatan_tinjauan: "",
+         tempat: "",
+         penilaian: [],
+         admin_id: null,
       };
 
   if (detailQuery.isLoading || masterQuery.isLoading) {

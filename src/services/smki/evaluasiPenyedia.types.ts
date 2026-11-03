@@ -76,20 +76,12 @@ export interface Fr021Penilaian {
   skala?: Fr021Skala | null;
 }
 
-/** Blok tanda tangan elektronik (snapshot saat ditandatangani). */
-export interface Fr021Tte {
-  nama: string | null;
-  nip: string | null;
-  jabatan: string | null;
-  tanggal: string | null;
-}
-
 export interface Fr021Evaluasi {
   id: number;
+  /** Pemilik/pembuat laporan. Evaluator adalah perwakilan vendor (tanpa akun). */
+  created_by?: number;
   penyedia_id: number;
   penyedia?: Fr021Penyedia | null;
-  evaluator_id: number;
-  evaluator?: Fr021UserRef | null;
   admin_id: number | null;
   admin?: Fr021UserRef | null;
   rekomendasi_id: number | null;

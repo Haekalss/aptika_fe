@@ -71,11 +71,12 @@ export default function IdentifikasiSection({
         />
         <Input
           label="Tanggal Berlaku"
-          placeholder="07 Juli 2022"
+          type="date"
           value={form.tanggal_berlaku}
           onChange={(event) => onChange({ tanggal_berlaku: event.target.value })}
           error={errors.tanggal_berlaku?.[0]}
           disabled={disabled}
+          required
         />
       </div>
 

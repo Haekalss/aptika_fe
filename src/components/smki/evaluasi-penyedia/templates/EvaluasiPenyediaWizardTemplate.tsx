@@ -78,18 +78,30 @@ export default function EvaluasiPenyediaWizardTemplate() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [masterQuery.data]);
 
+  // Hak ubah mengikuti backend: hanya pembuat (created_by) yang boleh menyimpan.
+  const canUpdate = detailQuery.data
+    ? Boolean(detailQuery.data.permissions.can_update)
+    : true;
+
   function goTo(next: Fr021Step) {
     // Autosave penilaian saat berpindah langkah (FR-2.7), bila lengkap.
+    // Dilewati bila bukan pemilik, atau request sebelumnya masih berjalan,
+    // agar version tidak basi dan tidak memicu 403/409 yang tak perlu.
     if (
       step === "penilaian" &&
       identity.id &&
       masterQuery.data &&
+      canUpdate &&
+      !mutations.savePenilaian.isPending &&
       isPenilaianComplete(form, masterQuery.data.kriteria)
     ) {
-      mutations.savePenilaian.mutate({
-        id: identity.id,
-        payload: { penilaian: toPenilaianPayload(form), version: identity.version },
-      });
+      mutations.savePenilaian.mutate(
+        {
+          id: identity.id,
+          payload: { penilaian: toPenilaianPayload(form), version: identity.version },
+        },
+        { onSuccess: (saved) => markSaved(saved) }
+      );
     }
     setStep(next);
     const targetId = identity.id ?? id;
@@ -102,13 +114,16 @@ export default function EvaluasiPenyediaWizardTemplate() {
   async function handleHitung() {
     if (!identity.id || !masterQuery.data) return;
     try {
-      await mutations.savePenilaian.mutateAsync({
+      // Pakai version hasil save untuk hitung; version lama pasti ditolak
+      // backend (409) karena save menaikkan version.
+      const afterSave = await mutations.savePenilaian.mutateAsync({
         id: identity.id,
         payload: { penilaian: toPenilaianPayload(form), version: identity.version },
       });
+      markSaved(afterSave);
       const saved = await mutations.hitung.mutateAsync({
         id: identity.id,
-        version: identity.version,
+        version: afterSave.version,
       });
       markSaved(saved);
       showToast.success("Nilai berhasil dihitung.");
@@ -120,12 +135,22 @@ export default function EvaluasiPenyediaWizardTemplate() {
     }
   }
 
+  // Mode section pengajuan: pembuat mengajukan; penonton hanya membaca.
+  const recordCanAjukan = detailQuery.data
+    ? Boolean(detailQuery.data.permissions.can_ajukan)
+    : true;
+  const pengajuanMode: "ajukan" | "lihat" =
+    !canUpdate && !recordCanAjukan ? "lihat" : "ajukan";
+
   async function handleAjukan() {
     if (!identity.id) return;
     try {
       const saved = await mutations.ajukan.mutateAsync({
         id: identity.id,
-        payload: { admin_id: form.admin_id as number, version: identity.version },
+        payload: {
+          admin_id: form.admin_id as number,
+          version: identity.version,
+        },
       });
       markSaved(saved);
       showToast.success("Evaluasi berhasil diajukan. Menunggu persetujuan Atasan.");
@@ -239,9 +264,9 @@ export default function EvaluasiPenyediaWizardTemplate() {
               master={masterQuery.data}
               errors={errors}
               onChange={onChange}
-              disabled={isLocked || isRevisi}
+              disabled={isLocked || isRevisi || !canUpdate}
             />
-            {!isLocked && !isRevisi && (
+            {!isLocked && !isRevisi && canUpdate && (
               <div className="flex justify-end gap-2 pt-2">
                 <Button
                   type="button"
@@ -270,7 +295,7 @@ export default function EvaluasiPenyediaWizardTemplate() {
               master={masterQuery.data}
               errors={errors}
               onChange={onChange}
-              disabled={isLocked}
+              disabled={isLocked || !canUpdate}
               onHitung={handleHitung}
               hitungBusy={
                 mutations.savePenilaian.isPending || mutations.hitung.isPending
@@ -306,6 +331,7 @@ export default function EvaluasiPenyediaWizardTemplate() {
                 ajukanBusy={mutations.ajukan.isPending}
                 disabled={isLocked}
                 onKembali={() => goTo("penilaian")}
+                mode={pengajuanMode}
               />
             </section>
           </div>

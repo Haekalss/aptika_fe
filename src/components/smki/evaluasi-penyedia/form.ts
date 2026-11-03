@@ -6,7 +6,7 @@ import type {
   Fr021PenilaianItemPayload,
   Fr021Skala,
 } from "@/services/smki/evaluasiPenyedia.types";
-import type { Fr021FormState, Fr021PenilaianDraft } from "./types";
+import type { Fr021FormState } from "./types";
 
 /** Tanggal hari ini (zona WIB) dalam format `yyyy-mm-dd`. */
 export function todayJakarta(): string {
@@ -16,6 +16,17 @@ export function todayJakarta(): string {
     month: "2-digit",
     day: "2-digit",
   });
+}
+
+/**
+ * Normalisasi ke format input date (`yyyy-mm-dd`).
+ * Nilai lama non-ISO (mis. "07 Juli 2022") dikembalikan ke hari ini (WIB)
+ * agar input tanggal selalu valid; pengguna dapat memilih ulang.
+ */
+export function toTanggalBerlakuInput(value?: string | null): string {
+  const text = (value ?? "").trim();
+  if (/^\d{4}-\d{2}-\d{2}/.test(text)) return text.slice(0, 10);
+  return todayJakarta();
 }
 
 /** Form kosong untuk evaluasi baru (Step 1). */
@@ -28,7 +39,7 @@ export function emptyFr021Form(master?: Fr021Master): Fr021FormState {
     no_kontrak: "",
     nomor_dokumen: master?.template?.nomor_dokumen ?? "FR-021/KOM.03.05/SANDIKAMI",
     nomor_revisi: master?.template?.nomor_revisi ?? "1.1",
-    tanggal_berlaku: master?.template?.tanggal_berlaku ?? "07 Juli 2022",
+    tanggal_berlaku: todayJakarta(),
     sifat_pekerjaan: "pengadaan_baru",
     sifat_pekerjaan_lainnya: "",
     tanggal_evaluasi: todayJakarta(),
@@ -38,7 +49,6 @@ export function emptyFr021Form(master?: Fr021Master): Fr021FormState {
       skala_id: null,
     })),
     admin_id: null,
-    catatan_tinjauan: "",
   };
 }
 
@@ -60,7 +70,7 @@ export function recordToForm(
     no_kontrak: record.no_kontrak ?? "",
     nomor_dokumen: record.nomor_dokumen ?? master?.template?.nomor_dokumen ?? "FR-021/KOM.03.05/SANDIKAMI",
     nomor_revisi: record.nomor_revisi ?? master?.template?.nomor_revisi ?? "1.1",
-    tanggal_berlaku: record.tanggal_berlaku ?? master?.template?.tanggal_berlaku ?? "07 Juli 2022",
+    tanggal_berlaku: toTanggalBerlakuInput(record.tanggal_berlaku),
     sifat_pekerjaan: record.sifat_pekerjaan,
     sifat_pekerjaan_lainnya: record.sifat_pekerjaan_lainnya ?? "",
     tanggal_evaluasi: record.tanggal_evaluasi?.slice(0, 10) ?? todayJakarta(),
@@ -70,7 +80,6 @@ export function recordToForm(
       skala_id: saved.get(kriteriaId) ?? null,
     })),
     admin_id: record.admin_id,
-    catatan_tinjauan: "",
     version: record.version,
   };
 }
@@ -140,29 +149,4 @@ export function penilaianSubtotal(
       total + (item.skala_id !== null ? skorById.get(item.skala_id) ?? 0 : 0),
     0
   );
-}
-
-/** Ubah satu baris penilaian tanpa memutasi array asal. */
-export function setPenilaian(
-  penilaian: readonly Fr021PenilaianDraft[],
-  kriteriaId: number,
-  skalaId: number | null
-): Fr021PenilaianDraft[] {
-  return penilaian.map((item) =>
-    item.kriteria_id === kriteriaId ? { ...item, skala_id: skalaId } : item
-  );
-}
-
-/** Apakah sebuah evaluasi masih dapat diubah (identifikasi/penilaian). */
-export function isEditable(status: string | undefined): boolean {
-  return status === "draft" || status === "revisi";
-}
-
-/** Ambil nilai skor untuk satu skala. */
-export function skorForSkala(
-  skala: readonly Fr021Skala[],
-  skalaId: number | null
-): number {
-  if (skalaId === null) return 0;
-  return skala.find((s) => s.id === skalaId)?.skor ?? 0;
 }

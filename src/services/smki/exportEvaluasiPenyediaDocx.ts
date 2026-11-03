@@ -345,7 +345,13 @@ export async function fillFr021Template(
   const nomorDokumen =
     record.nomor_dokumen?.trim() || master?.template?.nomor_dokumen || "FR-021/KOM.03.05/SANDIKAMI";
   const nomorRevisi = record.nomor_revisi?.trim() || master?.template?.nomor_revisi || "1.1";
-  const tanggalBerlaku = record.tanggal_berlaku?.trim() || master?.template?.tanggal_berlaku || "07 Juli 2022";
+  const tanggalBerlakuRaw =
+    record.tanggal_berlaku?.trim() || master?.template?.tanggal_berlaku || "07 Juli 2022";
+  // Nilai ISO dari date picker diformat gaya dokumen ("07 Juli 2022");
+  // nilai lama non-ISO disalin apa adanya.
+  const tanggalBerlaku = /^\d{4}-\d{2}-\d{2}/.test(tanggalBerlakuRaw)
+    ? formatTanggal(tanggalBerlakuRaw)
+    : tanggalBerlakuRaw;
 
   const skala = master?.skala?.length
     ? master.skala

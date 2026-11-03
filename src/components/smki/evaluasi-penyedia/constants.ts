@@ -12,13 +12,6 @@ export const FR021_STATUS_LABEL: Record<Fr021Status, string> = {
   selesai: "Selesai",
 };
 
-export const FR021_STATUS_OPTIONS: { value: Fr021Status; label: string }[] = [
-  { value: "draft", label: FR021_STATUS_LABEL.draft },
-  { value: "diajukan", label: FR021_STATUS_LABEL.diajukan },
-  { value: "revisi", label: FR021_STATUS_LABEL.revisi },
-  { value: "selesai", label: FR021_STATUS_LABEL.selesai },
-];
-
 export function fr021StatusLabel(status: Fr021Status): string {
   return FR021_STATUS_LABEL[status] ?? status;
 }
@@ -69,25 +62,9 @@ export const FR021_STEP_INDEX: Record<Fr021Step, number> = {
   tinjauan: 3,
 };
 
-/** Metadata dokumen formulir FR-021. */
-export const FR021_DOKUMEN = {
-  nomor: "FR-021/KOM.03.05/SANDIKAMI",
-  revisi: "1.1",
-  tanggal_berlaku: "07 Juli 2022",
-  judul: "Formulir Evaluasi Penyedia Barang/Jasa",
-} as const;
-
-/** Teks tetap pada blok rekomendasi (formulir asli). */
-export const FR021_REKOMENDASI_INTRO =
-  "Berdasarkan hasil evaluasi pada tanggal";
-
-/** Batas maksimum total nilai (4 kriteria × 100). */
-export const FR021_MAX_NILAI = 400;
-
 /** Basis route modul. */
 export const FR021_ROUTES = {
   list: "/smki/evaluasi-penyedia",
   baru: "/smki/evaluasi-penyedia/baru",
   detail: (id: number | string) => `/smki/evaluasi-penyedia/${id}`,
-  cetak: (id: number | string) => `/smki/evaluasi-penyedia/${id}/cetak`,
 } as const;

@@ -42,19 +42,23 @@ export default function EvaluasiTable({
         </thead>
         <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
           {records.map((record) => {
-            const isOwner = currentUserId !== undefined && record.evaluator_id === currentUserId;
-            const canDelete = isOwner && record.status === "draft";
+            // Kepemilikan mengikuti backend (created_by pembuat laporan).
+            const canUpdate = record.permissions.can_update;
+            const canAjukan = record.permissions.can_ajukan;
+            const canDelete = record.permissions.can_delete;
 
             let primaryAction: { kind: "lanjutkan" | "tinjau" | "lihat"; label: string } | null = null;
-            if (record.status === "draft") primaryAction = { kind: "lanjutkan", label: "Lanjutkan" };
-            else if (record.status === "diajukan") {
+            if (record.status === "draft" || record.status === "revisi") {
+              primaryAction =
+                canUpdate || canAjukan
+                  ? { kind: "lanjutkan", label: "Lanjutkan" }
+                  : { kind: "lihat", label: "Lihat" };
+            } else if (record.status === "diajukan") {
               if (isAtasan && record.admin_id === currentUserId) {
                 primaryAction = { kind: "tinjau", label: "Tinjau" };
               } else {
                 primaryAction = { kind: "lihat", label: "Lihat" };
               }
-            } else if (record.status === "revisi") {
-              primaryAction = { kind: "lanjutkan", label: "Lanjutkan" };
             } else if (record.status === "selesai") {
               primaryAction = { kind: "lihat", label: "Lihat Hasil" };
             }
