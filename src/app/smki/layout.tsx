@@ -29,6 +29,7 @@ import {
   MessageSquare,
   Usb,
   KeyRound,
+  Layers,
 } from "lucide-react";
 
 const smkiNavItems = [
@@ -235,6 +236,13 @@ const smkiNavItems = [
     desc: "Dokumentasi rapat tinjauan manajemen SMKI, pembahasan klausul ISO 27001 Clause 9.3, keputusan tindak lanjut, dan cetak berita acara.",
     path: "/smki/notulen",
     icon: FileCheck,
+  },
+  {
+    label: "Aset Informasi",
+    title: "Formulir Aset Informasi (FR-028)",
+    desc: "Pendataan formulir resmi FR-028 aset informasi unit kerja, aset intangible, dan evaluasi matriks risiko CIA (Kerahasiaan, Integritas, Ketersediaan).",
+    path: "/smki/aset-informasi",
+    icon: Layers,
   },
 ];
 
