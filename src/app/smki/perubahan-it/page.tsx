@@ -123,7 +123,6 @@ export default function PerubahanItPage() {
   }, [search]);
 
   // Cegah respons lama menimpa respons terbaru
-    // Cegah respons lama menimpa respons terbaru
   const requestId = useRef(0);
 
   // Dokumen dikunci (tidak bisa scroll sampai blank space), lalu halaman ini
@@ -475,7 +474,7 @@ export default function PerubahanItPage() {
                 aria-label="Cari permintaan perubahan"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Cari nomor, judul perubahan, atau pemohon..."
+                placeholder="Cari No. RFC, nomor dokumen, judul, atau pemohon..."
                 className={`w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-10 pr-9 text-xs font-medium text-slate-800 placeholder-slate-500 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-100 dark:placeholder-slate-400 ${focus}`}
               />
               {search && (
@@ -651,7 +650,11 @@ export default function PerubahanItPage() {
                                 <span className="block font-bold text-slate-900 hover:text-emerald-700 dark:text-white">
                                   {item.judul || "(Tanpa judul)"}
                                 </span>
-                                <span className="block text-[11px] text-slate-500 dark:text-slate-400">{item.no_rfc}</span>
+                                {item.nomor_dokumen && (
+                                  <span className="block text-[11px] text-slate-500 dark:text-slate-400">
+                                    {item.nomor_dokumen}
+                                  </span>
+                                )}
                               </button>
                             </div>
                           </td>

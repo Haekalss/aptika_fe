@@ -25,6 +25,9 @@ export type AksiPerubahan =
   | "laksanakan"
   | "simpan_catatan";
 
+/** BARU: nomor dokumen default pada kop formulir (dipakai bila kosong). */
+export const DEFAULT_NOMOR_DOKUMEN = "";
+
 export const STATUS_OPTIONS: { value: StatusPerubahan; label: string }[] = [
   { value: "draft", label: "Draft" },
   { value: "diajukan", label: "Diajukan" },
@@ -99,6 +102,8 @@ export interface PerubahanIt {
   no_rfc: string;
   tanggal: string | null;
 
+  /** BARU: nomor dokumen pada kop formulir. */
+  nomor_dokumen: string | null;
   judul: string | null;
   /** Nama pemohon (diisi server dari pengguna yang membuat formulir). */
   pemohon: string | null;
@@ -152,6 +157,8 @@ export interface PerubahanIt {
 
 /** Nilai isian formulir (semua string agar mudah dikontrol input). */
 export interface PerubahanItInput {
+  /** BARU */
+  nomor_dokumen: string;
   judul: string;
   /** id master_unit_kerja (string agar mudah dikontrol <select>). */
   unit_kerja_id: string;
@@ -178,6 +185,7 @@ export interface PerubahanItInput {
 }
 
 export const FORM_FIELDS: (keyof PerubahanItInput)[] = [
+  "nomor_dokumen", // BARU
   "judul",
   "unit_kerja_id",
   "perangkat_daerah",
@@ -268,6 +276,7 @@ export interface UnitKerjaOption {
 export interface PenggunaOption {
   id: number;
   nama: string;
+  punya_spesimen: boolean;
 }
 
 export interface PerubahanItLookup {
@@ -281,7 +290,10 @@ export interface PerubahanItLookup {
 export async function getPerubahanItLookup(scope?: "all"): Promise<PerubahanItLookup> {
   const res = await api.get(`${BASE}/lookup`, { params: scope ? { scope } : undefined });
   const data = res.data.data;
-  return { ...data, pengguna: data.pengguna ?? [] };
+  return {
+    ...data,
+    pengguna: (data.pengguna ?? []).map((u: any) => ({ ...u, punya_spesimen: !!u.punya_spesimen })),
+  };
 }
 
 export async function getPerubahanIt(id: number | string): Promise<PerubahanIt> {
@@ -343,6 +355,92 @@ export async function unduhLampiran(perubahanId: number | string, lampiran: Lamp
   a.click();
   a.remove();
   window.setTimeout(() => window.URL.revokeObjectURL(url), 1000);
+}
+
+/* ------------------------------------------------------------------ */
+/* Spesimen TTE                                                        */
+/* ------------------------------------------------------------------ */
+
+const SPESIMEN_BASE = "/smki/spesimen-tte";
+
+export interface SpesimenTte {
+  bytes: Uint8Array;
+  type: "png" | "jpg";
+  /** Ukuran dalam piksel (sudah diskalakan agar muat di kolom tanda tangan). */
+  width: number;
+  height: number;
+}
+
+export interface SpesimenSaya {
+  ada: boolean;
+  nama_asli: string | null;
+  ukuran: number | null;
+}
+
+/** Mengambil gambar spesimen user (blob). Mengembalikan null bila user belum punya. */
+export async function getSpesimenBlob(userId: number | string): Promise<Blob | null> {
+  try {
+    const res = await api.get(`${SPESIMEN_BASE}/${userId}`, { responseType: "blob" });
+    return res.data as Blob;
+  } catch (err: any) {
+    if (err?.response?.status === 404) return null;
+    throw err;
+  }
+}
+
+export async function getSpesimenSaya(): Promise<SpesimenSaya> {
+  const res = await api.get(`${SPESIMEN_BASE}/saya`);
+  return res.data.data;
+}
+
+export async function unggahSpesimenSaya(file: File): Promise<string> {
+  const fd = new FormData();
+  fd.append("spesimen", file);
+  const res = await api.post(SPESIMEN_BASE, fd);
+  return res.data.message;
+}
+
+export async function hapusSpesimenSaya(): Promise<string> {
+  const res = await api.delete(SPESIMEN_BASE);
+  return res.data.message;
+}
+
+const SPESIMEN_MAKS_W = 140; // px
+const SPESIMEN_MAKS_H = 70; // px
+
+/**
+ * Memuat spesimen untuk banyak user sekaligus (untuk ekspor DOCX/PDF).
+ * User tanpa spesimen tidak masuk ke Map hasil.
+ */
+export async function muatSpesimen(ids: (number | null | undefined)[]): Promise<Map<number, SpesimenTte>> {
+  const unik = [...new Set(ids.filter((n): n is number => typeof n === "number" && n > 0))];
+  const out = new Map<number, SpesimenTte>();
+
+  await Promise.all(
+    unik.map(async (id) => {
+      try {
+        const blob = await getSpesimenBlob(id);
+        if (!blob) return;
+
+        const bytes = new Uint8Array(await blob.arrayBuffer());
+        const type: "png" | "jpg" = bytes[0] === 0x89 ? "png" : "jpg";
+
+        const bmp = await createImageBitmap(blob);
+        const skala = Math.min(SPESIMEN_MAKS_W / bmp.width, SPESIMEN_MAKS_H / bmp.height, 1);
+        out.set(id, {
+          bytes,
+          type,
+          width: Math.max(1, Math.round(bmp.width * skala)),
+          height: Math.max(1, Math.round(bmp.height * skala)),
+        });
+        bmp.close();
+      } catch {
+        /* spesimen yang gagal dimuat dilewati; tanda tangan dibiarkan kosong */
+      }
+    })
+  );
+
+  return out;
 }
 
 /* ------------------------------------------------------------------ */
