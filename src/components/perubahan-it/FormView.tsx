@@ -1,9 +1,14 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import SignaturePad, { SignaturePadRef } from './Signaturepad';
+import SignaturePad, { SignaturePadRef } from '@/app/form-perubahan-it/form-view/Signaturepad';
 import { getPerubahanItOpd, createPerubahanIt } from '@/services/api';
 import { showToast } from '@/components/ui/Toast';
+import { isAxiosError } from 'axios';
+import type {
+  PerubahanItApiError,
+  PerubahanItSubmission,
+} from './types';
 
 const inputCls = "block w-full rounded-md border border-[#E2E8F0] bg-[#EFF4FF] px-4 py-3 text-[13px] text-slate-800 placeholder:text-[#94a3b8] focus:border-[#153289] focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#153289]";
 const labelCls = "mb-2 block text-[11px] font-bold uppercase tracking-wider text-[#1e293b]";
@@ -22,11 +27,25 @@ interface OpdItem {
   name: string;
 }
 
-export default function FormView({ onSuccess }: { onSuccess: (data: any) => void }) {
+function isOpdItem(value: unknown): value is OpdItem {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'id' in value &&
+    typeof value.id === 'number' &&
+    'name' in value &&
+    typeof value.name === 'string'
+  );
+}
+
+export default function FormView({
+  onSuccess,
+}: {
+  onSuccess: (data: PerubahanItSubmission) => void;
+}) {
   const [opdList, setOpdList] = useState<OpdItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://aptika-be.wasmer.dev/api';
   const [pemohon, setPemohon] = useState('');
   const [unitKerja, setUnitKerja] = useState('');
   const [perangkatDaerahId, setPerangkatDaerahId] = useState('');
@@ -40,7 +59,6 @@ export default function FormView({ onSuccess }: { onSuccess: (data: any) => void
   const [alamatRepository, setAlamatRepository] = useState('');
   const [latarBelakang, setLatarBelakang] = useState('');
   const [rincianPerubahan, setRincianPerubahan] = useState('');
-  const [risikoTidakDilakukan, setRisikoTidakDilakukan] = useState('');
   const [kriteriaRisiko, setKriteriaRisiko] = useState('');
   const [keterangan, setKeterangan] = useState('');
   const [solusiDiharapkan, setSolusiDiharapkan] = useState('');
@@ -62,7 +80,11 @@ export default function FormView({ onSuccess }: { onSuccess: (data: any) => void
 
   useEffect(() => {
     getPerubahanItOpd()
-      .then(data => setOpdList(data))
+      .then((response: unknown) => {
+        if (Array.isArray(response)) {
+          setOpdList(response.filter(isOpdItem));
+        }
+      })
       .catch(err => console.error(err));
   }, []);
 
@@ -125,7 +147,7 @@ export default function FormView({ onSuccess }: { onSuccess: (data: any) => void
     formData.append('alamat_repository', alamatRepository);
     formData.append('latar_belakang', latarBelakang);
     formData.append('rincian_perubahan', rincianPerubahan);
-    formData.append('risiko_tidak_dilakukan', risikoTidakDilakukan);
+    formData.append('risiko_tidak_dilakukan', '');
     if (kriteriaRisiko) formData.append('kriteria_risiko[]', kriteriaRisiko);
     formData.append('keterangan', keterangan);
     formData.append('solusi_diharapkan', solusiDiharapkan);
@@ -154,8 +176,7 @@ export default function FormView({ onSuccess }: { onSuccess: (data: any) => void
       
       if (result) {
         const selectedOpdName = opdList.find(o => o.id.toString() === perangkatDaerahId)?.name || '-';
-        const displayData = {
-          ...result,
+        const displayData: PerubahanItSubmission = {
           formData: {
             tanggalPengajuan: today.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }),
             perangkatDaerah: selectedOpdName,
@@ -168,10 +189,23 @@ export default function FormView({ onSuccess }: { onSuccess: (data: any) => void
         showToast.success("Permohonan IT / Perubahan IT berhasil dikirim!");
         onSuccess(displayData);
       }
-    } catch (error: any) {
-      const errorMsg = error?.response?.data?.errors 
-        ? Object.values(error.response.data.errors).flat().join(', ') 
-        : (error?.response?.data?.error || error?.response?.data?.message || "Terjadi kesalahan jaringan.");
+    } catch (error: unknown) {
+      let errorMsg = 'Terjadi kesalahan jaringan.';
+      if (isAxiosError<PerubahanItApiError>(error)) {
+        const responseData = error.response?.data;
+        const validationMessage = Object.values(responseData?.errors ?? {})
+          .flatMap(value =>
+            Array.isArray(value) ? value.map(String) : [String(value)]
+          )
+          .join(', ');
+        const serverMessage =
+          typeof responseData?.error === 'string'
+            ? responseData.error
+            : typeof responseData?.message === 'string'
+              ? responseData.message
+              : undefined;
+        errorMsg = validationMessage || serverMessage || errorMsg;
+      }
       showToast.error("Gagal mengirim data: " + errorMsg);
       setShowConfirmModal(false);
     } finally {

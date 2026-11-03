@@ -1,10 +1,38 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import FormView from './form-view/page';
-import SuccessView from './form-sukses/page';
+import Image from 'next/image';
+import FormView from '@/components/perubahan-it/FormView';
+import SuccessView from '@/components/perubahan-it/SuccessView';
 import { useRouter } from 'next/navigation';
 import { getPerubahanItList } from '@/services/api';
+import type {
+  PerubahanItSubmission,
+  PerubahanItTicket,
+} from '@/components/perubahan-it/types';
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
+function isPerubahanItTicket(value: unknown): value is PerubahanItTicket {
+  return (
+    isRecord(value) &&
+    (typeof value.id === 'number' || typeof value.id === 'string') &&
+    typeof value.no_rfc === 'string' &&
+    typeof value.status === 'string'
+  );
+}
+
+function extractTickets(response: unknown): PerubahanItTicket[] {
+  const records = Array.isArray(response)
+    ? response
+    : isRecord(response) && Array.isArray(response.data)
+      ? response.data
+      : [];
+
+  return records.filter(isPerubahanItTicket);
+}
 
 export default function PagePerubahanTI() {
   const router = useRouter();
@@ -13,9 +41,9 @@ export default function PagePerubahanTI() {
     useState(false);
 
   const [submittedData, setSubmittedData] =
-    useState<any>(null);
+    useState<PerubahanItSubmission | null>(null);
 
-  const [tickets, setTickets] = useState<any[]>([]);
+  const [tickets, setTickets] = useState<PerubahanItTicket[]>([]);
 
   const [showForm, setShowForm] =
     useState(false);
@@ -26,16 +54,8 @@ export default function PagePerubahanTI() {
   const fetchTickets = async () => {
     try {
       setLoading(true);
-
-      const data = await getPerubahanItList();
-
-      if (Array.isArray(data.data)) {
-        setTickets(data.data);
-      } else if (Array.isArray(data)) {
-        setTickets(data);
-      } else {
-        setTickets([]);
-      }
+      const response: unknown = await getPerubahanItList();
+      setTickets(extractTickets(response));
     } catch (err) {
       console.error(err);
       setTickets([]);
@@ -45,14 +65,36 @@ export default function PagePerubahanTI() {
   };
 
   useEffect(() => {
-    fetchTickets();
+    let active = true;
+
+    getPerubahanItList()
+      .then((response: unknown) => {
+        if (active) {
+          setTickets(extractTickets(response));
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        if (active) {
+          setTickets([]);
+        }
+      })
+      .finally(() => {
+        if (active) {
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      active = false;
+    };
   }, []);
 
-  const handleSuccess = (data: any) => {
+  const handleSuccess = (data: PerubahanItSubmission) => {
     setSubmittedData(data);
     setIsSubmitted(true);
 
-    fetchTickets();
+    void fetchTickets();
 
     window.scrollTo({
       top: 0,
@@ -105,15 +147,19 @@ export default function PagePerubahanTI() {
 
         {/* Header */}
         <div className="relative overflow-hidden rounded-xl border border-[#E2E8F0] bg-white px-6 py-10 text-center shadow-sm">
-          <img
-            src="./hiasan.png"
+          <Image
+            src="/hiasan.png"
             alt="Hiasan Kiri"
+            width={160}
+            height={160}
             className="pointer-events-none absolute bottom-0 left-0 h-40 w-auto rotate-180 object-contain opacity-80"
           />
 
-          <img
-            src="./hiasan.png"
+          <Image
+            src="/hiasan.png"
             alt="Hiasan Kanan"
+            width={160}
+            height={160}
             className="pointer-events-none absolute right-0 top-0 h-40 w-auto object-contain opacity-80"
           />
 
@@ -144,7 +190,7 @@ export default function PagePerubahanTI() {
             data={submittedData}
             onReset={() => {
               setIsSubmitted(false);
-              fetchTickets();
+              void fetchTickets();
             }}
           />
         ) : showForm ||
@@ -176,12 +222,10 @@ export default function PagePerubahanTI() {
 
                 {tickets.map((ticket) => {
                   const status =
-                    statusStyles[
-                      ticket.status?.toLowerCase()
-                    ] ?? {
+                    statusStyles[ticket.status.toLowerCase()] ?? {
                       bg: 'bg-slate-100',
                       text: 'text-slate-700',
-                      label: ticket.status,
+                      label: ticket.status || 'Status tidak diketahui',
                     };
 
                   return (
