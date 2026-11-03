@@ -353,6 +353,12 @@ export default function Sidebar() {
                 iconColor: "text-blue-600 bg-blue-50 border border-blue-200/60",
               },
               {
+                name: "Daftar Aset Virtual",
+                key: "smki/formulir-daftar-aset-virtualisasi",
+                icon: Server,
+                iconColor: "text-cyan-600 bg-cyan-50 border border-cyan-200/60",
+              },
+              {
                 name: "Daftar Removable Media",
                 key: "smki/removable-media",
                 icon: Usb,
