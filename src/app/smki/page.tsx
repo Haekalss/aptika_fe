@@ -101,6 +101,12 @@ const smkiCards: SmkiServiceCard[] = [
     icon: FileText,
   },
   {
+    title: "Formulir Review Hak Akses",
+    desc: "Review user ID yang terdaftar, tingkat hak akses, status aktif, dan tindak lanjut pada formulir FR-034.",
+    path: "/smki/review-hak-akses",
+    icon: ClipboardCheck,
+  },
+  {
     title: "Formulir Evaluasi Kepatuhan",
     desc: "Catat dan evaluasi kepatuhan terhadap regulasi dan aturan lain yang mendukung layanan utama, lengkap dengan status dan ekspor dokumen FR-044.",
     path: "/smki/evaluasi-kepatuhan",

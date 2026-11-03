@@ -299,6 +299,12 @@ export default function Sidebar() {
                 iconColor: "text-emerald-600 bg-emerald-50 border border-emerald-200/60",
               },
               {
+                name: "Review Hak Akses",
+                key: "smki/review-hak-akses",
+                icon: ClipboardCheck,
+                iconColor: "text-emerald-600 bg-emerald-50 border border-emerald-200/60",
+              },
+              {
                 name: "Daftar Penyedia",
                 key: "smki/daftar-penyedia",
                 icon: Building2,
