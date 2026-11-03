@@ -276,8 +276,8 @@ export default function AsetSdmPage() {
   return (
     <ServiceRouteGuard requiredService="SMKI">
       <div
-        ref={rootRef}
-        id="aset-sdm-page"
+        // ref={rootRef}
+        // id="aset-sdm-page"
                 className="flex min-w-0 flex-col gap-5 pb-2 [&>*]:shrink-0 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
       >
           <style>{`

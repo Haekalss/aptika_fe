@@ -415,8 +415,8 @@ export default function PerubahanItPage() {
   return (
     <ServiceRouteGuard requiredService="SMKI">
       <div
-        ref={rootRef}
-        className="flex flex-col gap-6 overflow-hidden pb-2 [&>*]:shrink-0 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+        // ref={rootRef}
+        // className="flex flex-col gap-6 overflow-hidden pb-2 [&>*]:shrink-0 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
       >
         {/* Hero */}
         <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#064e3b] via-[#047857] to-[#059669] p-6 text-white shadow-lg sm:p-8">
