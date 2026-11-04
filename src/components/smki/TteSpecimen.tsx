@@ -12,6 +12,8 @@ interface Props {
   nama?: string | null;
   /** Nama unit/dinas yang dicetak di bawah jabatan. */
   unit?: string;
+  /** Sembunyikan QR untuk formulir yang hanya memerlukan kotak spesimen. */
+  showQr?: boolean;
   /** Ukuran tampilan (px). Default mengikuti rasio gambar 962x370. */
   width?: number;
   className?: string;
@@ -27,7 +29,7 @@ interface Props {
  * Gambar diambil lewat axios (membawa token) lalu diubah menjadi blob URL,
  * karena endpoint TTE berada di balik middleware auth.
  */
-export default function TteSpecimen({ pegawaiId, nip, nama, unit, width = 300, className }: Props) {
+export default function TteSpecimen({ pegawaiId, nip, nama, unit, showQr = true, width = 300, className }: Props) {
   const [src, setSrc] = useState<string | null>(null);
   const [failed, setFailed] = useState(false);
 
@@ -35,7 +37,6 @@ export default function TteSpecimen({ pegawaiId, nip, nama, unit, width = 300, c
 
   useEffect(() => {
     if (!useResolver && !pegawaiId) {
-      setSrc(null);
       return;
     }
 
@@ -46,7 +47,7 @@ export default function TteSpecimen({ pegawaiId, nip, nama, unit, width = 300, c
       try {
         const res = useResolver
           ? await api.get("/tte/resolve/image", {
-              params: { ...(nip ? { nip } : {}), ...(nama ? { nama } : {}) },
+              params: { ...(nip ? { nip } : {}), ...(nama ? { nama } : {}), ...(!showQr ? { include_qr: 0 } : {}) },
               responseType: "blob",
             })
           : await api.get(`/tte/spesimen/${pegawaiId}`, {
@@ -68,7 +69,7 @@ export default function TteSpecimen({ pegawaiId, nip, nama, unit, width = 300, c
       cancelled = true;
       if (revoked) URL.revokeObjectURL(revoked);
     };
-  }, [pegawaiId, nip, nama, unit, useResolver]);
+  }, [pegawaiId, nip, nama, unit, useResolver, showQr]);
 
   if ((!useResolver && !pegawaiId) || failed) return null;
 

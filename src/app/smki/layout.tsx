@@ -133,6 +133,13 @@ const smkiNavItems = [
     icon: FileText,
   },
   {
+    label: "Review Hak Akses",
+    title: "Formulir Review Hak Akses (FR-034)",
+    desc: "Review pengguna yang terdaftar dalam sistem, tingkat hak akses, status akun, dan tindak lanjut hasil pemeriksaan sesuai formulir FR-034.",
+    path: "/smki/review-hak-akses",
+    icon: ClipboardCheck,
+  },
+  {
     label: "Evaluasi Kepatuhan",
     title: "Formulir Evaluasi Kepatuhan Regulasi (FR-044)",
     desc: "Catat dan evaluasi tingkat kepatuhan terhadap regulasi, kebijakan keamanan informasi, dan standar teknis yang mendukung layanan utama organisasi.",
