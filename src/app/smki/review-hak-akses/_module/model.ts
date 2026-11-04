@@ -8,6 +8,7 @@ export interface ReviewInput {
   bidangId: number; bidangName: string; objectId: string; objectName: string;
   reviewerId: string; reviewer: string; followUp: string;
   location: string; signedAt: string; preparedBy: string; acknowledgedBy: string;
+  preparedById: string; preparedByNip: string; acknowledgedById: string; acknowledgedByNip: string;
   accounts: ReviewAccount[];
 }
 export interface Review extends ReviewInput {
@@ -20,12 +21,13 @@ export function blankReview(bidangId: number, bidangName: string): ReviewInput {
   return { documentNumber: "FR-034/KOM.03.05/SANDIKAMI", documentRevision: "1.0", documentEffectiveDate: "",
     title: "Review Hak Akses", periodStart: "", periodEnd: "", reviewDate: "", bidangId, bidangName,
     objectId: "", objectName: "", reviewerId: "", reviewer: "", followUp: "",
-    location: "Bandung", signedAt: "", preparedBy: "", acknowledgedBy: "", accounts: [blankAccount()] };
+    location: "Bandung", signedAt: "", preparedBy: "", acknowledgedBy: "",
+    preparedById: "", preparedByNip: "", acknowledgedById: "", acknowledgedByNip: "", accounts: [blankAccount()] };
 }
 export function validateReview(input: ReviewInput, complete: boolean): Errors {
   const errors: Errors = {};
   const required: (keyof ReviewInput)[] = complete
-    ? ["documentNumber", "documentRevision", "documentEffectiveDate", "periodStart", "periodEnd", "reviewDate", "objectId", "reviewerId", "location", "signedAt", "preparedBy", "acknowledgedBy"] : [];
+    ? ["documentNumber", "documentRevision", "documentEffectiveDate", "periodStart", "periodEnd", "reviewDate", "objectId", "reviewerId", "location", "signedAt", "preparedById", "acknowledgedById"] : [];
   for (const key of required) if (!String(input[key] ?? "").trim()) errors[key] = "Bagian ini wajib diisi.";
   const dateValid = (value: string) => /^\d{4}-\d{2}-\d{2}$/.test(value) && !Number.isNaN(Date.parse(value)) && new Date(value).toISOString().slice(0, 10) === value;
   for (const key of ["documentEffectiveDate", "periodStart", "periodEnd", "reviewDate", "signedAt"] as const) {
@@ -79,9 +81,11 @@ export function parseReviews(raw: string | null): Review[] {
       objectId: item.objectId ?? objectId, objectName: item.objectName ?? objectName,
       followUp: item.followUp ?? "", location: item.location ?? "Bandung", signedAt: item.signedAt ?? "",
       preparedBy: item.preparedBy ?? item.recorderName, acknowledgedBy: item.acknowledgedBy ?? "",
+      preparedById: item.preparedById ?? "", preparedByNip: item.preparedByNip ?? "",
+      acknowledgedById: item.acknowledgedById ?? "", acknowledgedByNip: item.acknowledgedByNip ?? "",
       status: legacy ? "Draf" : item.status,
     };
-    for (const key of ["reviewerId", "objectId", "objectName", "followUp", "location", "signedAt", "preparedBy", "acknowledgedBy"]) {
+    for (const key of ["reviewerId", "objectId", "objectName", "followUp", "location", "signedAt", "preparedBy", "acknowledgedBy", "preparedById", "preparedByNip", "acknowledgedById", "acknowledgedByNip"]) {
       if (typeof result[key] !== "string") throw new Error("Isian review tidak valid.");
     }
     return result as Review;

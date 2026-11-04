@@ -1,13 +1,13 @@
 "use client";
 import { useEffect, useState } from "react";
 import { api } from "@/services/api";
-export interface MasterOption { id: string; name: string }
+export interface MasterOption { id: string; name: string; nip?: string }
 export interface Masters { systems: MasterOption[]; employees: MasterOption[] }
 function options(value: unknown, idKey: string, nameKey: string): MasterOption[] {
   if (!Array.isArray(value)) throw new Error("Format master tidak valid.");
   return value.map((item: Record<string, unknown>) => {
     if (!item || !Number.isSafeInteger(Number(item[idKey])) || Number(item[idKey]) <= 0 || typeof item[nameKey] !== "string") throw new Error("Data master tidak valid.");
-    return { id: String(item[idKey]), name: String(item[nameKey]) };
+    return { id: String(item[idKey]), name: String(item[nameKey]), nip: typeof item.nip === "string" ? item.nip : "" };
   });
 }
 export function useMasters() {

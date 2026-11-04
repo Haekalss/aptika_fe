@@ -1,5 +1,6 @@
 import type { Review } from "./model";
 import { formatDate } from "./model";
+import { api } from "@/services/api";
 
 // A DOCX is an Open XML ZIP package. Stored entries avoid adding a compression dependency.
 function zip(entries: Record<string, string | Uint8Array>): Uint8Array<ArrayBuffer> {
@@ -52,8 +53,21 @@ const cell = (content: string, width: number, span = 1) => `<w:tc><w:tcPr><w:tcW
 const table = (rows: string, widths: number[]) => `<w:tbl><w:tblPr><w:tblW w:w="${widths.reduce((sum, width) => sum + width, 0)}" w:type="dxa"/><w:tblLayout w:type="fixed"/><w:tblBorders>${["top", "left", "bottom", "right", "insideH", "insideV"].map(edge => `<w:${edge} w:val="single" w:sz="4" w:color="000000"/>`).join("")}</w:tblBorders><w:tblCellMar><w:top w:w="90" w:type="dxa"/><w:left w:w="110" w:type="dxa"/><w:bottom w:w="90" w:type="dxa"/><w:right w:w="110" w:type="dxa"/></w:tblCellMar></w:tblPr><w:tblGrid>${widths.map(width => `<w:gridCol w:w="${width}"/>`).join("")}</w:tblGrid>${rows}</w:tbl>`;
 const relationships = (items: [string, string, string][]) => `${xml}<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">${items.map(([id, type, target]) => `<Relationship Id="${id}" Type="${rel}/${type}" Target="${target}"/>`).join("")}</Relationships>`;
 
-export function createReviewDocx(logs: Review[], logo?: Uint8Array): Uint8Array<ArrayBuffer> {
+const signerKey = (name: string, nip: string) => JSON.stringify([name.trim(), nip.trim()]);
+function specimenDrawing(data: Uint8Array, id: string, drawingId: number): string {
+  if (data.length < 24 || ![137, 80, 78, 71, 13, 10, 26, 10].every((byte, index) => data[index] === byte)) throw new Error("Format spesimen TTE bukan PNG.");
+  const view = new DataView(data.buffer, data.byteOffset, data.byteLength);
+  const width = view.getUint32(16), height = view.getUint32(20);
+  if (!width || !height) throw new Error("Ukuran spesimen TTE tidak valid.");
+  const scale = Math.min(2300000 / width, 1200000 / height);
+  const cx = Math.round(width * scale), cy = Math.round(height * scale);
+  return `<w:p><w:pPr><w:jc w:val="center"/></w:pPr><w:r><w:drawing><wp:inline xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" distT="0" distB="0" distL="0" distR="0"><wp:extent cx="${cx}" cy="${cy}"/><wp:docPr id="${drawingId}" name="Spesimen TTE ${id}"/><a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:nvPicPr><pic:cNvPr id="${drawingId}" name="${id}.png"/><pic:cNvPicPr/></pic:nvPicPr><pic:blipFill><a:blip r:embed="${id}"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill><pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="${cx}" cy="${cy}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r></w:p>`;
+}
+
+export function createReviewDocx(logs: Review[], logo?: Uint8Array, specimens = new Map<string, Uint8Array>()): Uint8Array<ArrayBuffer> {
   if (!logs.length) throw new Error("Tidak ada review untuk diekspor.");
+  const specimenFiles: Record<string, Uint8Array> = {};
+  const specimenRelationships: [string, string, string][] = [];
   const drawing = `<w:p><w:pPr><w:jc w:val="center"/></w:pPr><w:r><w:drawing><wp:inline xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" distT="0" distB="0" distL="0" distR="0"><wp:extent cx="590000" cy="774000"/><wp:docPr id="1" name="Logo Diskominfo Jawa Barat"/><a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:nvPicPr><pic:cNvPr id="0" name="logo.png"/><pic:cNvPicPr/></pic:nvPicPr><pic:blipFill><a:blip r:embed="logo"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill><pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="590000" cy="774000"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r></w:p>`;
   const headers = logs.map(log => {
   const metadata = table([
@@ -88,7 +102,20 @@ export function createReviewDocx(logs: Review[], logo?: Uint8Array): Uint8Array<
     );
     const signatures = table(
       `<w:tr>${cell("<w:p/>", 4820)}${cell(paragraph(`${review.location || "Bandung"}, ${formatDate(review.signedAt)}`, false, 20, "center"), 4820)}</w:tr>` +
-      `<w:tr><w:trPr><w:cantSplit/></w:trPr>${[["Dibuat Oleh,", review.preparedBy], ["Mengetahui,", review.acknowledgedBy]].map(([label, name]) => cell(paragraph(label, false, 20, "center") + '<w:p><w:pPr><w:spacing w:before="1000"/></w:pPr></w:p>' + paragraph(name || "(………………………………)", false, 20, "center"), 4820)).join("")}</w:tr>`,
+      `<w:tr><w:trPr><w:cantSplit/></w:trPr>${[
+        ["Dibuat Oleh,", review.preparedBy, review.preparedByNip ?? ""],
+        ["Mengetahui,", review.acknowledgedBy, review.acknowledgedByNip ?? ""],
+      ].map(([label, name, nip], signerIndex) => {
+        const image = specimens.get(signerKey(name, nip));
+        const id = `specimen${index * 2 + signerIndex + 1}`;
+        let signature = '<w:p><w:pPr><w:spacing w:before="1000"/></w:pPr></w:p>';
+        if (image) {
+          signature = specimenDrawing(image, id, index * 2 + signerIndex + 2);
+          specimenFiles[`word/media/${id}.png`] = image;
+          specimenRelationships.push([id, "image", `media/${id}.png`]);
+        }
+        return cell(paragraph(label, false, 20, "center") + signature, 4820);
+      }).join("")}</w:tr>`,
       [4820, 4820],
     );
     return `${index ? `<w:p><w:pPr>${sectionProperties(index - 1)}</w:pPr></w:p>` : ""}${review.status === "Draf" ? paragraph("DRAF — pemeriksaan belum lengkap", true, 20, "center") : ""}${form}<w:p><w:pPr><w:spacing w:after="0" w:line="20" w:lineRule="exact"/></w:pPr></w:p>${signatures}`;
@@ -96,7 +123,8 @@ export function createReviewDocx(logs: Review[], logo?: Uint8Array): Uint8Array<
   return zip({
     "[Content_Types].xml": `${xml}<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Default Extension="png" ContentType="image/png"/>${[["document", "document.main"], ...logs.map((_, index) => [`header${index + 1}`, "header"]), ["footer1", "footer"], ["styles", "styles"]].map(([file, type]) => `<Override PartName="/word/${file}.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.${type}+xml"/>`).join("")}</Types>`,
     "_rels/.rels": relationships([["document", "officeDocument", "word/document.xml"]]),
-    "word/_rels/document.xml.rels": relationships([...logs.map((_, index): [string, string, string] => [`header${index + 1}`, "header", `header${index + 1}.xml`]), ["footer", "footer", "footer1.xml"], ["styles", "styles", "styles.xml"]]),
+    "word/_rels/document.xml.rels": relationships([...logs.map((_, index): [string, string, string] => [`header${index + 1}`, "header", `header${index + 1}.xml`]), ["footer", "footer", "footer1.xml"], ["styles", "styles", "styles.xml"], ...specimenRelationships]),
+    ...specimenFiles,
     ...(logo ? { ...Object.fromEntries(logs.map((_, index) => [`word/_rels/header${index + 1}.xml.rels`, relationships([["logo", "image", "media/logo.png"]])])), "word/media/logo.png": logo } : {}),
     "word/styles.xml": `${xml}<w:styles xmlns:w="${ns}"><w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial"/><w:sz w:val="20"/><w:lang w:val="id-ID"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:after="0"/></w:pPr></w:pPrDefault></w:docDefaults></w:styles>`,
     ...Object.fromEntries(headers.map((header, index) => [`word/header${index + 1}.xml`, `${xml}<w:hdr xmlns:w="${ns}" xmlns:r="${rel}">${header}<w:p/></w:hdr>`])),
@@ -108,7 +136,19 @@ export async function downloadReviews(logs: Review[]): Promise<void> {
   const response = await fetch("/logo-diskominfo-jabar.png");
   if (!response.ok) throw new Error("Logo dokumen gagal dimuat. Silakan coba kembali.");
   const logo = new Uint8Array(await response.arrayBuffer());
-  const url = URL.createObjectURL(new Blob([createReviewDocx(logs, logo)], { type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" }));
+  const signers = new Map<string, {name: string; nip: string}>();
+  for (const review of logs) for (const [name, nip] of [[review.preparedBy, review.preparedByNip ?? ""], [review.acknowledgedBy, review.acknowledgedByNip ?? ""]]) {
+    if (name.trim()) signers.set(signerKey(name, nip), {name, nip});
+  }
+  const specimens = new Map<string, Uint8Array>(await Promise.all([...signers].map(async ([key, signer]): Promise<[string, Uint8Array]> => {
+    try {
+      const image = await api.get<ArrayBuffer>("/tte/resolve/image", {params: {nama: signer.name, ...(signer.nip ? {nip: signer.nip} : {}), include_qr: 0}, responseType: "arraybuffer", timeout: 15000});
+      return [key, new Uint8Array(image.data)];
+    } catch {
+      throw new Error(`Spesimen TTE ${signer.name} gagal dimuat. Periksa nama/NIP atau coba kembali.`);
+    }
+  })));
+  const url = URL.createObjectURL(new Blob([createReviewDocx(logs, logo, specimens)], { type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" }));
   const link = document.createElement("a");
   link.href = url; link.download = `FR-034_${logs.length === 1 ? logs[0].number : "Review_Hak_Akses"}.docx`;
   link.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);

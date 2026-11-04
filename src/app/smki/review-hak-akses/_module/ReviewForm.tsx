@@ -5,14 +5,15 @@ import toast from "react-hot-toast";
 import { blankReview, blankAccount, userStatuses, validateReview, type ReviewInput, type Review, type Errors, type ReviewAccount } from "./model";
 import { useMasters, type MasterOption } from "./useMasters";
 import { ReviewSaveError } from "./useReviews";
+import ReviewSignatories from "./ReviewSignatories";
 import { Section, control, primary, secondary, panel } from "./ui";
 
 interface Props { review: Review | null; bidangId: number; bidangName: string; userName: string; onBack: () => void; onSave: (input: ReviewInput, complete: boolean) => Promise<void> }
 function Field({ id, label, required, error, children }: {id: string; label: string; required?: boolean; error?: string; children: ReactNode}) {
   return <div><label htmlFor={id} className="block text-[11px] font-bold text-slate-600 dark:text-slate-300 mb-1.5">{label}{required && <><span className="text-red-500" aria-hidden="true"> *</span><span className="sr-only"> wajib sebelum Simpan</span></>}</label>{children}{error && <p id={`${id}-error`} role="alert" className="text-red-600 text-[11px] mt-1">{error}</p>}</div>;
 }
-export default function ReviewForm({review, bidangId, bidangName, userName, onBack, onSave}: Props) {
-  const [input, setInput] = useState<ReviewInput>(() => review ? structuredClone(review) : {...blankReview(bidangId, bidangName), preparedBy: userName});
+export default function ReviewForm({review, bidangId, bidangName, onBack, onSave}: Props) {
+  const [input, setInput] = useState<ReviewInput>(() => review ? structuredClone(review) : blankReview(bidangId, bidangName));
   const [errors, setErrors] = useState<Errors>({});
   const [dirty, setDirty] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -34,6 +35,9 @@ export default function ReviewForm({review, bidangId, bidangName, userName, onBa
       if (!masters.data?.systems.some(item => item.id === next.objectId)) nextErrors.objectId = "Pilih obyek review yang tersedia pada master sistem.";
 
       if (!masters.data?.employees.some(item => item.id === next.reviewerId)) nextErrors.reviewerId = "Pilih pelaksana yang tersedia pada master pegawai.";
+      for (const key of ["preparedById", "acknowledgedById"] as const) {
+        if (!masters.data?.employees.some(item => item.id === next[key])) nextErrors[key] = "Pilih penanda tangan yang tersedia pada master pegawai.";
+      }
     }
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length) {
@@ -83,10 +87,13 @@ export default function ReviewForm({review, bidangId, bidangName, userName, onBa
         <button type="button" onClick={() => update("accounts", [...input.accounts, blankAccount()])} className={`${secondary} mt-4`}><Plus size={15}/> Tambah Pengguna</button>
       </Section>
       <Section number="04" title="Tindak Lanjut" description="Catat tindak lanjut untuk keseluruhan hasil review."><Field id="review-followUp" label="Tindak Lanjut"><textarea id="review-followUp" value={input.followUp} onChange={event => update("followUp", event.target.value)} maxLength={5000} rows={4} className={control} placeholder="Tuliskan tindak lanjut, atau keterangan tidak ada tindak lanjut."/></Field></Section>
-      <Section number="05" title="Pencantuman Nama" description="Nama pembuat dan pihak yang mengetahui dicantumkan pada dokumen."><div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <Section number="05" title="Penanda Tangan" description="Pilih pembuat dan pihak yang mengetahui untuk kotak spesimen TTE pada dokumen."><div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {field("location", "Tempat", true)}{field("signedAt", "Tanggal Dokumen", true, "date")}
-        {field("preparedBy", "Dibuat Oleh", true)}{field("acknowledgedBy", "Mengetahui", true)}
-      </div></Section>
+      </div><ReviewSignatories input={input} employees={masters.data?.employees ?? []} errors={errors} onChange={values => {
+        setInput(previous => ({...previous, ...values}));
+        setErrors(previous => {const next = {...previous}; for (const key of Object.keys(values)) delete next[key]; return next;});
+        setDirty(true);
+      }}/></Section>
       <div className={`${panel} p-4 flex flex-col sm:flex-row gap-4 justify-between sm:items-center`}><div><p className="text-xs font-bold">Simpan hasil review?</p><p className="text-[10px] text-slate-400 mt-1">Review tersimpan tetap dapat diedit atau dihapus.</p></div><div className="flex gap-2 flex-wrap"><button type="button" onClick={back} className={secondary}>Batal</button><button type="button" onClick={() => save(false)} className={secondary}><FileEdit size={15}/> Simpan Draf</button><button type="submit" className={primary}><Save size={15}/> Simpan</button></div></div>
       </fieldset>
     </form>
