@@ -22,6 +22,7 @@ import {
   DatabaseBackup,
   Database,
   CalendarRange,
+  Server,
   ServerCog,
   Users,
   Video,
@@ -96,6 +97,13 @@ const smkiNavItems = [
     desc: "Sistem inventarisasi dan manajemen aset perangkat keras TI, monitoring masa pakai, pemantauan kondisi perangkat, serta ekspor laporan resmi Bidang APTIKA.",
     path: "/daftar-aset-ti",
     icon: Box,
+  },
+  {
+    label: "Daftar Aset Virtualisasi",
+    title: "Daftar Aset Virtualisasi (FR-035)",
+    desc: "Inventarisasi server fisik dan instance virtualisasi, alamat IP/hostname, spesifikasi, pemilik, klasifikasi keamanan, serta ekspor dokumen FR-035.",
+    path: "/smki/formulir-daftar-aset-virtualisasi",
+    icon: Server,
   },
   {
     label: "Penghancuran Media",
