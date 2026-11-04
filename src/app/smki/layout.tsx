@@ -251,6 +251,13 @@ const smkiNavItems = [
     path: "/smki/aset-informasi",
     icon: Layers,
   },
+  {
+    label: "Matriks Kompetensi",
+    title: "Matriks Kompetensi SMKI (FR-031)",
+    desc: "Kelola standar kompetensi peran (Kordinator/Team Teknis), kompetensi pegawai dari Aset SDM, gap analisis otomatis, dan rencana training.",
+    path: "/smki/matrix-competency",
+    icon: ClipboardCheck,
+  },
 ];
 
 export default function SmkiLayout({
