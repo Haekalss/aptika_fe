@@ -214,6 +214,12 @@ const smkiCards: SmkiServiceCard[] = [
     path: "/smki/aset-informasi",
     icon: Layers,
   },
+  {
+    title: "Matriks Kompetensi SMKI",
+    desc: "Kelola standar kompetensi peran, kompetensi pegawai dari Aset SDM, gap analisis otomatis, dan rencana training sesuai format FR-031.",
+    path: "/smki/matrix-competency",
+    icon: ClipboardCheck,
+  },
 ];
 
 export default function SmkiPage() {
