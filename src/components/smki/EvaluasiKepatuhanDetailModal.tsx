@@ -1,7 +1,8 @@
 "use client";
 
 import React from "react";
-import { X, ClipboardCheck, CalendarDays, MapPin } from "lucide-react";
+import { X, ClipboardCheck, CalendarDays, MapPin, User } from "lucide-react";
+import TteSpecimen from "@/components/smki/TteSpecimen";
 import { EvaluasiKepatuhan, formatTanggalIndo, statusBadgeClass } from "@/services/smki/evaluasiKepatuhanService";
 
 interface Props {
@@ -38,6 +39,19 @@ export default function EvaluasiKepatuhanDetailModal({ isOpen, onClose, data }: 
               <p className="flex items-center gap-1.5 text-[11px] font-bold text-slate-400 uppercase mb-1"><CalendarDays size={12} /> Tanggal Evaluasi</p>
               <p className="text-sm font-semibold text-slate-700 dark:text-slate-200">{formatTanggalIndo(data.tanggal_evaluasi)}</p>
             </div>
+            <div>
+              <p className="flex items-center gap-1.5 text-[11px] font-bold text-slate-400 uppercase mb-1"><User size={12} /> Penandatangan</p>
+              <p className="text-sm font-semibold text-slate-700 dark:text-slate-200">{data.nama_penandatangan || "-"}</p>
+              {data.nip_penandatangan && (
+                <p className="text-xs text-slate-500">NIP. {data.nip_penandatangan}</p>
+              )}
+            </div>
+            {(data.nama_penandatangan || data.nip_penandatangan) && (
+              <div>
+                <p className="flex items-center gap-1.5 text-[11px] font-bold text-slate-400 uppercase mb-1">Spesimen TTE</p>
+                <TteSpecimen nama={data.nama_penandatangan || undefined} nip={data.nip_penandatangan || undefined} width={180} />
+              </div>
+            )}
             <div>
               <p className="flex items-center gap-1.5 text-[11px] font-bold text-slate-400 uppercase mb-1"><MapPin size={12} /> Ditandatangani di</p>
               <p className="text-sm font-semibold text-slate-700 dark:text-slate-200">{data.ditandatangani_di || "-"}</p>

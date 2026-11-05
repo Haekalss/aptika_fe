@@ -14,6 +14,8 @@ export interface EvaluasiItem {
 export interface EvaluasiKepatuhan {
   id: number;
   tanggal_evaluasi: string;
+  nama_penandatangan?: string | null;
+  nip_penandatangan?: string | null;
   ditandatangani_di: string | null;
   tanggal_ttd: string | null;
   created_at?: string;
@@ -27,6 +29,8 @@ export interface EvaluasiKepatuhan {
 
 export interface EvaluasiFormPayload {
   tanggal_evaluasi: string;
+  nama_penandatangan?: string | null;
+  nip_penandatangan?: string | null;
   ditandatangani_di?: string | null;
   tanggal_ttd?: string | null;
   items: EvaluasiItem[];

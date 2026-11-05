@@ -13,6 +13,7 @@ import {
   exportSmkiNotulenDocx,
   SmkiNotulenData,
 } from "@/services/api";
+import TteSpecimen from "@/components/smki/TteSpecimen";
 
 export default function PrintNotulenPage() {
   const router = useRouter();
@@ -407,22 +408,36 @@ export default function PrintNotulenPage() {
                       <td className="w-1/2 p-4 align-top">
                         <p>Bandung, {formatTanggalIndo(notulen.tanggal) || "……………… 202.."}</p>
                         <p className="mt-0.5">Disiapkan oleh:</p>
-                        <div className="h-16" />
+                        {(notulen.notulis_nip || notulen.notulis) && (
+                          <div className="flex justify-start">
+                            <TteSpecimen nip={notulen.notulis_nip || undefined} nama={notulen.notulis || undefined} width={180} />
+                          </div>
+                        )}
                         <p className="font-bold underline">
                           {notulen.notulis ? `(${notulen.notulis})` : "(Notulis)"}
                         </p>
+                        {notulen.notulis_nip && (
+                          <p className="text-[8pt]">NIP. {notulen.notulis_nip}</p>
+                        )}
                       </td>
 
                       {/* Kolom Kanan: Koordinator SMKI */}
                       <td className="w-1/2 p-4 text-right pr-6 align-top">
                         <p>Mengetahui,</p>
                         <p className="font-bold mt-0.5">Koordinator SMKI</p>
-                        <div className="h-16" />
+                        {(notulen.koordinator_nip || notulen.koordinator_smki) && (
+                          <div className="flex justify-end">
+                            <TteSpecimen nip={notulen.koordinator_nip || undefined} nama={notulen.koordinator_smki || undefined} width={180} />
+                          </div>
+                        )}
                         <p className="font-bold underline">
                           {notulen.koordinator_smki
                             ? `(${notulen.koordinator_smki})`
                             : "(…………………………………….)"}
                         </p>
+                        {notulen.koordinator_nip && (
+                          <p className="text-[8pt]">NIP. {notulen.koordinator_nip}</p>
+                        )}
                       </td>
                     </tr>
                   </tbody>

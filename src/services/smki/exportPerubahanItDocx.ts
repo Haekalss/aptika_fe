@@ -178,7 +178,8 @@ export async function buildPerubahanItDocx(items: PerubahanIt[]) {
             children: [run(t, { size: 20 })],
           })
       ),
-      // ruang tanda tangan: spesimen TTE bila ada, jika tidak ruang kosong seperti semula
+      // Pola FR-008: bila spesimen TTE ada, nama tidak ditulis ulang
+      // (sudah tercantum di dalam kotak spesimen).
       ttd
         ? new Paragraph({
             alignment: AlignmentType.CENTER,
@@ -196,12 +197,16 @@ export async function buildPerubahanItDocx(items: PerubahanIt[]) {
             run: { font: FONT, size: 20 },
             children: [new TextRun({ text: "", break: 5, size: 20, font: FONT })],
           }),
-      new Paragraph({
-        alignment: AlignmentType.CENTER,
-        spacing: { after: 0, line: 240 },
-        run: { font: FONT, size: 20 },
-        children: [run(`(${nama?.trim() || "……………………………"})`, { size: 20 })],
-      }),
+      ...(ttd
+        ? []
+        : [
+            new Paragraph({
+              alignment: AlignmentType.CENTER,
+              spacing: { after: 0, line: 240 },
+              run: { font: FONT, size: 20 },
+              children: [run(`(${nama?.trim() || "……………………………"})`, { size: 20 })],
+            }),
+          ]),
     ],
   });
 

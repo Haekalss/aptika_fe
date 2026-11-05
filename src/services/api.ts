@@ -1909,9 +1909,13 @@ export interface BeritaAcaraItem {
   id_pelaksana?: number | null;
   id_diketahui?: number | null;
   nama_pelaksana?: string | null;
+  nip_pelaksana?: string | null;
   nama_diketahui?: string | null;
+  nip_diketahui?: string | null;
   nama_pelaksana_display: string;
+  nip_pelaksana_display?: string | null;
   nama_diketahui_display: string;
+  nip_diketahui_display?: string | null;
   total_media_items?: number;
   bidang_id?: number | null;
   created_at?: string;
@@ -1957,7 +1961,9 @@ export interface BeritaAcaraPayload {
   id_pelaksana?: number | null;
   id_diketahui?: number | null;
   nama_pelaksana?: string | null;
+  nip_pelaksana?: string | null;
   nama_diketahui?: string | null;
+  nip_diketahui?: string | null;
   detail_media: {
     nama_perangkat: string;
     spesifikasi?: string | null;
@@ -2346,6 +2352,10 @@ export interface HakAksesTiItem {
   nip_atasan?: string | null;
   jabatan_atasan?: string | null;
   catatan_atasan?: string | null;
+  penanggung_jawab_nama?: string | null;
+  penanggung_jawab_nip?: string | null;
+  agen_nama?: string | null;
+  agen_nip?: string | null;
   nama_petugas_ti?: string | null;
   nip_petugas_ti?: string | null;
   tanggal_eksekusi?: string | null;
@@ -2919,6 +2929,10 @@ export interface ScreeningKaryawanItem {
   tanggal_screening: string;
   kesimpulan: "Perlu melengkapi administrasi" | "Administrasi Lengkap";
   catatan?: string | null;
+  nama_verifikator?: string | null;
+  nip_verifikator?: string | null;
+  ditandatangani_di?: string | null;
+  tanggal_ttd?: string | null;
   created_at?: string;
   updated_at?: string;
   jabatan?: JabatanItem;
@@ -2950,6 +2964,10 @@ export interface ScreeningKaryawanPayload {
   tanggal_screening: string;
   kesimpulan: string;
   catatan?: string | null;
+  nama_verifikator?: string | null;
+  nip_verifikator?: string | null;
+  ditandatangani_di?: string | null;
+  tanggal_ttd?: string | null;
   details: {
     id_item: number;
     status: "Ada" | "Tidak";
@@ -3033,7 +3051,9 @@ export interface SmkiNotulenData {
   zona_waktu?: string;
   tempat: string;
   notulis: string;
+  notulis_nip?: string | null;
   koordinator_smki: string;
+  koordinator_nip?: string | null;
   tujuan?: string;
   tindak_lanjut?: string;
   pesertas?: SmkiNotulenPesertaItem[];

@@ -59,6 +59,10 @@ export default function EditScreeningKaryawanPage() {
   const [tanggalScreening, setTanggalScreening] = useState<string>("");
   const [kesimpulan, setKesimpulan] = useState<string>("Administrasi Lengkap");
   const [catatan, setCatatan] = useState<string>("");
+  const [namaVerifikator, setNamaVerifikator] = useState<string>("");
+  const [nipVerifikator, setNipVerifikator] = useState<string>("");
+  const [ditandatanganiDi, setDitandatanganiDi] = useState<string>("Bandung");
+  const [tanggalTtd, setTanggalTtd] = useState<string>("");
 
   // 5 Checklist items
   const [itemsChecklist, setItemsChecklist] = useState<
@@ -96,6 +100,10 @@ export default function EditScreeningKaryawanPage() {
           );
           setKesimpulan(d.kesimpulan);
           setCatatan(d.catatan || "");
+          setNamaVerifikator((d as any).nama_verifikator || "");
+          setNipVerifikator((d as any).nip_verifikator || "");
+          setDitandatanganiDi((d as any).ditandatangani_di || "Bandung");
+          setTanggalTtd((d as any).tanggal_ttd ? String((d as any).tanggal_ttd).split("T")[0] : "");
 
           if (d.details && d.details.length > 0) {
             setItemsChecklist(
@@ -162,6 +170,10 @@ export default function EditScreeningKaryawanPage() {
         tanggal_screening: tanggalScreening,
         kesimpulan,
         catatan: catatan.trim(),
+        nama_verifikator: namaVerifikator.trim() || null,
+        nip_verifikator: nipVerifikator.trim() || null,
+        ditandatangani_di: ditandatanganiDi.trim() || null,
+        tanggal_ttd: tanggalTtd || null,
         details: itemsChecklist.map((it) => ({
           id_item: it.id_item,
           status: it.status,
@@ -457,6 +469,43 @@ export default function EditScreeningKaryawanPage() {
               placeholder="Karyawan atas nama ... menunjukkan kualifikasi yang sangat baik. Dokumen identitas dan riwayat kerja telah dikonfirmasi valid oleh tim internal. Direkomendasikan untuk melanjutkan ke tahap onboarding operasional."
               className="w-full p-3.5 text-xs rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-200 leading-relaxed focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
             />
+          </div>
+
+          {/* Penanda Tangan Verifikator (untuk spesimen TTE pada berita acara) */}
+          <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-sm">
+            <h3 className="text-xs font-bold text-slate-800 dark:text-slate-200 mb-1">
+              Petugas Verifikator (Tanda Tangan Berita Acara)
+            </h3>
+            <p className="text-[11px] text-slate-500 mb-3">Nama dan NIP dipakai untuk spesimen TTE pada dokumen cetak.</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <input
+                type="text"
+                placeholder="Nama petugas verifikator..."
+                value={namaVerifikator}
+                onChange={(e) => setNamaVerifikator(e.target.value)}
+                className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
+              />
+              <input
+                type="text"
+                placeholder="NIP (untuk spesimen TTE)"
+                value={nipVerifikator}
+                onChange={(e) => setNipVerifikator(e.target.value)}
+                className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
+              />
+              <input
+                type="text"
+                placeholder="Ditandatangani di (cth. Bandung)"
+                value={ditandatanganiDi}
+                onChange={(e) => setDitandatanganiDi(e.target.value)}
+                className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
+              />
+              <input
+                type="date"
+                value={tanggalTtd}
+                onChange={(e) => setTanggalTtd(e.target.value)}
+                className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
+              />
+            </div>
           </div>
 
           {/* Action Buttons */}

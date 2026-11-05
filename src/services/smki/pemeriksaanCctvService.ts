@@ -32,6 +32,9 @@ export interface PemeriksaanCctv {
   tanggal_pemeriksaan: string;
   kesesuaian_waktu: KesesuaianWaktu;
   nama_pemeriksa: string | null;
+  nip_pemeriksa?: string | null;
+  ditandatangani_di?: string | null;
+  tanggal_ttd?: string | null;
   created_at?: string;
   updated_at?: string;
   total_cctv?: number;
@@ -45,6 +48,9 @@ export interface PemeriksaanFormPayload {
   tanggal_pemeriksaan: string;
   kesesuaian_waktu: KesesuaianWaktu;
   nama_pemeriksa?: string | null;
+  nip_pemeriksa?: string | null;
+  ditandatangani_di?: string | null;
+  tanggal_ttd?: string | null;
   items: CctvItem[];
 }
 
@@ -52,6 +58,9 @@ export interface TerakhirData {
   lingkup: Lingkup;
   perangkat_perekaman: string;
   nama_pemeriksa: string | null;
+  nip_pemeriksa?: string | null;
+  ditandatangani_di?: string | null;
+  tanggal_ttd?: string | null;
   tanggal_pemeriksaan: string;
   items: { kode_cctv: string; nama_cctv: string; lokasi: string; petugas: string | null }[];
 }

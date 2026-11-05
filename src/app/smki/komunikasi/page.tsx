@@ -63,6 +63,7 @@ export default function KomunikasiFR010Page() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isHeaderModalOpen, setIsHeaderModalOpen] = useState(false);
   const [activeItem, setActiveItem] = useState<KomunikasiItem | null>(null);
 
   // State Modal Export
@@ -188,6 +189,22 @@ export default function KomunikasiFR010Page() {
     setSelectedPeriode("2026");
   };
 
+  const handleUpdateHeader = async (data: Partial<HeaderInfoFR010>) => {
+    try {
+      const res = await updateKomunikasiHeader({
+        ...headerInfo,
+        ...data,
+        periode: selectedPeriode,
+      } as HeaderInfoFR010);
+      setHeaderInfo(res);
+      toast.success("Metadata dan penanda tangan berhasil disimpan.");
+      loadData();
+    } catch (e: any) {
+      toast.error(e?.message || "Gagal menyimpan metadata");
+      throw e;
+    }
+  };
+
   return (
     <ServiceRouteGuard requiredService="SMKI">
       <div className="flex flex-col gap-5 md:gap-6 w-full text-slate-800 dark:text-slate-100">
@@ -267,6 +284,15 @@ export default function KomunikasiFR010Page() {
               >
                 <Plus size={16} />
                 <span>Tambah Komunikasi</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsHeaderModalOpen(true)}
+                title="Edit metadata dan penanda tangan dokumen"
+                className="px-4 py-2.5 text-[13px] font-semibold text-slate-600 hover:text-[#0f8b58] hover:bg-emerald-50 dark:text-slate-300 dark:hover:bg-emerald-950/30 transition-all flex items-center gap-1.5 border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-[#071733] whitespace-nowrap"
+              >
+                <FileText size={16} />
+                <span className="hidden sm:inline">Metadata & TTD</span>
               </button>
             </div>
           </div>
@@ -626,6 +652,67 @@ export default function KomunikasiFR010Page() {
                 />
               </div>
 
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Disusun (Nama)</label>
+                  <input
+                    type="text"
+                    value={exportData.disusun_nama || ""}
+                    onChange={(e) => setExportData({ ...exportData, disusun_nama: e.target.value })}
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#071733] text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-[#0f8b58]/20 focus:border-[#0f8b58] outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">NIP Penyusun</label>
+                  <input
+                    type="text"
+                    value={exportData.disusun_nip || ""}
+                    onChange={(e) => setExportData({ ...exportData, disusun_nip: e.target.value })}
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#071733] text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-[#0f8b58]/20 focus:border-[#0f8b58] outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Mengetahui (Nama)</label>
+                  <input
+                    type="text"
+                    value={exportData.mengetahui_nama || ""}
+                    onChange={(e) => setExportData({ ...exportData, mengetahui_nama: e.target.value })}
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#071733] text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-[#0f8b58]/20 focus:border-[#0f8b58] outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">NIP Pengetahui</label>
+                  <input
+                    type="text"
+                    value={exportData.mengetahui_nip || ""}
+                    onChange={(e) => setExportData({ ...exportData, mengetahui_nip: e.target.value })}
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#071733] text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-[#0f8b58]/20 focus:border-[#0f8b58] outline-none"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Kota</label>
+                  <input
+                    type="text"
+                    value={exportData.kota || ""}
+                    onChange={(e) => setExportData({ ...exportData, kota: e.target.value })}
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#071733] text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-[#0f8b58]/20 focus:border-[#0f8b58] outline-none"
+                    placeholder="Bandung"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Tanggal Tanda Tangan</label>
+                  <input
+                    type="date"
+                    value={exportData.tanggal_ttd || ""}
+                    onChange={(e) => setExportData({ ...exportData, tanggal_ttd: e.target.value })}
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#071733] text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-[#0f8b58]/20 focus:border-[#0f8b58] outline-none"
+                  />
+                </div>
+              </div>
+
               {/* Action Buttons */}
               <div className="flex items-center justify-end gap-3 mt-3 pt-4 border-t border-slate-100 dark:border-slate-800">
                 <button
@@ -654,6 +741,12 @@ export default function KomunikasiFR010Page() {
       )}
 
       {/* OTHER MODALS */}
+      <HeaderFormModal
+        isOpen={isHeaderModalOpen}
+        initialData={{ ...headerInfo, periode: selectedPeriode }}
+        onClose={() => setIsHeaderModalOpen(false)}
+        onSubmit={handleUpdateHeader}
+      />
       <KomunikasiFormModal
         isOpen={isAddModalOpen}
         mode="add"

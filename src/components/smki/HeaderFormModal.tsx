@@ -85,6 +85,71 @@ export default function HeaderFormModal({ isOpen, onClose, initialData, onSubmit
                         />
                     </div>
 
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Disusun (Nama)</label>
+                            <input
+                                type="text"
+                                value={formData.disusun_nama || ""}
+                                onChange={(e) => setFormData({ ...formData, disusun_nama: e.target.value })}
+                                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#071733] text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-[#0f8b58]/20 focus:border-[#0f8b58] outline-none"
+                                placeholder="Nama penyusun"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">NIP Penyusun</label>
+                            <input
+                                type="text"
+                                value={formData.disusun_nip || ""}
+                                onChange={(e) => setFormData({ ...formData, disusun_nip: e.target.value })}
+                                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#071733] text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-[#0f8b58]/20 focus:border-[#0f8b58] outline-none"
+                                placeholder="NIP (untuk spesimen TTE)"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Mengetahui (Nama)</label>
+                            <input
+                                type="text"
+                                value={formData.mengetahui_nama || ""}
+                                onChange={(e) => setFormData({ ...formData, mengetahui_nama: e.target.value })}
+                                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#071733] text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-[#0f8b58]/20 focus:border-[#0f8b58] outline-none"
+                                placeholder="Nama pengetahui"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">NIP Pengetahui</label>
+                            <input
+                                type="text"
+                                value={formData.mengetahui_nip || ""}
+                                onChange={(e) => setFormData({ ...formData, mengetahui_nip: e.target.value })}
+                                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#071733] text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-[#0f8b58]/20 focus:border-[#0f8b58] outline-none"
+                                placeholder="NIP (untuk spesimen TTE)"
+                            />
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Kota</label>
+                            <input
+                                type="text"
+                                value={formData.kota || ""}
+                                onChange={(e) => setFormData({ ...formData, kota: e.target.value })}
+                                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#071733] text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-[#0f8b58]/20 focus:border-[#0f8b58] outline-none"
+                                placeholder="Bandung"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Tanggal Tanda Tangan</label>
+                            <input
+                                type="date"
+                                value={formData.tanggal_ttd || ""}
+                                onChange={(e) => setFormData({ ...formData, tanggal_ttd: e.target.value })}
+                                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#071733] text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-[#0f8b58]/20 focus:border-[#0f8b58] outline-none"
+                            />
+                        </div>
+                    </div>
+
                     {/* Action Buttons */}
                     <div className="flex items-center justify-end gap-3 mt-4 pt-4 border-t border-slate-100 dark:border-slate-800">
                         <button

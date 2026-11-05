@@ -34,6 +34,7 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 import ServiceRouteGuard from "@/components/auth/ServiceRouteGuard";
+import TteSpecimen from "@/components/smki/TteSpecimen";
 import { useAuthStore } from "@/store/useAuthStore";
 import {
   getBeritaAcaraList,
@@ -128,8 +129,10 @@ export default function BeritaAcaraPenghancuranPage() {
   const [formAlasan, setFormAlasan] = useState("");
   const [formPelaksanaId, setFormPelaksanaId] = useState<string>("");
   const [formPelaksanaCustom, setFormPelaksanaCustom] = useState("");
+  const [formNipPelaksana, setFormNipPelaksana] = useState("");
   const [formDiketahuiId, setFormDiketahuiId] = useState<string>("");
   const [formDiketahuiCustom, setFormDiketahuiCustom] = useState("");
+  const [formNipDiketahui, setFormNipDiketahui] = useState("");
 
   // Media Items State (Array rincian media pada modal create/edit)
   const [mediaItems, setMediaItems] = useState<DetailMediaItem[]>([]);
@@ -234,8 +237,10 @@ export default function BeritaAcaraPenghancuranPage() {
     setFormAlasan("");
     setFormPelaksanaId("");
     setFormPelaksanaCustom("");
+    setFormNipPelaksana("");
     setFormDiketahuiId("");
     setFormDiketahuiCustom("");
+    setFormNipDiketahui("");
     setMediaItems([]);
     setIsFormModalOpen(true);
   };
@@ -249,8 +254,10 @@ export default function BeritaAcaraPenghancuranPage() {
     setFormAlasan(item.alasan_penghancuran || "");
     setFormPelaksanaId(item.id_pelaksana ? String(item.id_pelaksana) : "");
     setFormPelaksanaCustom(item.nama_pelaksana || "");
+    setFormNipPelaksana(item.nip_pelaksana || "");
     setFormDiketahuiId(item.id_diketahui ? String(item.id_diketahui) : "");
     setFormDiketahuiCustom(item.nama_diketahui || "");
+    setFormNipDiketahui(item.nip_diketahui || "");
     setMediaItems(item.detail_media ? [...item.detail_media] : []);
     setIsFormModalOpen(true);
   };
@@ -379,7 +386,9 @@ export default function BeritaAcaraPenghancuranPage() {
         id_pelaksana: formPelaksanaId ? Number(formPelaksanaId) : null,
         id_diketahui: formDiketahuiId ? Number(formDiketahuiId) : null,
         nama_pelaksana: formPelaksanaCustom.trim() || undefined,
+        nip_pelaksana: formNipPelaksana.trim() || null,
         nama_diketahui: formDiketahuiCustom.trim() || undefined,
+        nip_diketahui: formNipDiketahui.trim() || null,
         detail_media: mediaItems.map((m, idx) => ({
           no_urut: idx + 1,
           nama_perangkat: m.nama_perangkat,
@@ -903,6 +912,13 @@ export default function BeritaAcaraPenghancuranPage() {
                           </option>
                         ))}
                       </select>
+                      <input
+                        type="text"
+                        value={formNipPelaksana}
+                        onChange={(e) => setFormNipPelaksana(e.target.value)}
+                        placeholder="NIP Pelaksana (untuk spesimen TTE)"
+                        className="mt-1.5 w-full px-3.5 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500"
+                      />
                     </div>
 
                     {/* Alasan Penghancuran */}
@@ -932,6 +948,13 @@ export default function BeritaAcaraPenghancuranPage() {
                           value={formDiketahuiCustom}
                           onChange={(e) => setFormDiketahuiCustom(e.target.value)}
                           placeholder="Nama pemberi izin..."
+                          className="w-full px-3.5 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500"
+                        />
+                        <input
+                          type="text"
+                          value={formNipDiketahui}
+                          onChange={(e) => setFormNipDiketahui(e.target.value)}
+                          placeholder="NIP pemberi izin (untuk spesimen TTE)"
                           className="w-full px-3.5 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500"
                         />
                         <select
@@ -1463,18 +1486,42 @@ export default function BeritaAcaraPenghancuranPage() {
                   {/* Dual Signature Blocks */}
                   <div className="grid grid-cols-2 gap-8 pt-4">
                     <div className="text-center">
-                      <p className="font-bold mb-16">Pelaksana,</p>
-                      <p className="font-bold underline text-xs">
+                      <p className="font-bold mb-2">Pelaksana,</p>
+                      {(previewData.nip_pelaksana || previewData.nama_pelaksana_display) && (
+                        <div className="flex justify-center">
+                          <TteSpecimen
+                            nip={previewData.nip_pelaksana || undefined}
+                            nama={previewData.nama_pelaksana_display}
+                            width={200}
+                          />
+                        </div>
+                      )}
+                      <p className="font-bold underline text-xs mt-1">
                         {previewData.nama_pelaksana_display}
                       </p>
+                      {previewData.nip_pelaksana && (
+                        <p className="text-[10px] text-slate-600">NIP. {previewData.nip_pelaksana}</p>
+                      )}
                       <p className="text-[10px] text-slate-600">Unit Pelaksana Teknis</p>
                     </div>
 
                     <div className="text-center">
-                      <p className="font-bold mb-16">Yang Mengetahui,</p>
-                      <p className="font-bold underline text-xs">
+                      <p className="font-bold mb-2">Yang Mengetahui,</p>
+                      {(previewData.nip_diketahui || previewData.nama_diketahui_display) && (
+                        <div className="flex justify-center">
+                          <TteSpecimen
+                            nip={previewData.nip_diketahui || undefined}
+                            nama={previewData.nama_diketahui_display}
+                            width={200}
+                          />
+                        </div>
+                      )}
+                      <p className="font-bold underline text-xs mt-1">
                         {previewData.nama_diketahui_display}
                       </p>
+                      {previewData.nip_diketahui && (
+                        <p className="text-[10px] text-slate-600">NIP. {previewData.nip_diketahui}</p>
+                      )}
                       <p className="text-[10px] text-slate-600">Pengawas / Penanggung Jawab</p>
                     </div>
                   </div>

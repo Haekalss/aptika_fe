@@ -50,10 +50,13 @@ export interface DrpEvaluasi {
   checklist: DrpChecklist | null;
   lampiran: string | null;
   dibuat_oleh_nama: string | null;
+  dibuat_oleh_nip?: string | null;
   dibuat_oleh_tanggal: string | null;
   diperiksa_oleh_nama: string | null;
+  diperiksa_oleh_nip?: string | null;
   diperiksa_oleh_tanggal: string | null;
   disetujui_oleh_nama: string | null;
+  disetujui_oleh_nip?: string | null;
   disetujui_oleh_tanggal: string | null;
   created_at?: string;
   total_sistem?: number;
@@ -77,10 +80,13 @@ export interface DrpEvaluasiPayload {
   checklist: DrpChecklist;
   lampiran?: string | null;
   dibuat_oleh_nama?: string | null;
+  dibuat_oleh_nip?: string | null;
   dibuat_oleh_tanggal?: string | null;
   diperiksa_oleh_nama?: string | null;
+  diperiksa_oleh_nip?: string | null;
   diperiksa_oleh_tanggal?: string | null;
   disetujui_oleh_nama?: string | null;
+  disetujui_oleh_nip?: string | null;
   disetujui_oleh_tanggal?: string | null;
   waktu: DrpWaktu[];
   proses: DrpProses[];
