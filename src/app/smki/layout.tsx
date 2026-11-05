@@ -22,6 +22,7 @@ import {
   DatabaseBackup,
   Database,
   CalendarRange,
+  Server,
   ServerCog,
   Users,
   Video,
@@ -29,6 +30,7 @@ import {
   MessageSquare,
   Usb,
   KeyRound,
+  Layers,
 } from "lucide-react";
 
 const smkiNavItems = [
@@ -83,11 +85,25 @@ const smkiNavItems = [
     icon: Building2,
   },
   {
+    label: "Evaluasi Penyedia",
+    title: "Formulir Evaluasi Kinerja Penyedia Barang/Jasa (FR-021)",
+    desc: "Penilaian kinerja penyedia barang/jasa, perhitungan nilai otomatis, rekomendasi, dan pengesahan digital (TTE) oleh Evaluator dan Atasan.",
+    path: "/smki/evaluasi-penyedia",
+    icon: ClipboardCheck,
+  },
+  {
     label: "Daftar Aset TI",
     title: "Daftar Aset Teknologi Informasi",
     desc: "Sistem inventarisasi dan manajemen aset perangkat keras TI, monitoring masa pakai, pemantauan kondisi perangkat, serta ekspor laporan resmi Bidang APTIKA.",
     path: "/daftar-aset-ti",
     icon: Box,
+  },
+  {
+    label: "Daftar Aset Virtualisasi",
+    title: "Daftar Aset Virtualisasi (FR-035)",
+    desc: "Inventarisasi server fisik dan instance virtualisasi, alamat IP/hostname, spesifikasi, pemilik, klasifikasi keamanan, serta ekspor dokumen FR-035.",
+    path: "/smki/formulir-daftar-aset-virtualisasi",
+    icon: Server,
   },
   {
     label: "Penghancuran Media",
@@ -123,6 +139,13 @@ const smkiNavItems = [
     desc: "Pencatatan pelaksanaan perubahan teknologi informasi, kondisi sebelum dan sesudah perubahan, hasil pengujian sistem, serta tindak lanjut operasional.",
     path: "/smki/log-perubahan",
     icon: FileText,
+  },
+  {
+    label: "Review Hak Akses",
+    title: "Formulir Review Hak Akses (FR-034)",
+    desc: "Review pengguna yang terdaftar dalam sistem, tingkat hak akses, status akun, dan tindak lanjut hasil pemeriksaan sesuai formulir FR-034.",
+    path: "/smki/review-hak-akses",
+    icon: ClipboardCheck,
   },
   {
     label: "Evaluasi Kepatuhan",
@@ -242,6 +265,20 @@ const smkiNavItems = [
     desc: "Dokumentasi rapat tinjauan manajemen SMKI, pembahasan klausul ISO 27001 Clause 9.3, keputusan tindak lanjut, dan cetak berita acara.",
     path: "/smki/notulen",
     icon: FileCheck,
+  },
+  {
+    label: "Aset Informasi",
+    title: "Formulir Aset Informasi (FR-028)",
+    desc: "Pendataan formulir resmi FR-028 aset informasi unit kerja, aset intangible, dan evaluasi matriks risiko CIA (Kerahasiaan, Integritas, Ketersediaan).",
+    path: "/smki/aset-informasi",
+    icon: Layers,
+  },
+  {
+    label: "Matriks Kompetensi",
+    title: "Matriks Kompetensi SMKI (FR-031)",
+    desc: "Kelola standar kompetensi peran (Kordinator/Team Teknis), kompetensi pegawai dari Aset SDM, gap analisis otomatis, dan rencana training.",
+    path: "/smki/matrix-competency",
+    icon: ClipboardCheck,
   },
 ];
 

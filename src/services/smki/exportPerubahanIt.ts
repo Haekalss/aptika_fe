@@ -4,6 +4,7 @@ import {
   formatRentangJam,
   formatRupiah,
   formatTanggal,
+  muatSpesimen,
   type PerubahanIt,
 } from "@/services/smki/perubahanIt";
 
@@ -19,6 +20,9 @@ export async function exportPerubahanItPdf(item: PerubahanIt): Promise<void> {
   const autoTable = (await import("jspdf-autotable")).default;
 
   const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+
+  const spesimen = await muatSpesimen([item.created_by, item.diterima_oleh_id, item.disetujui_oleh_id, item.dilaksanakan_oleh_id]);
+  const sp = (id?: number | null) => (id ? spesimen.get(id) ?? null : null);
 
   doc.setFont("helvetica", "bold");
   doc.setFontSize(13);
@@ -57,9 +61,10 @@ export async function exportPerubahanItPdf(item: PerubahanIt): Promise<void> {
     nama: string | null
   ) => `Tanggal: ${tanggal ? formatTanggal(tanggal) : ""}\n\n${judul}\n\n${jabatan}\n\n\n\n(${nama?.trim() || "……………………………"})`;
 
-  const ttd = (content: string, colSpan = 1) => ({
+  const ttd = (content: string, userId: number | null | undefined, colSpan = 1) => ({
     content,
     colSpan,
+    spesimen: sp(userId),
     styles: { minCellHeight: 42, valign: "top" as const },
   });
 
@@ -80,6 +85,7 @@ export async function exportPerubahanItPdf(item: PerubahanIt): Promise<void> {
     margin: { left: 15, right: 15 },
     body: [
       row("No. RFC", item.no_rfc),
+      row("No. Dokumen", dash(item.nomor_dokumen)), // BARU
       row("Judul Perubahan", dash(item.judul)),
       section("Informasi Pemohon"),
       row("Pemohon", dash(item.pemohon)),
@@ -106,21 +112,28 @@ export async function exportPerubahanItPdf(item: PerubahanIt): Promise<void> {
       ),
       row("Lampiran", lampiran),
       [
-        ttd(tanda(item.tanggal_diajukan, "Dibuat Oleh:", "Pemohon,", item.pemohon), 2),
-        ttd(tanda(item.diterima_pada, "Diterima Oleh:", "Koordinator Agen,", item.diterima_oleh_nama)),
+        ttd(tanda(item.tanggal_diajukan, "Dibuat Oleh:", "Pemohon,", item.pemohon), item.created_by, 2),
+        ttd(tanda(item.diterima_pada, "Diterima Oleh:", "Koordinator Agen,", item.diterima_oleh_nama), item.diterima_oleh_id),
       ],
       [
-        ttd(tanda(item.disetujui_pada, "Disetujui Oleh:", "Penanggung Jawab Perangkat,", item.disetujui_oleh_nama), 2),
+        ttd(tanda(item.disetujui_pada, "Disetujui Oleh:", "Penanggung Jawab Perangkat,", item.disetujui_oleh_nama), item.disetujui_oleh_id, 2),
         ttd(
-          tanda(
-            item.tanggal_pelaksanaan ?? item.dilaksanakan_pada,
-            "Dilaksanakan Oleh:",
-            "Agen,",
-            item.dilaksanakan_oleh_nama
-          )
+          tanda(item.tanggal_pelaksanaan ?? item.dilaksanakan_pada, "Dilaksanakan Oleh:", "Agen,", item.dilaksanakan_oleh_nama),
+          item.dilaksanakan_oleh_id
         ),
       ],
     ],
+    didDrawCell: (d: any) => {
+      const s = d.section === "body" ? d.cell.raw?.spesimen : null;
+      if (!s) return;
+      const maxW = 28, maxH = 11; // mm
+      const skala = Math.min(maxW / s.width, maxH / s.height);
+      const w = s.width * skala;
+      const h = s.height * skala;
+      const x = d.cell.x + (d.cell.width - w) / 2;
+      const y = d.cell.y + 19; // di antara baris jabatan dan nama
+      doc.addImage(s.bytes, s.type === "png" ? "PNG" : "JPEG", x, y, w, h);
+    },
   });
 
   doc.save(`${item.no_rfc.replace(/[^\w-]+/g, "_")}.pdf`);

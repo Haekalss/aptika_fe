@@ -34,6 +34,9 @@ export default function PemeriksaanCctvFormModal({ isOpen, onClose, onSave, init
   const [tanggal, setTanggal] = useState(today());
   const [kesesuaian, setKesesuaian] = useState<KesesuaianWaktu>("Sesuai");
   const [pemeriksa, setPemeriksa] = useState("");
+  const [nipPemeriksa, setNipPemeriksa] = useState("");
+  const [ditandatanganiDi, setDitandatanganiDi] = useState("Bandung");
+  const [tanggalTtd, setTanggalTtd] = useState("");
   const [items, setItems] = useState<CctvItem[]>([emptyItem()]);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
@@ -47,6 +50,9 @@ export default function PemeriksaanCctvFormModal({ isOpen, onClose, onSave, init
       setTanggal(initialData.tanggal_pemeriksaan);
       setKesesuaian(initialData.kesesuaian_waktu);
       setPemeriksa(initialData.nama_pemeriksa || "");
+      setNipPemeriksa(initialData.nip_pemeriksa || "");
+      setDitandatanganiDi(initialData.ditandatangani_di || "Bandung");
+      setTanggalTtd(initialData.tanggal_ttd ? String(initialData.tanggal_ttd).slice(0, 10) : "");
       setItems(
         initialData.items && initialData.items.length > 0
           ? initialData.items.map((i) => ({
@@ -57,7 +63,7 @@ export default function PemeriksaanCctvFormModal({ isOpen, onClose, onSave, init
           : [emptyItem()]
       );
     } else {
-      setLingkup("Data Center"); setPerangkat(""); setTanggal(today()); setKesesuaian("Sesuai"); setPemeriksa("");
+      setLingkup("Data Center"); setPerangkat(""); setTanggal(today()); setKesesuaian("Sesuai"); setPemeriksa(""); setNipPemeriksa(""); setDitandatanganiDi("Bandung"); setTanggalTtd("");
       setItems([emptyItem()]);
     }
     setErrors({});
@@ -82,6 +88,9 @@ export default function PemeriksaanCctvFormModal({ isOpen, onClose, onSave, init
       setItems(res.data.items.map((i) => ({ ...emptyItem(), kode_cctv: i.kode_cctv, nama_cctv: i.nama_cctv, lokasi: i.lokasi, petugas: i.petugas || "" })));
       if (!perangkat.trim()) setPerangkat(res.data.perangkat_perekaman);
       if (!pemeriksa.trim() && res.data.nama_pemeriksa) setPemeriksa(res.data.nama_pemeriksa);
+      if (!nipPemeriksa.trim() && res.data.nip_pemeriksa) setNipPemeriksa(res.data.nip_pemeriksa);
+      if (res.data.ditandatangani_di) setDitandatanganiDi(res.data.ditandatangani_di);
+      if (!tanggalTtd && res.data.tanggal_ttd) setTanggalTtd(String(res.data.tanggal_ttd).slice(0, 10));
       toast.success(`${res.data.items.length} CCTV disalin dari pemeriksaan ${res.data.tanggal_pemeriksaan}.`);
     } catch {
       toast.error("Gagal menyalin data pemeriksaan sebelumnya");
@@ -114,6 +123,9 @@ export default function PemeriksaanCctvFormModal({ isOpen, onClose, onSave, init
         tanggal_pemeriksaan: tanggal,
         kesesuaian_waktu: kesesuaian,
         nama_pemeriksa: pemeriksa.trim() || null,
+        nip_pemeriksa: nipPemeriksa.trim() || null,
+        ditandatangani_di: ditandatanganiDi.trim() || null,
+        tanggal_ttd: tanggalTtd || null,
         items: items.map((it) => ({
           kode_cctv: it.kode_cctv.trim(), nama_cctv: it.nama_cctv.trim(), lokasi: it.lokasi.trim(),
           fungsi: it.fungsi, rekaman: it.rekaman, obstacle: it.obstacle,
@@ -184,6 +196,18 @@ export default function PemeriksaanCctvFormModal({ isOpen, onClose, onSave, init
                 <User size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input value={pemeriksa} onChange={(e) => setPemeriksa(e.target.value)} placeholder="Nama pemeriksa CCTV" className={`${inputCls()} pl-9`} />
               </div>
+            </div>
+            <div>
+              <label className={labelCls}>NIP Pemeriksa (untuk spesimen TTE)</label>
+              <input value={nipPemeriksa} onChange={(e) => setNipPemeriksa(e.target.value)} placeholder="NIP pemeriksa" className={inputCls()} />
+            </div>
+            <div>
+              <label className={labelCls}>Ditandatangani di</label>
+              <input value={ditandatanganiDi} onChange={(e) => setDitandatanganiDi(e.target.value)} placeholder="Bandung" className={inputCls()} />
+            </div>
+            <div>
+              <label className={labelCls}>Tanggal Tanda Tangan</label>
+              <input type="date" value={tanggalTtd} onChange={(e) => setTanggalTtd(e.target.value)} className={inputCls()} />
             </div>
           </div>
 

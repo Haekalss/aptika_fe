@@ -84,7 +84,7 @@ export default function DrpEvaluasiForm({ mode, id }: Props) {
   const [checklist, setChecklist] = useState<DrpChecklist>(emptyChecklist());
   const [lampiran, setLampiran] = useState("");
   const [sign, setSign] = useState({
-    dibuatNama: "", dibuatTgl: "", diperiksaNama: "", diperiksaTgl: "", disetujuiNama: "", disetujuiTgl: "",
+    dibuatNama: "", dibuatNip: "", dibuatTgl: "", diperiksaNama: "", diperiksaNip: "", diperiksaTgl: "", disetujuiNama: "", disetujuiNip: "", disetujuiTgl: "",
   });
 
   useEffect(() => {
@@ -108,9 +108,9 @@ export default function DrpEvaluasiForm({ mode, id }: Props) {
           setChecklist({ ...emptyChecklist(), ...(d.checklist || {}) });
           setLampiran(d.lampiran || "");
           setSign({
-            dibuatNama: d.dibuat_oleh_nama || "", dibuatTgl: d.dibuat_oleh_tanggal || "",
-            diperiksaNama: d.diperiksa_oleh_nama || "", diperiksaTgl: d.diperiksa_oleh_tanggal || "",
-            disetujuiNama: d.disetujui_oleh_nama || "", disetujuiTgl: d.disetujui_oleh_tanggal || "",
+            dibuatNama: d.dibuat_oleh_nama || "", dibuatNip: d.dibuat_oleh_nip || "", dibuatTgl: d.dibuat_oleh_tanggal || "",
+            diperiksaNama: d.diperiksa_oleh_nama || "", diperiksaNip: d.diperiksa_oleh_nip || "", diperiksaTgl: d.diperiksa_oleh_tanggal || "",
+            disetujuiNama: d.disetujui_oleh_nama || "", disetujuiNip: d.disetujui_oleh_nip || "", disetujuiTgl: d.disetujui_oleh_tanggal || "",
           });
         }
       } catch (err) {
@@ -158,10 +158,13 @@ export default function DrpEvaluasiForm({ mode, id }: Props) {
       checklist,
       lampiran: nz(lampiran),
       dibuat_oleh_nama: nz(sign.dibuatNama),
+      dibuat_oleh_nip: sign.dibuatNip.trim() || null,
       dibuat_oleh_tanggal: sign.dibuatTgl || null,
       diperiksa_oleh_nama: nz(sign.diperiksaNama),
+      diperiksa_oleh_nip: sign.diperiksaNip.trim() || null,
       diperiksa_oleh_tanggal: sign.diperiksaTgl || null,
       disetujui_oleh_nama: nz(sign.disetujuiNama),
+      disetujui_oleh_nip: sign.disetujuiNip.trim() || null,
       disetujui_oleh_tanggal: sign.disetujuiTgl || null,
       waktu: w.map((r) => ({ sistem_ti: r.sistem_ti.trim(), rto_ideal: nz(r.rto_ideal), pencapaian_rto: nz(r.pencapaian_rto), kendala: nz(r.kendala) })),
       proses: p.map((r) => ({ proses: r.proses.trim(), aktivitas: nz(r.aktivitas), hasil_evaluasi: nz(r.hasil_evaluasi), rekomendasi: nz(r.rekomendasi), pic: nz(r.pic) })),
@@ -376,6 +379,15 @@ export default function DrpEvaluasiForm({ mode, id }: Props) {
                   </FormField>
                   <FormField label="Disetujui Oleh (Nama)">
                     <input type="text" value={sign.disetujuiNama} onChange={(e) => setSign({ ...sign, disetujuiNama: e.target.value })} className={inputCls} />
+                  </FormField>
+                  <FormField label="NIP Pembuat" hint="Untuk spesimen TTE">
+                    <input type="text" value={sign.dibuatNip} onChange={(e) => setSign({ ...sign, dibuatNip: e.target.value })} placeholder="NIP pembuat" className={inputCls} />
+                  </FormField>
+                  <FormField label="NIP Pemeriksa" hint="Untuk spesimen TTE">
+                    <input type="text" value={sign.diperiksaNip} onChange={(e) => setSign({ ...sign, diperiksaNip: e.target.value })} placeholder="NIP pemeriksa" className={inputCls} />
+                  </FormField>
+                  <FormField label="NIP Penyetuju" hint="Untuk spesimen TTE">
+                    <input type="text" value={sign.disetujuiNip} onChange={(e) => setSign({ ...sign, disetujuiNip: e.target.value })} placeholder="NIP penyetuju" className={inputCls} />
                   </FormField>
                   <FormField label="Tanggal Dibuat">
                     <input type="date" value={sign.dibuatTgl} onChange={(e) => setSign({ ...sign, dibuatTgl: e.target.value })} className={inputCls} />

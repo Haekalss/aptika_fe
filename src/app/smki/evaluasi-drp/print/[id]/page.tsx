@@ -8,6 +8,7 @@ import {
   fetchDrpEvaluasiDetail, downloadDrpEvaluasiDocx, formatTanggalIndo, formatWaktuPengujian,
   drpEvaluasiErrMsg, CHECKLIST_GROUPS, DrpEvaluasi,
 } from "@/services/smki/drpEvaluasiService";
+import TteSpecimen from "@/components/smki/TteSpecimen";
 
 /** Baris minimum tiap tabel (sama dengan template .docx). */
 const MIN_WAKTU = 2;
@@ -120,9 +121,9 @@ export default function PrintDrpEvaluasiPage() {
     ["Asumsi Ketersediaan Sumber Daya", item.asumsi_sumber_daya || ""],
   ];
   const sign = [
-    { judul: "Dibuat Oleh:", nama: item.dibuat_oleh_nama, tgl: item.dibuat_oleh_tanggal },
-    { judul: "Diperiksa Oleh:", nama: item.diperiksa_oleh_nama, tgl: item.diperiksa_oleh_tanggal },
-    { judul: "Disetujui Oleh:", nama: item.disetujui_oleh_nama, tgl: item.disetujui_oleh_tanggal },
+    { judul: "Dibuat Oleh:", nama: item.dibuat_oleh_nama, nip: item.dibuat_oleh_nip, tgl: item.dibuat_oleh_tanggal },
+    { judul: "Diperiksa Oleh:", nama: item.diperiksa_oleh_nama, nip: item.diperiksa_oleh_nip, tgl: item.diperiksa_oleh_tanggal },
+    { judul: "Disetujui Oleh:", nama: item.disetujui_oleh_nama, nip: item.disetujui_oleh_nip, tgl: item.disetujui_oleh_tanggal },
   ];
   const wW = [2800, 1900, 2000, 3760];
   const wP = [1900, 2700, 2200, 2400, 1260];
@@ -263,7 +264,13 @@ export default function PrintDrpEvaluasiPage() {
               <tr>
                 {sign.map((s) => (
                   <td key={s.judul} style={{ ...td, height: "1.65in", verticalAlign: "bottom", textAlign: "center", fontSize: "11pt" }}>
-                    {s.nama ? `(${s.nama})` : ""}
+                    {(s.nip || s.nama) && (
+                      <div style={{ display: "flex", justifyContent: "center" }}>
+                        <TteSpecimen nip={s.nip || undefined} nama={s.nama || undefined} width={150} />
+                      </div>
+                    )}
+                    <div>{s.nama ? `(${s.nama})` : ""}</div>
+                    {s.nip && <div style={{ fontSize: "9pt" }}>NIP. {s.nip}</div>}
                   </td>
                 ))}
               </tr>

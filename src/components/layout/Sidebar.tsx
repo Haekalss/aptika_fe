@@ -275,6 +275,12 @@ export default function Sidebar() {
                 iconColor: "text-cyan-600 bg-cyan-50 border border-cyan-200/60",
               },
               {
+                name: "Aset Informasi",
+                key: "smki/aset-informasi",
+                icon: Layers,
+                iconColor: "text-blue-600 bg-blue-50 border border-blue-200/60",
+              },
+              {
                 name: "Daftar Rekaman",
                 key: "smki/daftar-rekaman",
                 icon: FileText,
@@ -293,9 +299,21 @@ export default function Sidebar() {
                 iconColor: "text-emerald-600 bg-emerald-50 border border-emerald-200/60",
               },
               {
+                name: "Review Hak Akses",
+                key: "smki/review-hak-akses",
+                icon: ClipboardCheck,
+                iconColor: "text-emerald-600 bg-emerald-50 border border-emerald-200/60",
+              },
+              {
                 name: "Daftar Penyedia",
                 key: "smki/daftar-penyedia",
                 icon: Building2,
+                iconColor: "text-emerald-600 bg-emerald-50 border border-emerald-200/60",
+              },
+              {
+                name: "Evaluasi Penyedia",
+                key: "smki/evaluasi-penyedia",
+                icon: ClipboardCheck,
                 iconColor: "text-emerald-600 bg-emerald-50 border border-emerald-200/60",
               },
               {
@@ -339,6 +357,12 @@ export default function Sidebar() {
                 key: "daftar-aset-ti",
                 icon: Box,
                 iconColor: "text-blue-600 bg-blue-50 border border-blue-200/60",
+              },
+              {
+                name: "Daftar Aset Virtual",
+                key: "smki/formulir-daftar-aset-virtualisasi",
+                icon: Server,
+                iconColor: "text-cyan-600 bg-cyan-50 border border-cyan-200/60",
               },
               {
                 name: "Daftar Removable Media",

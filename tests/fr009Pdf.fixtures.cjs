@@ -14,6 +14,7 @@ const lookup = {
 function report(overrides = {}) {
   return {
     id: 901, nomor_laporan: 'FR009/UJI/2026', id_unit_kerja: null, area: bidang.name, tanggal_laporan: '2026-10-19',
+    nomor_dokumen: lookup.template.code, nomor_revisi: lookup.template.revision, tanggal_berlaku: lookup.template.effective_date,
     diajukan_kepada_id: null, diajukan_kepada_nama: 'Atasan Uji', dilaporkan_oleh_id: user.id, dilaporkan_oleh_nama: user.name,
     sumber_codes: ['audit_internal', 'lainnya'], sumber_lainnya: 'Evaluasi layanan', status_temuan: 'Minor',
     deskripsi: 'Prosedur peninjauan hak akses belum dilaksanakan secara berkala.', akar_masalah: 'Jadwal evaluasi dan PIC belum ditetapkan.',

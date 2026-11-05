@@ -50,7 +50,9 @@ export default function EditNotulenPage() {
     zona_waktu: "WIB",
     tempat: "",
     notulis: "",
+    notulis_nip: "",
     koordinator_smki: "",
+    koordinator_nip: "",
     tujuan: "",
     tindak_lanjut: "",
   });
@@ -95,7 +97,9 @@ export default function EditNotulenPage() {
             zona_waktu: item.zona_waktu || "WIB",
             tempat: item.tempat || "",
             notulis: item.notulis || "",
+            notulis_nip: item.notulis_nip || "",
             koordinator_smki: item.koordinator_smki || "",
+            koordinator_nip: item.koordinator_nip || "",
             tujuan: item.tujuan || "",
             tindak_lanjut: item.tindak_lanjut || "",
           });
@@ -473,7 +477,10 @@ export default function EditNotulenPage() {
             <div className="flex flex-col gap-1.5">
               <select
                 onChange={(e) => {
-                  if (e.target.value) setForm({ ...form, notulis: e.target.value });
+                  if (e.target.value) {
+                    const found = pegawaiList.find((p: any) => p.nama === e.target.value);
+                    setForm({ ...form, notulis: e.target.value, notulis_nip: found?.nip || form.notulis_nip });
+                  }
                 }}
                 className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50/50 dark:bg-slate-800 text-slate-700 dark:text-slate-200"
               >
@@ -491,6 +498,13 @@ export default function EditNotulenPage() {
                 onChange={(e) => setForm({ ...form, notulis: e.target.value })}
                 className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800/80 text-slate-800 dark:text-slate-100"
               />
+              <input
+                type="text"
+                placeholder="NIP notulis (untuk spesimen TTE)"
+                value={form.notulis_nip}
+                onChange={(e) => setForm({ ...form, notulis_nip: e.target.value })}
+                className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800/80 text-slate-800 dark:text-slate-100"
+              />
             </div>
           </div>
 
@@ -501,7 +515,10 @@ export default function EditNotulenPage() {
             <div className="flex flex-col gap-1.5">
               <select
                 onChange={(e) => {
-                  if (e.target.value) setForm({ ...form, koordinator_smki: e.target.value });
+                  if (e.target.value) {
+                    const found = pegawaiList.find((p: any) => p.nama === e.target.value);
+                    setForm({ ...form, koordinator_smki: e.target.value, koordinator_nip: found?.nip || form.koordinator_nip });
+                  }
                 }}
                 className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50/50 dark:bg-slate-800 text-slate-700 dark:text-slate-200"
               >
@@ -517,6 +534,13 @@ export default function EditNotulenPage() {
                 required
                 value={form.koordinator_smki}
                 onChange={(e) => setForm({ ...form, koordinator_smki: e.target.value })}
+                className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800/80 text-slate-800 dark:text-slate-100"
+              />
+              <input
+                type="text"
+                placeholder="NIP koordinator (untuk spesimen TTE)"
+                value={form.koordinator_nip}
+                onChange={(e) => setForm({ ...form, koordinator_nip: e.target.value })}
                 className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800/80 text-slate-800 dark:text-slate-100"
               />
             </div>

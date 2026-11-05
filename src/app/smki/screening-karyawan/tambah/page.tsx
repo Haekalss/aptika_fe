@@ -64,6 +64,10 @@ export default function TambahScreeningKaryawanPage() {
 
   const [kesimpulan, setKesimpulan] = useState<string>("");
   const [catatan, setCatatan] = useState<string>("");
+  const [namaVerifikator, setNamaVerifikator] = useState<string>("");
+  const [nipVerifikator, setNipVerifikator] = useState<string>("");
+  const [ditandatanganiDi, setDitandatanganiDi] = useState<string>("Bandung");
+  const [tanggalTtd, setTanggalTtd] = useState<string>("");
 
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [loadingLookup, setLoadingLookup] = useState<boolean>(true);
@@ -169,6 +173,10 @@ export default function TambahScreeningKaryawanPage() {
         tanggal_screening: tanggalScreening,
         kesimpulan,
         catatan: catatan.trim(),
+        nama_verifikator: namaVerifikator.trim() || null,
+        nip_verifikator: nipVerifikator.trim() || null,
+        ditandatangani_di: ditandatanganiDi.trim() || null,
+        tanggal_ttd: tanggalTtd || null,
         details: itemsChecklist.map((it) => ({
           id_item: it.id_item,
           status: it.status as "Ada" | "Tidak",
@@ -468,6 +476,53 @@ export default function TambahScreeningKaryawanPage() {
                 onChange={(e) => setCatatan(e.target.value)}
                 className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-200 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
               />
+            </div>
+
+            {/* Penanda Tangan Verifikator (untuk spesimen TTE pada berita acara) */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-950/40 p-4">
+              <div className="sm:col-span-2">
+                <p className="text-xs font-bold text-slate-800 dark:text-slate-200">Petugas Verifikator (Tanda Tangan Berita Acara)</p>
+                <p className="text-[11px] text-slate-500 mt-0.5">Nama dan NIP dipakai untuk spesimen TTE pada dokumen cetak.</p>
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-800 dark:text-slate-200 mb-1.5">Nama Verifikator</label>
+                <input
+                  type="text"
+                  placeholder="Nama petugas verifikator..."
+                  value={namaVerifikator}
+                  onChange={(e) => setNamaVerifikator(e.target.value)}
+                  className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-200 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-800 dark:text-slate-200 mb-1.5">NIP Verifikator</label>
+                <input
+                  type="text"
+                  placeholder="NIP (untuk spesimen TTE)"
+                  value={nipVerifikator}
+                  onChange={(e) => setNipVerifikator(e.target.value)}
+                  className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-200 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-800 dark:text-slate-200 mb-1.5">Ditandatangani di</label>
+                <input
+                  type="text"
+                  placeholder="Bandung"
+                  value={ditandatanganiDi}
+                  onChange={(e) => setDitandatanganiDi(e.target.value)}
+                  className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-200 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-800 dark:text-slate-200 mb-1.5">Tanggal Tanda Tangan</label>
+                <input
+                  type="date"
+                  value={tanggalTtd}
+                  onChange={(e) => setTanggalTtd(e.target.value)}
+                  className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
+                />
+              </div>
             </div>
 
             {/* Panduan Input Notice Box */}

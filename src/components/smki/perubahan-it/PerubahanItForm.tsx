@@ -31,7 +31,10 @@ import {
 import toast from "react-hot-toast";
 import ServiceRouteGuard from "@/components/auth/ServiceRouteGuard";
 import { useAuthStore } from "@/store/useAuthStore";
+import SpesimenTtePreview from "./SpesimenTtePreview";
+import SpesimenSayaCard from "./SpesimenSayaCard";
 import {
+  DEFAULT_NOMOR_DOKUMEN, // BARU
   JENIS_OPTIONS,
   LAMPIRAN_ACCEPT,
   LAMPIRAN_MAKS_BERKAS,
@@ -64,6 +67,7 @@ const inputCls = (invalid: boolean, readOnly = false) =>
 type Errors = Record<string, string>;
 
 const EMPTY: PerubahanItInput = {
+  nomor_dokumen: "", // BARU
   judul: "",
   unit_kerja_id: "",
   perangkat_daerah: "",
@@ -88,6 +92,7 @@ const EMPTY: PerubahanItInput = {
 
 /** Urutan field untuk fokus ke error pertama. */
 const FIELD_ORDER = [
+  "nomor_dokumen", // BARU
   "unit_kerja_id",
   "perangkat_daerah",
   "nomor_surat_kontak",
@@ -296,6 +301,7 @@ function TahapCard({
   tanggal,
   ttdSelesai,
   ttdTeks,
+  userId,
   namaId,
   namaValue,
   namaOptions,
@@ -310,6 +316,8 @@ function TahapCard({
   tanggal: string | null;
   ttdSelesai: boolean;
   ttdTeks: string;
+  /** id user yang spesimen TTE-nya ditampilkan. */
+  userId?: string | number | null;
   namaId?: string;
   namaValue?: string;
   namaOptions?: { value: string; label: string }[];
@@ -368,17 +376,13 @@ function TahapCard({
         </span>
       </ReadonlyBox>
 
-      <p className="mb-1 mt-3 text-[11px] font-bold text-slate-700 dark:text-slate-200">Tanda tangan</p>
-      <div
-        className={`flex h-20 flex-col items-center justify-center gap-1.5 rounded-xl border border-dashed text-[11px] ${
-          ttdSelesai
-            ? "border-emerald-300 bg-emerald-50/60 text-emerald-700 dark:border-emerald-800 dark:bg-emerald-950/20 dark:text-emerald-300"
-            : "border-slate-300 text-slate-500 dark:border-slate-600 dark:text-slate-400"
-        }`}
-      >
-        {ttdSelesai ? <CheckCircle2 size={16} aria-hidden="true" /> : <PenLine size={16} aria-hidden="true" />}
-        {ttdTeks}
-      </div>
+      <p className="mb-1 mt-3 text-[11px] font-bold text-slate-700 dark:text-slate-200">Tanda tangan (Spesimen TTE)</p>
+      <SpesimenTtePreview userId={userId} fallbackTeks={ttdTeks} />
+      {ttdSelesai && (
+        <p className="mt-1.5 flex items-center gap-1 text-[11px] font-semibold text-emerald-700 dark:text-emerald-300">
+          <CheckCircle2 size={12} aria-hidden="true" /> {ttdTeks}
+        </p>
+      )}
     </div>
   );
 }
@@ -389,7 +393,7 @@ export default function PerubahanItForm({ mode }: { mode: "create" | "edit" }) {
   const id = mode === "edit" ? params?.id : undefined;
   const auth = useAuthStore() as unknown as {
     bidang?: { name?: string } | null;
-    user?: { name?: string } | null;
+    user?: { id?: number; name?: string } | null;
   };
 
   const [values, setValues] = useState<PerubahanItInput>(EMPTY);
@@ -410,7 +414,7 @@ export default function PerubahanItForm({ mode }: { mode: "create" | "edit" }) {
 
   const pemohonNama = item?.pemohon || auth.user?.name || "-";
 
-    // Kunci scroll dokumen agar tidak muncul ruang kosong di bawah halaman.
+  // Kunci scroll dokumen agar tidak muncul ruang kosong di bawah halaman.
   // Konten formulir menjadi area scroll tersendiri dengan tinggi sesuai viewport.
   const unlockRef = useRef<(() => void) | null>(null);
 
@@ -525,6 +529,7 @@ export default function PerubahanItForm({ mode }: { mode: "create" | "edit" }) {
           setItem(data);
           setLampiranLama(data.lampiran);
           setValues({
+            nomor_dokumen: data.nomor_dokumen || DEFAULT_NOMOR_DOKUMEN, // BARU
             judul: data.judul ?? "",
             unit_kerja_id: data.unit_kerja_id ? String(data.unit_kerja_id) : "",
             perangkat_daerah: data.perangkat_daerah ?? "",
@@ -551,6 +556,7 @@ export default function PerubahanItForm({ mode }: { mode: "create" | "edit" }) {
           const w = waktuDefault();
           setValues((prev) => ({
             ...prev,
+            nomor_dokumen: prev.nomor_dokumen || DEFAULT_NOMOR_DOKUMEN, // BARU
             perangkat_daerah: opsi.perangkat_daerah.length === 1 ? opsi.perangkat_daerah[0] : prev.perangkat_daerah,
             tanggal_perubahan: prev.tanggal_perubahan || w.tanggal,
             jam_mulai: prev.jam_mulai || w.mulai,
@@ -587,9 +593,21 @@ export default function PerubahanItForm({ mode }: { mode: "create" | "edit" }) {
   const totalLampiran = lampiranAktif.length + berkasBaru.length;
 
   const opsiPengguna = useMemo(
-    () => lookup.pengguna.map((u) => ({ value: String(u.id), label: u.nama })),
+    () =>
+      lookup.pengguna.map((u) => ({
+        value: String(u.id),
+        label: u.punya_spesimen ? u.nama : `${u.nama} (belum ada spesimen TTE)`,
+      })),
     [lookup.pengguna]
   );
+
+  const refreshLookup = useCallback(async () => {
+    try {
+      setLookup(await getPerubahanItLookup("all"));
+    } catch {
+      /* abaikan */
+    }
+  }, []);
 
   const tambahBerkas = (picked: File[]) => {
     if (picked.length === 0) return;
@@ -706,7 +724,7 @@ export default function PerubahanItForm({ mode }: { mode: "create" | "edit" }) {
 
   return (
     <ServiceRouteGuard requiredService="SMKI">
-       <div
+      <div
         ref={rootRef}
         className="flex flex-col gap-5 overflow-hidden pb-2 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
       >
@@ -776,7 +794,7 @@ export default function PerubahanItForm({ mode }: { mode: "create" | "edit" }) {
             {/* 01 */}
             <Section no="01" title="Informasi Pemohon" subtitle="Identitas dan kontak pemohon untuk administrasi permintaan perubahan.">
               <div className="grid grid-cols-1 gap-x-5 gap-y-4 md:grid-cols-2">
-                <div className="md:col-span-2">
+                <div>
                   <p className="mb-1.5 text-xs font-bold text-slate-800 dark:text-slate-100">Pemohon</p>
                   <ReadonlyBox>
                     <span className="flex items-center justify-between gap-2">
@@ -785,6 +803,15 @@ export default function PerubahanItForm({ mode }: { mode: "create" | "edit" }) {
                     </span>
                   </ReadonlyBox>
                 </div>
+                {/* BARU: Nomor Dokumen */}
+                <Field
+                  id="nomor_dokumen"
+                  label="Nomor Dokumen"
+                  hint="Tercetak pada kop formulir (No. Dokumen)."
+                  error={errors.nomor_dokumen}
+                >
+                  {text("nomor_dokumen", "Contoh: FR-015/KOM.03.05/SANDIKAMI", 100)}
+                </Field>
                 <Field id="unit_kerja_id" label="Unit Kerja" error={errors.unit_kerja_id}>
                   {select(
                     "unit_kerja_id",
@@ -1078,72 +1105,74 @@ export default function PerubahanItForm({ mode }: { mode: "create" | "edit" }) {
 
             {/* 05 */}
             <Section
-              no="05"
-              title="Penerimaan, Persetujuan, dan Pelaksanaan"
-              subtitle="Pengesahan dilakukan berurutan oleh pemohon, koordinator, penanggung jawab, dan agen."
-            >
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                <TahapCard
-                  no={1}
-                  judul="Dibuat Oleh"
-                  peran="Pemohon"
-                  nama={pemohonNama === "-" ? null : pemohonNama}
-                  tanggal={item?.tanggal ?? new Date().toISOString().slice(0, 10)}
-                  ttdSelesai={!!item?.tanggal_diajukan}
-                  ttdTeks={item?.tanggal_diajukan ? "Telah diajukan" : "Menunggu pengajuan"}
-                />
-                <TahapCard
-                  no={2}
-                  judul="Diterima Oleh"
-                  peran="Koordinator Agen"
-                  nama={item?.diterima_oleh_nama ?? null}
-                  tanggal={item?.diterima_pada ?? null}
-                  ttdSelesai={!!item?.diterima_pada}
-                  ttdTeks={item?.diterima_pada ? "Telah diterima" : "Menunggu tahap sebelumnya"}
-                  namaId="diterima_oleh_id"
-                  namaValue={values.diterima_oleh_id}
-                  namaOptions={opsiPengguna}
-                  namaPlaceholder="Pilih koordinator agen"
-                  onNamaChange={(v) => set("diterima_oleh_id", v)}
-                  error={errors.diterima_oleh_id}
-                />
-                <TahapCard
-                  no={3}
-                  judul="Disetujui Oleh"
-                  peran="Penanggung Jawab Perangkat"
-                  nama={item?.disetujui_oleh_nama ?? null}
-                  tanggal={item?.disetujui_pada ?? null}
-                  ttdSelesai={!!item?.disetujui_pada}
-                  ttdTeks={item?.disetujui_pada ? "Telah disetujui" : "Menunggu tahap sebelumnya"}
-                  namaId="disetujui_oleh_id"
-                  namaValue={values.disetujui_oleh_id}
-                  namaOptions={opsiPengguna}
-                  namaPlaceholder="Pilih penanggung jawab"
-                  onNamaChange={(v) => set("disetujui_oleh_id", v)}
-                  error={errors.disetujui_oleh_id}
-                />
-                <TahapCard
-                  no={4}
-                  judul="Dilaksanakan Oleh"
-                  peran="Agen"
-                  nama={item?.dilaksanakan_oleh_nama ?? null}
-                  tanggal={item?.dilaksanakan_pada ?? null}
-                  ttdSelesai={!!item?.dilaksanakan_pada}
-                  ttdTeks={item?.dilaksanakan_pada ? "Telah dilaksanakan" : "Menunggu tahap sebelumnya"}
-                  namaId="dilaksanakan_oleh_id"
-                  namaValue={values.dilaksanakan_oleh_id}
-                  namaOptions={opsiPengguna}
-                  namaPlaceholder="Pilih agen"
-                  onNamaChange={(v) => set("dilaksanakan_oleh_id", v)}
-                  error={errors.dilaksanakan_oleh_id}
-                />
-              </div>
-              <p className="mt-4 flex items-start gap-2 rounded-xl border border-emerald-100 bg-emerald-50/60 px-4 py-3 text-[11px] text-emerald-800 dark:border-emerald-900 dark:bg-emerald-950/20 dark:text-emerald-300">
-                <Info size={14} className="mt-px flex-shrink-0" aria-hidden="true" />
-                Nama, tanggal, dan tanda tangan penerima, penyetuju, serta pelaksana dilengkapi pada masing-masing tahap
-                setelah permintaan diajukan.
-              </p>
-            </Section>
+  no="05"
+  title="Penerimaan, Persetujuan, dan Pelaksanaan"
+  subtitle="Pengesahan dilakukan berurutan oleh pemohon, koordinator, penanggung jawab, dan agen."
+>
+  <SpesimenSayaCard userId={auth.user?.id} onChanged={refreshLookup} />
+
+  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    <TahapCard
+      no={1}
+      judul="Dibuat Oleh"
+      peran="Pemohon"
+      nama={pemohonNama === "-" ? null : pemohonNama}
+      tanggal={item?.tanggal ?? new Date().toISOString().slice(0, 10)}
+      ttdSelesai={!!item?.tanggal_diajukan}
+      ttdTeks={item?.tanggal_diajukan ? "Telah diajukan" : "Menunggu pengajuan"}
+      userId={item?.created_by ?? auth.user?.id}
+    />
+    <TahapCard
+      no={2}
+      judul="Diterima Oleh"
+      peran="Koordinator Agen"
+      nama={item?.diterima_oleh_nama ?? null}
+      tanggal={item?.diterima_pada ?? null}
+      ttdSelesai={!!item?.diterima_pada}
+      ttdTeks={item?.diterima_pada ? "Telah diterima" : "Pilih nama untuk menampilkan spesimen"}
+      userId={values.diterima_oleh_id}
+      namaId="diterima_oleh_id"
+      namaValue={values.diterima_oleh_id}
+      namaOptions={opsiPengguna}
+      namaPlaceholder="Pilih koordinator agen"
+      onNamaChange={(v) => set("diterima_oleh_id", v)}
+      error={errors.diterima_oleh_id}
+    />
+    <TahapCard
+      no={3}
+      judul="Disetujui Oleh"
+      peran="Penanggung Jawab Perangkat"
+      nama={item?.disetujui_oleh_nama ?? null}
+      tanggal={item?.disetujui_pada ?? null}
+      ttdSelesai={!!item?.disetujui_pada}
+      ttdTeks={item?.disetujui_pada ? "Telah disetujui" : "Pilih nama untuk menampilkan spesimen"}
+      userId={values.disetujui_oleh_id}
+      namaId="disetujui_oleh_id"
+      namaValue={values.disetujui_oleh_id}
+      namaOptions={opsiPengguna}
+      namaPlaceholder="Pilih penanggung jawab"
+      onNamaChange={(v) => set("disetujui_oleh_id", v)}
+      error={errors.disetujui_oleh_id}
+    />
+    <TahapCard
+      no={4}
+      judul="Dilaksanakan Oleh"
+      peran="Agen"
+      nama={item?.dilaksanakan_oleh_nama ?? null}
+      tanggal={item?.dilaksanakan_pada ?? null}
+      ttdSelesai={!!item?.dilaksanakan_pada}
+      ttdTeks={item?.dilaksanakan_pada ? "Telah dilaksanakan" : "Pilih nama untuk menampilkan spesimen"}
+      userId={values.dilaksanakan_oleh_id}
+      namaId="dilaksanakan_oleh_id"
+      namaValue={values.dilaksanakan_oleh_id}
+      namaOptions={opsiPengguna}
+      namaPlaceholder="Pilih agen"
+      onNamaChange={(v) => set("dilaksanakan_oleh_id", v)}
+      error={errors.dilaksanakan_oleh_id}
+    />
+  </div>
+  {/* paragraf info yang lama tetap */}
+</Section>
 
             {/* Bilah aksi */}
             <div className="flex flex-col items-stretch justify-between gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900/90 md:flex-row md:items-center">

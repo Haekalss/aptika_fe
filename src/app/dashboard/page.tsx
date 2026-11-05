@@ -356,7 +356,7 @@ export default function Homepage() {
       try {
         const [notifRes, ndRes, ptRes, krRes, mgRes, taskRes, tiRes] =
           await Promise.allSettled([
-            api.get("/notifications").then((r) => r.data?.data || r.data || []),
+            api.get("/task-management/notifications").then((r) => r.data?.data || r.data || []),
             getNotaDinasList({ per_page: 5 }),
             getHasilPentestList({ per_page: 5 }),
             getKerentananList({ per_page: 5 }),
