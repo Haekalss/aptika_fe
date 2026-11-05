@@ -230,6 +230,13 @@ const smkiNavItems = [
     icon: Usb,
   },
   {
+    label: "Capacity Planning",
+    title: "Pemantauan Kapasitas Infrastruktur (FR-026)",
+    desc: "Pantau kapasitas Server dan Network, catat log bulanan Current/Projection, serta ekspor laporan tahunan dalam format PDF atau Excel.",
+    path: "/smki/capacity-planning",
+    icon: ServerCog,
+  },
+  {
     label: "Notulen Management Review",
     title: "Notulen Management Review (FR-011)",
     desc: "Dokumentasi rapat tinjauan manajemen SMKI, pembahasan klausul ISO 27001 Clause 9.3, keputusan tindak lanjut, dan cetak berita acara.",

@@ -347,6 +347,12 @@ export default function Sidebar() {
                 iconColor: "text-emerald-600 bg-emerald-50 border border-emerald-200/60",
               },
               {
+                name: "Capacity Planning",
+                key: "smki/capacity-planning",
+                icon: ServerCog,
+                iconColor: "text-emerald-600 bg-emerald-50 border border-emerald-200/60",
+              },
+              {
                 name: "Aset Sistem Info",
                 key: "smki/aset-sistem-informasi",
                 icon: Database,
