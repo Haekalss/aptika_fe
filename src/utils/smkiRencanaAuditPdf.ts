@@ -58,6 +58,8 @@ export interface ExportPdfOptions {
   approvedByName?: string;
   approvedByNip?: string;
   tanggalDokumen?: string;
+  /** Spesimen TTE (data-URL PNG/JPEG) milik lead auditor; bila kosong ruang TTD dibiarkan kosong. */
+  tteImageDataUrl?: string | null;
 }
 
 /**
@@ -77,6 +79,7 @@ export async function exportRencanaAuditToPdf(options: ExportPdfOptions): Promis
     leadAuditorNip = "",
     approvedByName = "",
     approvedByNip = "",
+    tteImageDataUrl = null,
   } = options;
 
   const noDokumen = metadata?.no_dokumen || "F05-SMKI";
@@ -258,16 +261,50 @@ export async function exportRencanaAuditToPdf(options: ExportPdfOptions): Promis
   doc.text("Mengetahui,", signX, signY);
   doc.text("Auditor", signX, signY + 5);
 
+  // Spesimen TTE lead auditor. Pola FR-008: bila gambar berhasil disisipkan,
+  // nama/NIP tidak ditulis ulang (sudah tercantum di dalam kotak spesimen).
   const signLineY = signY + 28;
-  const auditorDisplayName = leadAuditorName
-    ? `( ${leadAuditorName} )`
-    : "(............................................)";
+  let tteOk = false;
+  if (tteImageDataUrl) {
+    try {
+      const natSize = await new Promise<{ w: number; h: number }>(
+        (resolve) => {
+          const img = new Image();
+          img.onload = () =>
+            resolve({ w: img.naturalWidth || 1, h: img.naturalHeight || 1 });
+          img.onerror = () => resolve({ w: 1, h: 1 });
+          img.src = tteImageDataUrl;
+        }
+      );
+      const maxW = 62;
+      const maxH = 29;
+      const scale = Math.min(maxW / natSize.w, maxH / natSize.h);
+      const imgW = natSize.w * scale;
+      const imgH = natSize.h * scale;
+      doc.addImage(
+        tteImageDataUrl,
+        "PNG",
+        signX,
+        signY + 7,
+        imgW,
+        imgH
+      );
+      tteOk = natSize.w > 1 || natSize.h > 1;
+    } catch {
+      // biarkan ruang tanda tangan kosong bila gambar gagal disisipkan
+    }
+  }
+  if (!tteOk) {
+    const auditorDisplayName = leadAuditorName
+      ? `( ${leadAuditorName} )`
+      : "(............................................)";
 
-  doc.text(auditorDisplayName, signX - 2, signLineY);
+    doc.text(auditorDisplayName, signX - 2, signLineY);
 
-  if (leadAuditorNip && leadAuditorNip !== "-") {
-    doc.setFontSize(8.5);
-    doc.text(`NIP. ${leadAuditorNip}`, signX, signLineY + 4.5);
+    if (leadAuditorNip && leadAuditorNip !== "-") {
+      doc.setFontSize(8.5);
+      doc.text(`NIP. ${leadAuditorNip}`, signX, signLineY + 4.5);
+    }
   }
 
   // ============================================================

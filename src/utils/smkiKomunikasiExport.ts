@@ -2,6 +2,7 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import ExcelJS from "exceljs";
 import { KomunikasiItem, HeaderInfoFR010 } from "@/services/smki/komunikasiService";
+import { fetchTteImageDataUrl } from "@/services/tteService";
 
 interface ExportFR010Options {
   header: HeaderInfoFR010;
@@ -9,6 +10,60 @@ interface ExportFR010Options {
   eksternalItems: KomunikasiItem[];
   city?: string;
   signDate?: string;
+  disusunNama?: string;
+  disusunNip?: string;
+  mengetahuiNama?: string;
+  mengetahuiNip?: string;
+}
+
+/** Ambil nama/NIP penanda tangan dari header bila tidak di-override eksplisit. */
+type SignerOverrides = Partial<
+  Pick<
+    ExportFR010Options,
+    | "city"
+    | "signDate"
+    | "disusunNama"
+    | "disusunNip"
+    | "mengetahuiNama"
+    | "mengetahuiNip"
+  >
+>;
+function resolveSigners(header: HeaderInfoFR010, opts: SignerOverrides) {
+  return {
+    city: (opts.city ?? header.kota ?? "Bandung") || "Bandung",
+    signDate:
+      opts.signDate ??
+      (header.tanggal_ttd
+        ? formatTanggalIndo(header.tanggal_ttd)
+        : "__________________"),
+    disusunNama: opts.disusunNama ?? header.disusun_nama ?? "",
+    disusunNip: opts.disusunNip ?? header.disusun_nip ?? "",
+    mengetahuiNama: opts.mengetahuiNama ?? header.mengetahui_nama ?? "",
+    mengetahuiNip: opts.mengetahuiNip ?? header.mengetahui_nip ?? "",
+  };
+}
+
+/** Muat dimensi asli gambar data-URL (untuk menjaga rasio). */
+async function measureImage(dataUrl: string): Promise<{ w: number; h: number }> {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () =>
+      resolve({ w: img.naturalWidth || 1, h: img.naturalHeight || 1 });
+    img.onerror = () => resolve({ w: 1, h: 1 });
+    img.src = dataUrl;
+  });
+}
+
+/** Format tanggal YYYY-MM-DD menjadi "d F Y" Indonesia. */
+function formatTanggalIndo(value?: string | null): string {
+  if (!value) return "__________________";
+  const d = new Date(value.length === 10 ? `${value}T00:00:00` : value);
+  if (isNaN(d.getTime())) return value;
+  return d.toLocaleDateString("id-ID", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
 }
 
 // Jumlah baris minimal per seksi mengikuti template xlsx (5 baris bernomor 1-5)
@@ -65,8 +120,7 @@ export async function exportKomunikasiToPdf({
   header,
   internalItems,
   eksternalItems,
-  city = "Bandung",
-  signDate = "__________________",
+  ...signOpts
 }: ExportFR010Options): Promise<void> {
   // Portrait A4 persis template xlsx (182 mm lebar konten)
   const doc = new jsPDF({
@@ -324,7 +378,7 @@ export async function exportKomunikasiToPdf({
       .finalY + 10;
 
   // Portrait A4 (297 mm): pindah halaman bila blok TTD tidak muat
-  if (sigY + 35 > pageHeight - margin) {
+  if (sigY + 55 > pageHeight - margin) {
     doc.addPage();
     sigY = margin + 12;
   }
@@ -336,15 +390,67 @@ export async function exportKomunikasiToPdf({
   doc.setFontSize(10);
   doc.setTextColor(0, 0, 0);
 
+  const sign = resolveSigners(header, signOpts);
+  const tteKiri = await fetchTteImageDataUrl(sign.disusunNip, sign.disusunNama);
+  const tteKanan = await fetchTteImageDataUrl(
+    sign.mengetahuiNip,
+    sign.mengetahuiNama
+  );
+
   // "Bandung, {tanggal}" di atas kolom kiri (seperti B23 template)
-  doc.text(`${city}, ${signDate}`, leftSigX, sigY);
+  doc.text(`${sign.city}, ${sign.signDate}`, leftSigX, sigY);
   sigY += 7;
   doc.text("Disusun,", leftSigX, sigY);
   doc.text("Mengetahui,", rightSigX, sigY);
 
-  sigY += 22;
-  doc.text("(.......................................)", leftSigX - 12, sigY);
-  doc.text("(..................................)", rightSigX - 6, sigY);
+  // Gambar spesimen TTE (bila ada) di ruang tanda tangan.
+  // Pola FR-008: bila gambar berhasil disisipkan, nama/NIP tidak ditulis ulang.
+  const tteH = 34;
+  const tteW = 68;
+  sigY += 4;
+  let tteKiriOk = false;
+  let tteKananOk = false;
+  if (tteKiri) {
+    try {
+      const nat = await measureImage(tteKiri);
+      const w = Math.min(tteW, (tteH * nat.w) / nat.h);
+      doc.addImage(tteKiri, "PNG", leftSigX, sigY, w, (w * nat.h) / nat.w);
+      tteKiriOk = nat.w > 1 || nat.h > 1;
+    } catch {
+      // biarkan ruang kosong bila gambar gagal disisipkan
+    }
+  }
+  if (tteKanan) {
+    try {
+      const nat = await measureImage(tteKanan);
+      const w = Math.min(tteW, (tteH * nat.w) / nat.h);
+      doc.addImage(tteKanan, "PNG", rightSigX, sigY, w, (w * nat.h) / nat.w);
+      tteKananOk = nat.w > 1 || nat.h > 1;
+    } catch {
+      // biarkan ruang kosong bila gambar gagal disisipkan
+    }
+  }
+  sigY += tteH + 2;
+
+  if (!tteKiriOk) {
+    const namaKiri = sign.disusunNama ? `(${sign.disusunNama})` : "(.......................................)";
+    doc.text(namaKiri, leftSigX - 12, sigY);
+  }
+  if (!tteKananOk) {
+    const namaKanan = sign.mengetahuiNama ? `(${sign.mengetahuiNama})` : "(..................................)";
+    doc.text(namaKanan, rightSigX - 6, sigY);
+  }
+  sigY += 5;
+  if (!tteKiriOk && sign.disusunNip) {
+    doc.setFontSize(9);
+    doc.text(`NIP. ${sign.disusunNip}`, leftSigX - 12, sigY);
+    doc.setFontSize(10);
+  }
+  if (!tteKananOk && sign.mengetahuiNip) {
+    doc.setFontSize(9);
+    doc.text(`NIP. ${sign.mengetahuiNip}`, rightSigX - 6, sigY);
+    doc.setFontSize(10);
+  }
 
   const filename = `FR-010_Komunikasi_${header.periode || "2022"}.pdf`;
   doc.save(filename);
@@ -384,8 +490,7 @@ export async function exportKomunikasiToExcel({
   header,
   internalItems,
   eksternalItems,
-  city = "Bandung",
-  signDate = "",
+  ...signOpts
 }: ExportFR010Options): Promise<void> {
   const wb = new ExcelJS.Workbook();
   wb.creator = "SMKI APTIKA";
@@ -615,8 +720,15 @@ export async function exportKomunikasiToExcel({
   spacerRows(2);
 
   // ---- Blok tanda tangan (tanpa border, posisi persis template) ----
+  const sign = resolveSigners(header, signOpts);
+  const tteKiriXls = await fetchTteImageDataUrl(sign.disusunNip, sign.disusunNama);
+  const tteKananXls = await fetchTteImageDataUrl(
+    sign.mengetahuiNip,
+    sign.mengetahuiNama
+  );
+
   const bandungRow = row;
-  ws.getCell(`B${bandungRow}`).value = `${city}, ${signDate}`;
+  ws.getCell(`B${bandungRow}`).value = `${sign.city}, ${sign.signDate}`;
   ws.getCell(`B${bandungRow}`).font = ARIAL_11;
   ws.getRow(bandungRow).height = 14.25;
   row += 2; // baris kosong 24 template
@@ -627,13 +739,66 @@ export async function exportKomunikasiToExcel({
   ws.getCell(`F${row}`).value = "Mengetahui,";
   ws.getCell(`F${row}`).font = ARIAL_11;
   ws.getRow(row).height = 14.25;
-  row += 6; // ruang tanda tangan (baris 26-30 template)
+  row += 1;
 
-  ws.getCell(`B${row}`).value = "(.......................................)";
-  ws.getCell(`B${row}`).font = ARIAL_11;
-  ws.getCell(`F${row}`).value = "(..................................)";
-  ws.getCell(`F${row}`).font = ARIAL_11;
-  ws.getRow(row).height = 14.25;
+  // Gambar spesimen TTE (bila ada) di ruang tanda tangan.
+  // Pola FR-008: bila gambar berhasil disisipkan, nama/NIP tidak ditulis ulang.
+  const tteRow = row;
+  ws.getRow(tteRow).height = 72;
+  const addTteImage = (
+    dataUrl: string | null,
+    col: number,
+    rowIdx: number
+  ): boolean => {
+    if (!dataUrl) return false;
+    try {
+      const base64 = dataUrl.split(",")[1] ?? "";
+      if (!base64) return false;
+      const ext = dataUrl.includes("image/jpeg") ? "jpeg" : "png";
+      const imageId = wb.addImage({ base64, extension: ext as "png" });
+      ws.addImage(imageId, {
+        tl: { col: col - 1 + 0.15, row: rowIdx - 1 + 0.1 },
+        ext: { width: 200, height: 85 },
+      });
+      return true;
+    } catch {
+      // biarkan ruang kosong bila gambar gagal disisipkan
+      return false;
+    }
+  };
+  const tteKiriXlsOk = addTteImage(tteKiriXls, 2, tteRow);
+  const tteKananXlsOk = addTteImage(tteKananXls, 6, tteRow);
+  row += 1;
+
+  if (!tteKiriXlsOk || !tteKananXlsOk) {
+    ws.getCell(`B${row}`).value = !tteKiriXlsOk
+      ? sign.disusunNama
+        ? `(${sign.disusunNama})`
+        : "(.....................................)"
+      : "";
+    ws.getCell(`B${row}`).font = ARIAL_11;
+    ws.getCell(`F${row}`).value = !tteKananXlsOk
+      ? sign.mengetahuiNama
+        ? `(${sign.mengetahuiNama})`
+        : "(..................................)"
+      : "";
+    ws.getCell(`F${row}`).font = ARIAL_11;
+    ws.getRow(row).height = 14.25;
+    row += 1;
+
+    if ((!tteKiriXlsOk && sign.disusunNip) || (!tteKananXlsOk && sign.mengetahuiNip)) {
+      if (!tteKiriXlsOk && sign.disusunNip) {
+        ws.getCell(`B${row}`).value = `NIP. ${sign.disusunNip}`;
+        ws.getCell(`B${row}`).font = ARIAL_11;
+      }
+      if (!tteKananXlsOk && sign.mengetahuiNip) {
+        ws.getCell(`F${row}`).value = `NIP. ${sign.mengetahuiNip}`;
+        ws.getCell(`F${row}`).font = ARIAL_11;
+      }
+      ws.getRow(row).height = 14.25;
+      row += 1;
+    }
+  }
 
   const buffer = await wb.xlsx.writeBuffer();
   const blob = new Blob([buffer], {

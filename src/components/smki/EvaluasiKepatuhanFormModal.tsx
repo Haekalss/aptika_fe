@@ -26,6 +26,8 @@ const inputCls = (err?: boolean) =>
 
 export default function EvaluasiKepatuhanFormModal({ isOpen, onClose, onSave, initialData }: Props) {
   const [tanggalEvaluasi, setTanggalEvaluasi] = useState(today());
+  const [namaPenandatangan, setNamaPenandatangan] = useState("");
+  const [nipPenandatangan, setNipPenandatangan] = useState("");
   const [ditandatanganDi, setDitandatanganDi] = useState("");
   const [tanggalTtd, setTanggalTtd] = useState("");
   const [items, setItems] = useState<EvaluasiItem[]>([emptyItem()]);
@@ -36,6 +38,8 @@ export default function EvaluasiKepatuhanFormModal({ isOpen, onClose, onSave, in
     if (!isOpen) return;
     if (initialData) {
       setTanggalEvaluasi(initialData.tanggal_evaluasi || today());
+      setNamaPenandatangan(initialData.nama_penandatangan || "");
+      setNipPenandatangan(initialData.nip_penandatangan || "");
       setDitandatanganDi(initialData.ditandatangani_di || "");
       setTanggalTtd(initialData.tanggal_ttd || "");
       setItems(
@@ -49,6 +53,8 @@ export default function EvaluasiKepatuhanFormModal({ isOpen, onClose, onSave, in
       );
     } else {
       setTanggalEvaluasi(today());
+      setNamaPenandatangan("");
+      setNipPenandatangan("");
       setDitandatanganDi("");
       setTanggalTtd("");
       setItems([emptyItem()]);
@@ -82,6 +88,8 @@ export default function EvaluasiKepatuhanFormModal({ isOpen, onClose, onSave, in
     try {
       await onSave({
         tanggal_evaluasi: tanggalEvaluasi,
+        nama_penandatangan: namaPenandatangan.trim() || null,
+        nip_penandatangan: nipPenandatangan.trim() || null,
         ditandatangani_di: ditandatanganDi.trim() || null,
         tanggal_ttd: tanggalTtd || null,
         items: items.map((it) => ({
@@ -132,6 +140,14 @@ export default function EvaluasiKepatuhanFormModal({ isOpen, onClose, onSave, in
                 <input type="date" value={tanggalEvaluasi} onChange={(e) => setTanggalEvaluasi(e.target.value)} className={`${inputCls(!!errors.tanggalEvaluasi)} pl-9`} />
               </div>
               {errors.tanggalEvaluasi && <p className="text-[11px] text-red-500 mt-1">{errors.tanggalEvaluasi}</p>}
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1.5">Nama Penandatangan</label>
+              <input value={namaPenandatangan} onChange={(e) => setNamaPenandatangan(e.target.value)} placeholder="Nama penandatangan dokumen" className={inputCls()} />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1.5">NIP Penandatangan</label>
+              <input value={nipPenandatangan} onChange={(e) => setNipPenandatangan(e.target.value)} placeholder="NIP (untuk spesimen TTE)" className={inputCls()} />
             </div>
             <div>
               <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1.5">Ditandatangani di</label>

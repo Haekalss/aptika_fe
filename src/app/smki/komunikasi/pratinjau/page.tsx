@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 import ServiceRouteGuard from "@/components/auth/ServiceRouteGuard";
+import TteSpecimen from "@/components/smki/TteSpecimen";
 import {
   KomunikasiItem,
   HeaderInfoFR010,
@@ -290,20 +291,36 @@ export default function PratinjauKomunikasiPage() {
               {/* Signature Block — sama dengan template FR-010 xlsx */}
               <div className="grid grid-cols-2 pt-2 text-xs">
                 <div className="text-center">
-                  <p className="text-[11px] text-slate-600 mb-1">Bandung, __________________</p>
+                  <p className="text-[11px] text-slate-600 mb-1">{headerInfo.kota || "Bandung"}, {headerInfo.tanggal_ttd ? new Date(headerInfo.tanggal_ttd.length === 10 ? `${headerInfo.tanggal_ttd}T00:00:00` : headerInfo.tanggal_ttd).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" }) : "__________________"}</p>
                   <p className="font-semibold text-slate-800">Disusun,</p>
+                  {(headerInfo.disusun_nip || headerInfo.disusun_nama) && (
+                    <div className="flex justify-center">
+                      <TteSpecimen nip={headerInfo.disusun_nip || undefined} nama={headerInfo.disusun_nama || undefined} width={180} />
+                    </div>
+                  )}
                   <div className="h-20"></div>
                   <p className="pt-1 font-bold text-slate-700">
-                    (.......................................)
+                    ({headerInfo.disusun_nama || "......................................."})
                   </p>
+                  {headerInfo.disusun_nip && (
+                    <p className="text-[11px] text-slate-600">NIP. {headerInfo.disusun_nip}</p>
+                  )}
                 </div>
                 <div className="text-center">
                   <p className="text-[11px] text-slate-600 mb-1">&nbsp;</p>
                   <p className="font-semibold text-slate-800">Mengetahui,</p>
+                  {(headerInfo.mengetahui_nip || headerInfo.mengetahui_nama) && (
+                    <div className="flex justify-center">
+                      <TteSpecimen nip={headerInfo.mengetahui_nip || undefined} nama={headerInfo.mengetahui_nama || undefined} width={180} />
+                    </div>
+                  )}
                   <div className="h-20"></div>
                   <p className="pt-1 font-bold text-slate-700">
-                    (..................................)
+                    ({headerInfo.mengetahui_nama || ".................................."})
                   </p>
+                  {headerInfo.mengetahui_nip && (
+                    <p className="text-[11px] text-slate-600">NIP. {headerInfo.mengetahui_nip}</p>
+                  )}
                 </div>
               </div>
             </div>

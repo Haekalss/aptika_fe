@@ -576,8 +576,8 @@ export async function fillFr021Template(
   }
   zip.file(relsPath, relsXml);
 
-  const cx = 170 * 9525;
-  const cy = 65 * 9525;
+  const cx = 280 * 9525;
+  const cy = 107 * 9525;
   const placeholder = "(………………………………..)";
 
   // Blok tanda tangan: Evaluator (kolom kiri) lalu Mengetahui (kolom kanan).
@@ -595,12 +595,13 @@ export async function fillFr021Template(
 
         return transformParagraphs(cell, (para) => {
           if (!paragraphText(para).includes(placeholder)) return null;
+          // Pola FR-008: bila gambar TTE ada, caption nama dilewati
+          // (nama sudah tercantum di dalam kotak spesimen).
           if (isEvaluator) {
             if (rIdEval) {
               return setParagraphImage(
                 para,
                 drawingXml(rIdEval, 10, cx, cy),
-                record.ttd_evaluator_nama,
               );
             }
             if (record.ttd_evaluator_nama) return setParagraphText(para, `(${record.ttd_evaluator_nama})`);
@@ -610,7 +611,6 @@ export async function fillFr021Template(
             return setParagraphImage(
               para,
               drawingXml(rIdAdmin, 11, cx, cy),
-              record.ttd_admin_nama,
             );
           }
           if (record.ttd_admin_nama) return setParagraphText(para, `(${record.ttd_admin_nama})`);

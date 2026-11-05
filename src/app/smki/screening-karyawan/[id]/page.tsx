@@ -26,6 +26,7 @@ import {
   exportScreeningKaryawanToPdf,
   formatTanggalIndo,
 } from "@/utils/smkiScreeningKaryawanPdf";
+import TteSpecimen from "@/components/smki/TteSpecimen";
 
 const BULAN_PENDEK = [
   "Jan", "Feb", "Mar", "Apr", "Mei", "Jun",
@@ -388,6 +389,34 @@ export default function DetailScreeningKaryawanPage() {
             </div>
           </div>
         </div>
+
+        {/* Petugas Verifikator (penanda tangan berita acara) */}
+        {(data.nama_verifikator || data.nip_verifikator) && (
+          <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-sm">
+            <span className="text-[10px] font-bold tracking-wider text-slate-400 uppercase block mb-2">
+              Petugas Verifikator
+            </span>
+            <div className="flex items-center gap-4">
+              <div className="flex justify-start">
+                <TteSpecimen nip={data.nip_verifikator || undefined} nama={data.nama_verifikator || undefined} width={180} />
+              </div>
+              <div>
+                <p className="text-sm font-bold text-slate-800 dark:text-slate-100">
+                  {data.nama_verifikator || "-"}
+                </p>
+                {data.nip_verifikator && (
+                  <p className="text-xs text-slate-500">NIP. {data.nip_verifikator}</p>
+                )}
+                {(data.ditandatangani_di || data.tanggal_ttd) && (
+                  <p className="text-xs text-slate-500">
+                    {data.ditandatangani_di || "Bandung"},{" "}
+                    {data.tanggal_ttd ? formatTanggalIndo(data.tanggal_ttd) : ""}
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* ========================================================
             BOTTOM CARD: RIWAYAT PERUBAHAN & AUDIT (Matching Image 2)

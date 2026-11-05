@@ -26,6 +26,7 @@ import {
   Tags,
   Info,
   Layers,
+  PenTool,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import {
@@ -79,6 +80,14 @@ export default function HakAksesTiForm({ mode, id }: Props) {
   const [jabatan, setJabatan] = useState("");
   const [unitKerja, setUnitKerja] = useState<string>("");
   const [email, setEmail] = useState("");
+
+  // Penanda tangan (untuk spesimen TTE pada dokumen)
+  const [atasanNama, setAtasanNama] = useState("");
+  const [atasanNip, setAtasanNip] = useState("");
+  const [pjNama, setPjNama] = useState("");
+  const [pjNip, setPjNip] = useState("");
+  const [agenNama, setAgenNama] = useState("");
+  const [agenNip, setAgenNip] = useState("");
 
   // Detail permohonan
   const [jenisPermohonan, setJenisPermohonan] = useState<string>("");
@@ -138,6 +147,12 @@ export default function HakAksesTiForm({ mode, id }: Props) {
           setWaktu(d.waktu_akses || "Jam Kerja");
           setWaktuLainnya(d.waktu_akses_lainnya || "");
           setPersetujuan(!!d.persetujuan_ketentuan);
+          setAtasanNama(d.atasan_nama || "");
+          setAtasanNip(d.atasan_nip || "");
+          setPjNama(d.penanggung_jawab_nama || "");
+          setPjNip(d.penanggung_jawab_nip || "");
+          setAgenNama(d.agen_nama || "");
+          setAgenNip(d.agen_nip || "");
         }
       } catch (err: any) {
         toast.error(err?.response?.data?.message || "Gagal memuat data formulir");
@@ -183,6 +198,12 @@ export default function HakAksesTiForm({ mode, id }: Props) {
         waktu_akses: waktu,
         waktu_akses_lainnya: waktu === "Lainnya" ? waktuLainnya.trim() : null,
         persetujuan_ketentuan: persetujuan,
+        atasan_nama: atasanNama.trim() || null,
+        atasan_nip: atasanNip.trim() || null,
+        penanggung_jawab_nama: pjNama.trim() || null,
+        penanggung_jawab_nip: pjNip.trim() || null,
+        agen_nama: agenNama.trim() || null,
+        agen_nip: agenNip.trim() || null,
       };
 
       if (isEdit && id) {
@@ -522,6 +543,38 @@ export default function HakAksesTiForm({ mode, id }: Props) {
           {ketentuanBox}
         </section>
       )}
+
+      {/* Penanda tangan (spesimen TTE pada dokumen) */}
+      <section className="rounded-2xl bg-white dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 shadow-sm p-6">
+        {sectionHead(<PenTool size={18} />, "Penanda Tangan Dokumen", "Nama dan NIP pejabat untuk spesimen TTE pada dokumen resmi.")}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {[
+            { title: "Atasan Pemohon", nama: atasanNama, setNama: setAtasanNama, nip: atasanNip, setNip: setAtasanNip },
+            { title: "Penanggung Jawab Perangkat", nama: pjNama, setNama: setPjNama, nip: pjNip, setNip: setPjNip },
+            { title: "Agen Pelaksana", nama: agenNama, setNama: setAgenNama, nip: agenNip, setNip: setAgenNip },
+          ].map((s) => (
+            <div key={s.title} className="rounded-xl border border-slate-200 dark:border-slate-700 p-4">
+              <p className="text-xs font-extrabold text-slate-800 dark:text-white mb-3">{s.title}</p>
+              <label className={labelCls}>Nama</label>
+              <input
+                type="text"
+                value={s.nama}
+                onChange={(e) => s.setNama(e.target.value)}
+                placeholder="Nama penanda tangan"
+                className={`${inputCls} mb-3`}
+              />
+              <label className={labelCls}>NIP</label>
+              <input
+                type="text"
+                value={s.nip}
+                onChange={(e) => s.setNip(e.target.value)}
+                placeholder="NIP (untuk spesimen TTE)"
+                className={inputCls}
+              />
+            </div>
+          ))}
+        </div>
+      </section>
 
       {/* EDIT: Kebutuhan Teknis + Ketentuan & Syarat (mockup page 3) */}
       {isEdit && (

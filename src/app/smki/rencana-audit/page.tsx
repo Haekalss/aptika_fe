@@ -45,6 +45,7 @@ import {
   formatTanggalIndo,
   formatTanggalSingkat,
 } from "@/utils/smkiRencanaAuditPdf";
+import TteSpecimen from "@/components/smki/TteSpecimen";
 
 export default function FormulirRencanaAuditPage() {
   const router = useRouter();
@@ -363,6 +364,8 @@ export default function FormulirRencanaAuditPage() {
 
     setIsExportingPdf(true);
     try {
+      const { fetchTteImageDataUrl } = await import("@/services/tteService");
+      const tteImageDataUrl = await fetchTteImageDataUrl(pdfLeadAuditorNip, pdfLeadAuditor);
       await exportRencanaAuditToPdf({
         items,
         metadata: lookups.default_meta,
@@ -371,6 +374,7 @@ export default function FormulirRencanaAuditPage() {
         approvedByName: pdfApprover,
         approvedByNip: pdfApproverNip,
         tanggalDokumen: new Date().toISOString(),
+        tteImageDataUrl,
       });
       toast.success("Dokumen PDF Formulir Rencana Audit berhasil diunduh!");
       setIsExportModalOpen(false);
@@ -1394,7 +1398,14 @@ export default function FormulirRencanaAuditPage() {
                   <div className="pt-8">
                     <div className="text-left text-xs font-sans text-black max-w-xs">
                       <p className="leading-tight">Mengetahui,</p>
-                      <p className="leading-tight font-medium mb-16">Auditor</p>
+                      <p className="leading-tight font-medium">Auditor</p>
+                      {(pdfLeadAuditorNip || pdfLeadAuditor) && pdfLeadAuditorNip !== "-" ? (
+                        <div className="flex justify-start">
+                          <TteSpecimen nip={pdfLeadAuditorNip !== "-" ? pdfLeadAuditorNip : undefined} nama={pdfLeadAuditor} width={150} />
+                        </div>
+                      ) : (
+                        <div className="mb-16" />
+                      )}
                       <p className="font-normal tracking-wide">
                         {pdfLeadAuditor ? `( ${pdfLeadAuditor} )` : "(............................................)"}
                       </p>
