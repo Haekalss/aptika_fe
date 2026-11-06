@@ -209,6 +209,12 @@ const smkiCards: SmkiServiceCard[] = [
     icon: Usb,
   },
   {
+    title: "Capacity Planning",
+    desc: "Pemantauan kapasitas Server dan Network (FR-026): log bulanan Current/Projection, matriks tahunan, dan ekspor laporan PDF atau Excel.",
+    path: "/smki/capacity-planning",
+    icon: ServerCog,
+  },
+  {
     title: "Notulen Management Review",
     desc: "Dokumentasi rapat tinjauan manajemen SMKI (FR-011), pembahasan klausul ISO 27001:2013 Clause 9.3, keputusan tindak lanjut, dan cetak berita acara.",
     path: "/smki/notulen",
