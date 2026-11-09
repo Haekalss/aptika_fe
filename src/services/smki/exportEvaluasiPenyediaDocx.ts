@@ -1,5 +1,4 @@
 import JSZip from "jszip";
-import { api } from "@/services/api";
 import type {
   Fr021Evaluasi,
   Fr021Master,
@@ -267,23 +266,60 @@ function setCellTextAt(rowXml: string, index: number, text: string): string {
   return mapCells(rowXml, (i, cell) => (i === index ? setCellText(cell, text) : cell));
 }
 
-/* ───────────────────────── Gambar TTE ───────────────────────── */
+/* ───────────────────────── Kotak TTE (teks, tanpa QR) ───────────────────────── */
 
-function drawingXml(rId: string, docPrId: number, cx: number, cy: number): string {
+interface BentukTte {
+  nama?: string | null;
+  nip?: string | null;
+  jabatan?: string | null;
+}
+
+/**
+ * Membentuk kotak tanda-tangan elektronik teks agar hasil akhir DOCX sama
+ * seperti format resmi: hanya berisi jabatan, nama, dan NIP penandatangan.
+ * Bentuk ini tidak menyisipkan spesimen gambar/QR.
+ */
+function tteKotakXml(bentuk: BentukTte, docPrId: number, cx: number, cy: number): string {
+  const lines = [
+    "Ditandatangani secara elektronik",
+    "oleh:",
+    bentuk.jabatan?.trim() || "-",
+    "",
+    bentuk.nama?.trim() || "-",
+    bentuk.nip?.trim() || "-",
+  ];
+
+  const paragraphs = lines
+    .map(
+      (line) =>
+        `<w:p><w:pPr><w:jc w:val="center"/><w:spacing w:after="20" w:line="220" w:lineRule="auto"/></w:pPr>` +
+        `<w:r><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial" w:eastAsia="Arial"/><w:sz w:val="18"/><w:szCs w:val="18"/></w:rPr>` +
+        `<w:t xml:space="preserve">${escapeXml(line)}</w:t></w:r></w:p>`,
+    )
+    .join("");
+
   return (
     `<w:drawing>` +
     `<wp:inline distT="0" distB="0" distL="0" distR="0" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing">` +
     `<wp:extent cx="${cx}" cy="${cy}"/>` +
     `<wp:effectExtent l="0" t="0" r="0" b="0"/>` +
-    `<wp:docPr id="${docPrId}" name="tte.png"/>` +
-    `<wp:cNvGraphicFramePr><a:graphicFrameLocks noChangeAspect="1" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"/></wp:cNvGraphicFramePr>` +
+    `<wp:docPr id="${docPrId}" name="tte-kotak"/>` +
+    `<wp:cNvGraphicFramePr><a:graphicFrameLocks xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" noChangeAspect="1"/></wp:cNvGraphicFramePr>` +
     `<a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">` +
-    `<a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">` +
-    `<pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture">` +
-    `<pic:nvPicPr><pic:cNvPr id="${docPrId}" name="tte.png"/><pic:cNvPicPr/></pic:nvPicPr>` +
-    `<pic:blipFill><a:blip r:embed="${rId}" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill>` +
-    `<pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="${cx}" cy="${cy}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr>` +
-    `</pic:pic>` +
+    `<a:graphicData uri="http://schemas.microsoft.com/office/word/2010/wordprocessingShape">` +
+    `<wps:wsp>` +
+    `<wps:cNvSpPr><wps:cNvPr id="${docPrId}" name="tte-kotak"/><wps:cNvSpPr/></wps:cNvSpPr>` +
+    `<wps:spPr>` +
+    `<a:xfrm><a:off x="0" y="0"/><a:ext cx="${cx}" cy="${cy}"/></a:xfrm>` +
+    `<a:prstGeom prst="roundRect" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><a:avLst><a:gd name="adj" fmla="val 10000"/></a:avLst></a:prstGeom>` +
+    `<a:solidFill><a:srgbClr val="FFFFFF"/></a:solidFill>` +
+    `<a:ln w="12700"><a:solidFill><a:srgbClr val="000000"/></a:solidFill></a:ln>` +
+    `</wps:spPr>` +
+    `<wps:txbx><w:txbxContent>${paragraphs}</w:txbxContent></wps:txbx>` +
+    `<wps:bodyPr rot="0" vert="horz" wrap="square" lIns="72000" tIns="36000" rIns="72000" bIns="36000" anchor="ctr" anchorCtr="0">` +
+    `<a:prstTxWarp><a:avLst/></a:prstTxWarp><a:normAutofit fontScale="90000" lnScale="90000"/>` +
+    `</wps:bodyPr>` +
+    `</wps:wsp>` +
     `</a:graphicData>` +
     `</a:graphic>` +
     `</wp:inline>` +
@@ -291,32 +327,13 @@ function drawingXml(rId: string, docPrId: number, cx: number, cy: number): strin
   );
 }
 
-/** Ganti paragraf placeholder tanda tangan dengan gambar TTE di dalam run (+ nama). */
-function setParagraphImage(xml: string, contentXml: string, caption?: string | null): string {
+/** Ganti paragraf placeholder tanda tangan dengan kotak teks TTE. */
+function setParagraphDrawing(xml: string, contentXml: string): string {
   const open = /^<w:p(?:\s[^>]*)?>/.exec(xml);
   if (!open) return xml;
   const pPr = /<w:pPr>[\s\S]*?<\/w:pPr>/.exec(xml);
-  const rPr = /<w:r(?:\s[^>]*)?>\s*(<w:rPr>[\s\S]*?<\/w:rPr>)/.exec(xml);
   const head = `${open[0]}${pPr ? pPr[0] : ""}`;
-  const image = `${head}<w:r>${contentXml}</w:r></w:p>`;
-  if (!caption) return image;
-  const captionXml =
-    `${head}<w:r>${rPr?.[1] ?? ""}<w:t xml:space="preserve">(${escapeXml(caption)})</w:t></w:r></w:p>`;
-  return image + captionXml;
-}
-
-async function fetchTteImageBytes(nip?: string | null, nama?: string | null): Promise<Uint8Array | null> {
-  if (!nip && !nama) return null;
-  try {
-    const res = await api.get("/tte/resolve/image", {
-      params: { ...(nip ? { nip } : {}), ...(nama ? { nama } : {}) },
-      responseType: "blob",
-    });
-    const buf = await (res.data as Blob).arrayBuffer();
-    return new Uint8Array(buf);
-  } catch {
-    return null;
-  }
+  return `${head}<w:r>${contentXml}</w:r></w:p>`;
 }
 
 /* ───────────────────────── Filler dokumen ───────────────────────── */
@@ -542,42 +559,9 @@ export async function fillFr021Template(
 
   xml = xml.slice(0, table.start) + newTable + xml.slice(table.end);
 
-  /* ---- TTE: evaluator & atasan ---- */
-  const imgEval = await fetchTteImageBytes(record.ttd_evaluator_nip, record.ttd_evaluator_nama);
-  const imgAdmin = await fetchTteImageBytes(record.ttd_admin_nip, record.ttd_admin_nama);
-
-  let rIdEval: string | null = null;
-  let rIdAdmin: string | null = null;
-  const relsPath = "word/_rels/document.xml.rels";
-  const relsFile = zip.file(relsPath);
-  let relsXml = relsFile ? await relsFile.async("string") : "";
-
-  function nextRId(rels: string): string {
-    const ids = [...rels.matchAll(/Id="rId(\d+)"/g)].map((m) => parseInt(m[1], 10));
-    const max = ids.length ? Math.max(...ids) : 0;
-    return `rId${max + 1}`;
-  }
-
-  if (imgEval) {
-    zip.file("word/media/tte_eval.png", imgEval);
-    rIdEval = nextRId(relsXml);
-    relsXml = relsXml.replace(
-      "</Relationships>",
-      `<Relationship Id="${rIdEval}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/tte_eval.png"/></Relationships>`,
-    );
-  }
-  if (imgAdmin) {
-    zip.file("word/media/tte_admin.png", imgAdmin);
-    rIdAdmin = nextRId(relsXml);
-    relsXml = relsXml.replace(
-      "</Relationships>",
-      `<Relationship Id="${rIdAdmin}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/tte_admin.png"/></Relationships>`,
-    );
-  }
-  zip.file(relsPath, relsXml);
-
-  const cx = 170 * 9525;
-  const cy = 65 * 9525;
+  /* ---- TTE: kotak teks tengah (tanpa QR/gambar spesimen) ---- */
+  const cx = 175 * 9525;
+  const cy = 70 * 9525;
   const placeholder = "(………………………………..)";
 
   // Blok tanda tangan: Evaluator (kolom kiri) lalu Mengetahui (kolom kanan).
@@ -587,34 +571,34 @@ export async function fillFr021Template(
     const rows = findBlocks(t2.xml, "w:tr");
     const sigRowIndex = rows.length - 1;
 
+    const evaluatorSigner: BentukTte = {
+      nama:
+        record.ttd_evaluator_nama ??
+        record.penyedia?.contact_person ??
+        record.penyedia?.nama_penyedia,
+      nip: record.ttd_evaluator_nip,
+      jabatan: record.ttd_evaluator_jabatan || "Perwakilan Penyedia Jasa",
+    };
+    const adminSigner: BentukTte = {
+      nama: record.ttd_admin_nama ?? record.admin?.name,
+      nip: record.ttd_admin_nip,
+      jabatan: record.ttd_admin_jabatan || record.admin?.position || "",
+    };
+
     const newSig = mapRows(t2.xml, (ri, row) => {
       if (ri !== sigRowIndex) return row;
       return mapCells(row, (ci, cell) => {
         const isEvaluator = ci === 0;
         if (!isEvaluator && ci !== 2) return cell;
 
+        const signer = isEvaluator ? evaluatorSigner : adminSigner;
         return transformParagraphs(cell, (para) => {
           if (!paragraphText(para).includes(placeholder)) return null;
-          if (isEvaluator) {
-            if (rIdEval) {
-              return setParagraphImage(
-                para,
-                drawingXml(rIdEval, 10, cx, cy),
-                record.ttd_evaluator_nama,
-              );
-            }
-            if (record.ttd_evaluator_nama) return setParagraphText(para, `(${record.ttd_evaluator_nama})`);
-            return null;
-          }
-          if (rIdAdmin) {
-            return setParagraphImage(
-              para,
-              drawingXml(rIdAdmin, 11, cx, cy),
-              record.ttd_admin_nama,
-            );
-          }
-          if (record.ttd_admin_nama) return setParagraphText(para, `(${record.ttd_admin_nama})`);
-          return null;
+          if (!signer.nama && !signer.jabatan && !signer.nip) return null;
+          return setParagraphDrawing(
+            para,
+            tteKotakXml(signer, isEvaluator ? 10 : 11, cx, cy),
+          );
         });
       });
     });
