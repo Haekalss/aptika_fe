@@ -353,6 +353,12 @@ export default function Sidebar() {
                 iconColor: "text-violet-600 bg-violet-50 border border-violet-200/60",
               },
               {
+                name: "Berita Acara Backup",
+                key: "smki/backup-restore",
+                icon: DatabaseBackup,
+                iconColor: "text-violet-600 bg-violet-50 border border-violet-200/60",
+              },
+              {
                 name: "Checklist CCTV",
                 key: "smki/pemeriksaan-cctv",
                 icon: Video,

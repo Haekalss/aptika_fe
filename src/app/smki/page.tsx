@@ -143,6 +143,12 @@ const smkiCards: SmkiServiceCard[] = [
     icon: DatabaseBackup,
   },
   {
+    title: "Berita Acara Backup",
+    desc: "Rekap backup dan restore aset, hasil kegiatan, serta bukti bulanan dalam formulir FR-030.",
+    path: "/smki/backup-restore",
+    icon: DatabaseBackup,
+  },
+  {
     title: "Daftar Aset Virtualisasi",
     desc: "Kelola formulir FR-035: inventaris instance virtualisasi, IP/hostname, spesifikasi, pemilik, klasifikasi keamanan, dan ekspor dokumen.",
     path: "/smki/formulir-daftar-aset-virtualisasi",

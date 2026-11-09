@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import MainLayout from "@/components/layout/MainLayout";
+import { runGuardedNavigation } from "@/utils/guardedNavigation";
 import {
   ShieldCheck,
   ShieldAlert,
@@ -187,6 +188,13 @@ const smkiNavItems = [
     title: "Evaluasi Pengujian Disaster Recovery Plan (FR-039)",
     desc: "Laporan evaluasi dan pengujian Disaster Recovery Plan (DRP), pencapaian target waktu pemulihan (RTO), kesiapan tim, dan checklist kelangsungan layanan TI.",
     path: "/smki/evaluasi-drp",
+    icon: DatabaseBackup,
+  },
+  {
+    label: "Berita Acara Backup",
+    title: "Berita Acara Backup dan Restore (FR-030)",
+    desc: "Rekap backup dan restore aset, hasil kegiatan, serta bukti bulanan keamanan informasi.",
+    path: "/smki/backup-restore",
     icon: DatabaseBackup,
   },
   {
@@ -379,7 +387,7 @@ export default function SmkiLayout({
                     key={item.path}
                     type="button"
                     suppressHydrationWarning
-                    onClick={() => router.push(item.path)}
+                    onClick={() => runGuardedNavigation(() => router.push(item.path))}
                     className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-left text-[12.5px] transition-all ${
                       isActive
                         ? "bg-violet-50/90 dark:bg-violet-950/60 text-violet-600 dark:text-violet-400 font-bold border border-violet-200/80 dark:border-violet-900/60 shadow-2xs"
