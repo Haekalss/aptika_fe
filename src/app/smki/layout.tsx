@@ -64,6 +64,13 @@ const smkiNavItems = [
     icon: KeyRound,
   },
   {
+    label: "Risk Register",
+    title: "Daftar Risiko Keamanan Informasi (FR-002)",
+    desc: "Kelola identifikasi aset, penilaian matriks risiko (Inherent, Current, Residual), kontrol ISO 27001, dan rencana mitigasi risiko keamanan informasi.",
+    path: "/smki/risk-register",
+    icon: ShieldAlert,
+  },
+  {
     label: "Hak Akses TI",
     title: "Formulir Hak Akses TI (FR-018)",
     desc: "Pencatatan, pengajuan, dan verifikasi permohonan hak akses sistem informasi, penetapan level serta jenis akses pengguna sesuai standar keamanan informasi SMKI.",

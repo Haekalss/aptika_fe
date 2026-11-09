@@ -251,6 +251,12 @@ export default function Sidebar() {
                 iconColor: "text-emerald-600 bg-emerald-50 border border-emerald-200/60",
               },
               {
+                name: "Risk Register (FR-002)",
+                key: "smki/risk-register",
+                icon: ShieldAlert,
+                iconColor: "text-emerald-700 bg-emerald-50 border border-emerald-200/60",
+              },
+              {
                 name: "Software Standar",
                 key: "smki/software-standar",
                 icon: Laptop,
