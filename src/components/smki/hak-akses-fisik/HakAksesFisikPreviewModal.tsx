@@ -48,6 +48,12 @@ export default function HakAksesFisikPreviewModal({ open, onClose, data }: Props
   const isJamKerja = waktuStr.includes("08.00") || waktuStr.toLowerCase().includes("kerja");
   const isWaktuLain = !is7x24 && !isJamKerja;
 
+  // Bila ada data penanda tangan → spesimen tampil, baris nama/NIP di luar
+  // spesimen disembunyikan. Bila tanpa spesimen → nama placeholder tetap tampil.
+  const hasTteAtasan = Boolean(data.atasan_nip || data.atasan_nama);
+  const hasTtePJ = Boolean(data.penanggung_jawab_nip || data.penanggung_jawab_nama);
+  const hasTteAgen = Boolean(data.agen_nip || data.agen_nama);
+
   const handlePrint = () => {
     window.print();
   };
@@ -323,12 +329,17 @@ export default function HakAksesFisikPreviewModal({ open, onClose, data }: Props
                       nip={data.atasan_nip}
                       nama={data.atasan_nama}
                       width={180}
+                      withoutQr
                     />
                   </div>
-                  <div className="font-bold underline">
-                    ( {data.atasan_nama || "…………………………………"} )
-                  </div>
-                  {data.atasan_nip && <div className="text-[9px] text-slate-600">NIP. {data.atasan_nip}</div>}
+                  {!hasTteAtasan && (
+                    <div>
+                      <div className="font-bold underline">
+                        ( {data.atasan_nama || "…………………………………"} )
+                      </div>
+                      {data.atasan_nip && <div className="text-[9px] text-slate-600">NIP. {data.atasan_nip}</div>}
+                    </div>
+                  )}
                 </div>
 
                 {/* Kolom 3: Penanggung Jawab Perangkat */}
@@ -342,12 +353,17 @@ export default function HakAksesFisikPreviewModal({ open, onClose, data }: Props
                       nip={data.penanggung_jawab_nip}
                       nama={data.penanggung_jawab_nama}
                       width={180}
+                      withoutQr
                     />
                   </div>
-                  <div className="font-bold underline">
-                    ( {data.penanggung_jawab_nama || "…………………………………"} )
-                  </div>
-                  {data.penanggung_jawab_nip && <div className="text-[9px] text-slate-600">NIP. {data.penanggung_jawab_nip}</div>}
+                  {!hasTtePJ && (
+                    <div>
+                      <div className="font-bold underline">
+                        ( {data.penanggung_jawab_nama || "…………………………………"} )
+                      </div>
+                      {data.penanggung_jawab_nip && <div className="text-[9px] text-slate-600">NIP. {data.penanggung_jawab_nip}</div>}
+                    </div>
+                  )}
                 </div>
 
                 {/* Kolom 4: Agen / Pelaksana */}
@@ -361,12 +377,17 @@ export default function HakAksesFisikPreviewModal({ open, onClose, data }: Props
                       nip={data.agen_nip}
                       nama={data.agen_nama}
                       width={180}
+                      withoutQr
                     />
                   </div>
-                  <div className="font-bold underline">
-                    ( {data.agen_nama || "…………………………………"} )
-                  </div>
-                  {data.agen_nip && <div className="text-[9px] text-slate-600">NIP. {data.agen_nip}</div>}
+                  {!hasTteAgen && (
+                    <div>
+                      <div className="font-bold underline">
+                        ( {data.agen_nama || "…………………………………"} )
+                      </div>
+                      {data.agen_nip && <div className="text-[9px] text-slate-600">NIP. {data.agen_nip}</div>}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

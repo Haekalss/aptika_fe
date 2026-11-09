@@ -52,6 +52,12 @@ const smkiCards: SmkiServiceCard[] = [
     icon: ShieldAlert,
   },
   {
+    title: "Risk Register (FR-002)",
+    desc: "Kelola identifikasi aset, penilaian matriks risiko (Inherent, Current, Residual), kontrol ISO 27001, dan rencana mitigasi risiko keamanan informasi.",
+    path: "/smki/risk-register",
+    icon: ShieldAlert,
+  },
+  {
     title: "Formulir Daftar Rekaman",
     desc: "Kelola pencatatan dan inventarisasi formulir daftar rekaman dokumen SMKI, klasifikasi tingkat keamanan, masa retensi, dan penetapan pemilik arsip.",
     path: "/smki/daftar-rekaman",

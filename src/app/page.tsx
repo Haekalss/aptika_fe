@@ -280,7 +280,7 @@ export default function Home() {
           </div>
 
           {/* Login Form */}
-          <form onSubmit={handleLogin} className="space-y-4">
+          <form onSubmit={handleLogin} className="space-y-4" suppressHydrationWarning>
             {loginError && (
               <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-xs text-red-600 font-semibold animate-in fade-in">
                 {loginError}
@@ -330,6 +330,7 @@ export default function Home() {
               <button
                 type="button"
                 onClick={() => setShowPass(!showPass)}
+                suppressHydrationWarning
                 className="text-slate-400 hover:text-slate-600 p-1 flex-shrink-0"
               >
                 {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
@@ -343,6 +344,7 @@ export default function Home() {
                   type="checkbox"
                   checked={rememberMe}
                   onChange={(e) => setRememberMe(e.target.checked)}
+                  suppressHydrationWarning
                   className="w-4 h-4 rounded text-blue-600 border-slate-300 focus:ring-blue-500"
                 />
                 <span>Ingat saya</span>
@@ -350,6 +352,7 @@ export default function Home() {
               <button
                 type="button"
                 onClick={() => alert("Silakan hubungi administrator bidang untuk reset password.")}
+                suppressHydrationWarning
                 className="text-blue-600 hover:text-blue-700 font-semibold"
               >
                 Lupa password?
@@ -360,6 +363,7 @@ export default function Home() {
             <button
               type="submit"
               disabled={loginLoading}
+              suppressHydrationWarning
               className="w-full py-3.5 bg-blue-600 hover:bg-blue-700 active:scale-[0.99] text-white font-bold rounded-2xl shadow-lg shadow-blue-600/30 transition-all flex items-center justify-center gap-2 text-sm disabled:opacity-60"
             >
               {loginLoading ? (

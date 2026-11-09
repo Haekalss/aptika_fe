@@ -3078,3 +3078,152 @@ export const exportSmkiNotulenDocx = async (id: number | string) => {
   });
   return res.data;
 };
+
+// ─── SMKI: RISK REGISTER (FR-002) ───────────────────────────
+export interface SmkiFr002HeaderData {
+  id?: number;
+  tahun_periode: number;
+  ruang_lingkup: string;
+  no_revisi: string;
+  tanggal_dokumen?: string;
+  klasifikasi: string;
+  jabatan_pengesah: string;
+  nama_pengesah: string;
+  nip_pengesah?: string;
+}
+
+export interface SmkiFr002KategoriItem {
+  kode_kategori: string;
+  nama_kategori_aset: string;
+  deskripsi?: string;
+  urutan: number;
+}
+
+export interface SmkiFr002AnnexItem {
+  id: number;
+  kode_annex: string;
+  nama_kontrol_iso: string;
+  kategori_tema: string;
+}
+
+export interface SmkiFr002RiskTreatmentPlanData {
+  id?: number;
+  risiko_id?: number;
+  opsi_penanggulangan?: string;
+  uraian_rencana?: string;
+  target_selesai?: string;
+  pic_penanggung_jawab?: string;
+  prioritas?: string;
+  ownership?: string;
+  status_monitoring: 'Open' | 'On Progress' | 'Closed';
+  keterangan?: string;
+}
+
+export interface SmkiFr002RisikoItem {
+  id: number;
+  header_id?: number;
+  kode_kategori: string;
+  kode_annex?: string;
+  nama_aset_proses: string;
+  kerawanan_vulnerability?: string;
+  ancaman_threat?: string;
+  kategori_cia: string;
+  uraian_dampak?: string;
+  inherent_likelihood: number;
+  inherent_impact: number;
+  inherent_score: number;
+  inherent_kategori: string;
+  existing_control?: string;
+  referensi_dokumen?: string;
+  kontrol_annex_iso?: string;
+  current_likelihood: number;
+  current_impact: number;
+  current_score: number;
+  current_kategori: string;
+  status_risiko_current: string;
+  residual_likelihood: number;
+  residual_impact: number;
+  residual_score: number;
+  residual_kategori: string;
+  status_risiko_residual: string;
+  is_deleted?: boolean;
+  kategori_aset?: SmkiFr002KategoriItem;
+  treatment_plan?: SmkiFr002RiskTreatmentPlanData;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface SmkiFr002PegawaiOption {
+  id: number;
+  nama: string;
+  nip?: string;
+  jabatan?: string;
+}
+
+export interface SmkiFr002LookupResponse {
+  success: boolean;
+  data: {
+    kategoris: SmkiFr002KategoriItem[];
+    annexes: SmkiFr002AnnexItem[];
+    header?: SmkiFr002HeaderData | null;
+    pegawais: SmkiFr002PegawaiOption[];
+  };
+}
+
+export interface SmkiFr002Metrics {
+  total_risiko: number;
+  risiko_tinggi_ekstrim: number;
+  risiko_dapat_diterima: number;
+  data_dihapus: number;
+  count_per_kategori: Record<string, number>;
+}
+
+export const getSmkiRiskRegisterLookup = async () => {
+  const res = await api.get('/smki/risk-register/lookup');
+  return res.data;
+};
+
+export const getSmkiRiskRegisterList = async (params?: { kategori?: string; search?: string }) => {
+  const res = await api.get('/smki/risk-register', { params });
+  return res.data;
+};
+
+export const getSmkiRiskRegisterById = async (id: number | string) => {
+  const res = await api.get(`/smki/risk-register/${id}`);
+  return res.data;
+};
+
+export const createSmkiRiskRegister = async (data: Record<string, unknown>) => {
+  const res = await api.post('/smki/risk-register', data);
+  return res.data;
+};
+
+export const updateSmkiRiskRegister = async (id: number | string, data: Record<string, unknown>) => {
+  const res = await api.put(`/smki/risk-register/${id}`, data);
+  return res.data;
+};
+
+export const deleteSmkiRiskRegister = async (id: number | string) => {
+  const res = await api.delete(`/smki/risk-register/${id}`);
+  return res.data;
+};
+
+export const updateSmkiRiskRegisterHeader = async (data: Partial<SmkiFr002HeaderData>) => {
+  const res = await api.post('/smki/risk-register/update-header', data);
+  return res.data;
+};
+
+export const exportSmkiRiskRegisterExcel = async () => {
+  const res = await api.get('/smki/risk-register/export-excel', {
+    responseType: 'blob',
+  });
+  return res.data;
+};
+
+export const exportSmkiRiskRegisterPdf = async () => {
+  const res = await api.get('/smki/risk-register/export-pdf', {
+    responseType: 'blob',
+  });
+  return res.data;
+};
+
