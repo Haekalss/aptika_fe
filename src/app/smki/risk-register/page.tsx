@@ -542,6 +542,7 @@ function RiskRegister() {
       {/* Modal Wizard Tambah/Edit Risiko */}
       {isRiskModalOpen && reference && (
         <RiskRegisterModal
+          key={editItem?.id ?? "new"}
           onClose={() => {
             setIsRiskModalOpen(false);
             setEditItem(null);

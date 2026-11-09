@@ -79,10 +79,9 @@ export default function HeaderExportModal({
     try {
       const blob = await (isExcel ? exportSmkiRiskRegisterExcel() : exportSmkiRiskRegisterPdf());
       const url = window.URL.createObjectURL(blob);
-      const year = headerData === null ? new Date().getFullYear() : headerData?.tahun_periode;
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", `FR-002_Risk_Register${year ? `_${year}` : ""}.${extension}`);
+      link.setAttribute("download", `FR-002_Risk_Register.${extension}`);
       document.body.appendChild(link);
       link.click();
       link.remove();
