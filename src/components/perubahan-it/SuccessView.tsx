@@ -1,8 +1,22 @@
 import React from 'react';
+import Image from 'next/image';
+import type { PerubahanItSubmission } from './types';
 
-export default function SuccessView({ data, onReset }: { data: any, onReset: () => void }) {
+export default function SuccessView({
+  data,
+  onReset,
+}: {
+  data: PerubahanItSubmission | null;
+  onReset: () => void;
+}) {
   // Fallback data jika backend tidak lengkap
-  const formData = data?.formData || {};
+  const formData = data?.formData ?? {
+    tanggalPengajuan: '-',
+    perangkatDaerah: '-',
+    pemohon: '-',
+    jenisPermohonan: '-',
+    namaAplikasi: '-',
+  };
   
   return (
     <div className="mx-auto max-w-[900px] space-y-6 animate-in fade-in zoom-in duration-500 pb-12">
@@ -15,7 +29,7 @@ export default function SuccessView({ data, onReset }: { data: any, onReset: () 
           <div className="absolute inset-[10px] rounded-full bg-[#C8E6C9]" />
           <div className="relative flex h-[76px] w-[76px] items-center justify-center rounded-full bg-[#10B981] shadow-lg shadow-green-300/50 z-10">
             {/* Menggunakan File Gambar Ceklis */}
-            <img src="./ceklis.png" alt="Berhasil" className="h-32 w-32 object-contain" />
+            <Image src="/ceklis.png" alt="Berhasil" width={128} height={128} className="h-32 w-32 object-contain" />
           </div>
           {/* Elemen Bintang/Plus */}
           <svg className="absolute right-3 top-2 h-4 w-4 text-green-500" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4"/></svg>

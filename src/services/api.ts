@@ -1909,9 +1909,13 @@ export interface BeritaAcaraItem {
   id_pelaksana?: number | null;
   id_diketahui?: number | null;
   nama_pelaksana?: string | null;
+  nip_pelaksana?: string | null;
   nama_diketahui?: string | null;
+  nip_diketahui?: string | null;
   nama_pelaksana_display: string;
+  nip_pelaksana_display?: string | null;
   nama_diketahui_display: string;
+  nip_diketahui_display?: string | null;
   total_media_items?: number;
   bidang_id?: number | null;
   created_at?: string;
@@ -1957,7 +1961,9 @@ export interface BeritaAcaraPayload {
   id_pelaksana?: number | null;
   id_diketahui?: number | null;
   nama_pelaksana?: string | null;
+  nip_pelaksana?: string | null;
   nama_diketahui?: string | null;
+  nip_diketahui?: string | null;
   detail_media: {
     nama_perangkat: string;
     spesifikasi?: string | null;
@@ -2346,6 +2352,10 @@ export interface HakAksesTiItem {
   nip_atasan?: string | null;
   jabatan_atasan?: string | null;
   catatan_atasan?: string | null;
+  penanggung_jawab_nama?: string | null;
+  penanggung_jawab_nip?: string | null;
+  agen_nama?: string | null;
+  agen_nip?: string | null;
   nama_petugas_ti?: string | null;
   nip_petugas_ti?: string | null;
   tanggal_eksekusi?: string | null;
@@ -2919,6 +2929,10 @@ export interface ScreeningKaryawanItem {
   tanggal_screening: string;
   kesimpulan: "Perlu melengkapi administrasi" | "Administrasi Lengkap";
   catatan?: string | null;
+  nama_verifikator?: string | null;
+  nip_verifikator?: string | null;
+  ditandatangani_di?: string | null;
+  tanggal_ttd?: string | null;
   created_at?: string;
   updated_at?: string;
   jabatan?: JabatanItem;
@@ -2950,6 +2964,10 @@ export interface ScreeningKaryawanPayload {
   tanggal_screening: string;
   kesimpulan: string;
   catatan?: string | null;
+  nama_verifikator?: string | null;
+  nip_verifikator?: string | null;
+  ditandatangani_di?: string | null;
+  tanggal_ttd?: string | null;
   details: {
     id_item: number;
     status: "Ada" | "Tidak";
@@ -3033,7 +3051,9 @@ export interface SmkiNotulenData {
   zona_waktu?: string;
   tempat: string;
   notulis: string;
+  notulis_nip?: string | null;
   koordinator_smki: string;
+  koordinator_nip?: string | null;
   tujuan?: string;
   tindak_lanjut?: string;
   pesertas?: SmkiNotulenPesertaItem[];
@@ -3075,6 +3095,164 @@ export const deleteSmkiNotulen = async (id: number | string) => {
 export const exportSmkiNotulenDocx = async (id: number | string) => {
   const res = await api.get(`/smki/notulen/${id}/export-docx`, {
     responseType: "blob",
+  });
+  return res.data;
+};
+
+// ─── SMKI: RISK REGISTER (FR-002) ───────────────────────────
+export interface SmkiFr002HeaderData {
+  id?: number;
+  lock_version: number;
+  tahun_periode: number;
+  ruang_lingkup: string;
+  no_revisi: string;
+  tanggal_dokumen?: string;
+  klasifikasi: string;
+  jabatan_pengesah: string;
+  nama_pengesah: string;
+  nip_pengesah?: string;
+}
+
+export interface SmkiFr002KategoriItem {
+  kode_kategori: string;
+  nama_kategori_aset: string;
+  deskripsi?: string;
+  urutan: number;
+}
+
+export interface SmkiFr002AnnexItem {
+  id: number;
+  kode_annex: string;
+  nama_kontrol_iso: string;
+  kategori_tema: string;
+}
+
+export interface SmkiFr002RiskTreatmentPlanData {
+  id?: number;
+  risiko_id?: number;
+  opsi_penanggulangan?: string;
+  uraian_rencana?: string;
+  target_selesai?: string;
+  pic_penanggung_jawab?: string;
+  prioritas?: string;
+  ownership?: string;
+  status_monitoring: 'Open' | 'On Progress' | 'Closed';
+  keterangan?: string;
+}
+
+export interface SmkiFr002RisikoItem {
+  id: number;
+  lock_version: number;
+  header_id?: number;
+  kode_kategori: string;
+  kode_annex?: string;
+  nama_aset_proses: string;
+  kerawanan_vulnerability?: string;
+  ancaman_threat?: string;
+  kategori_cia: string;
+  uraian_dampak?: string;
+  inherent_likelihood: number;
+  inherent_impact: number;
+  inherent_score: number;
+  inherent_kategori: string;
+  existing_control?: string;
+  referensi_dokumen?: string;
+  kontrol_annex_iso?: string;
+  current_likelihood: number;
+  current_impact: number;
+  current_score: number;
+  current_kategori: string;
+  status_risiko_current: string;
+  residual_likelihood: number;
+  residual_impact: number;
+  residual_score: number;
+  residual_kategori: string;
+  status_risiko_residual: string;
+  is_deleted?: boolean;
+  kategori_aset?: SmkiFr002KategoriItem;
+  treatment_plan?: SmkiFr002RiskTreatmentPlanData;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface SmkiFr002PegawaiOption {
+  id: number;
+  nama: string;
+  nip?: string;
+  jabatan?: string;
+}
+
+export interface SmkiFr002LookupResponse {
+  success: boolean;
+  data: {
+    kategoris: SmkiFr002KategoriItem[];
+    annexes: SmkiFr002AnnexItem[];
+    header?: SmkiFr002HeaderData | null;
+    pegawais: SmkiFr002PegawaiOption[];
+  };
+}
+
+export interface SmkiFr002Metrics {
+  total_risiko: number;
+  risiko_tinggi_ekstrim: number;
+  risiko_dapat_diterima: number;
+  data_dihapus: number;
+  count_per_kategori: Record<string, number>;
+}
+
+export const getSmkiRiskRegisterLookup = async () => {
+  const res = await api.get<SmkiFr002LookupResponse>('/smki/risk-register/lookup');
+  if (!res.data.success) throw new Error("Gagal memuat referensi Risk Register.");
+  return res.data;
+};
+
+export const getSmkiRiskRegisterList = async (
+  params?: { kategori?: string; search?: string },
+  signal?: AbortSignal,
+) => {
+  const res = await api.get<{ success: boolean; data: SmkiFr002RisikoItem[]; metrics: SmkiFr002Metrics }>(
+    '/smki/risk-register',
+    { params, signal },
+  );
+  if (!res.data.success) throw new Error("Gagal memuat data Risk Register.");
+  return res.data;
+};
+
+export const getSmkiRiskRegisterById = async (id: number | string) => {
+  const res = await api.get(`/smki/risk-register/${id}`);
+  return res.data;
+};
+
+export const createSmkiRiskRegister = async (data: Record<string, unknown>) => {
+  const res = await api.post('/smki/risk-register', data);
+  return res.data;
+};
+
+export const updateSmkiRiskRegister = async (id: number | string, data: Record<string, unknown>) => {
+  const res = await api.put(`/smki/risk-register/${id}`, data);
+  return res.data;
+};
+
+export const deleteSmkiRiskRegister = async (id: number | string, lockVersion: number) => {
+  const res = await api.delete(`/smki/risk-register/${id}`, { data: { lock_version: lockVersion } });
+  return res.data;
+};
+
+export const updateSmkiRiskRegisterHeader = async (data: SmkiFr002HeaderData) => {
+  const res = await api.post<{ success: boolean; data: SmkiFr002HeaderData }>('/smki/risk-register/update-header', data);
+  return res.data;
+};
+
+export const exportSmkiRiskRegisterExcel = async () => {
+  const res = await api.get('/smki/risk-register/export-excel', {
+    responseType: 'blob',
+  });
+  return res.data;
+};
+
+export const exportSmkiRiskRegisterPdf = async () => {
+  const res = await api.get('/smki/risk-register/export-pdf', {
+    responseType: 'blob',
   });
   return res.data;
 };

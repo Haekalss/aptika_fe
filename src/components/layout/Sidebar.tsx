@@ -251,6 +251,12 @@ export default function Sidebar() {
                 iconColor: "text-emerald-600 bg-emerald-50 border border-emerald-200/60",
               },
               {
+                name: "Risk Register (FR-002)",
+                key: "smki/risk-register",
+                icon: ShieldAlert,
+                iconColor: "text-emerald-700 bg-emerald-50 border border-emerald-200/60",
+              },
+              {
                 name: "Software Standar",
                 key: "smki/software-standar",
                 icon: Laptop,
@@ -299,6 +305,12 @@ export default function Sidebar() {
                 iconColor: "text-emerald-600 bg-emerald-50 border border-emerald-200/60",
               },
               {
+                name: "Review Hak Akses",
+                key: "smki/review-hak-akses",
+                icon: ClipboardCheck,
+                iconColor: "text-emerald-600 bg-emerald-50 border border-emerald-200/60",
+              },
+              {
                 name: "Daftar Penyedia",
                 key: "smki/daftar-penyedia",
                 icon: Building2,
@@ -341,6 +353,12 @@ export default function Sidebar() {
                 iconColor: "text-violet-600 bg-violet-50 border border-violet-200/60",
               },
               {
+                name: "Berita Acara Backup",
+                key: "smki/backup-restore",
+                icon: DatabaseBackup,
+                iconColor: "text-violet-600 bg-violet-50 border border-violet-200/60",
+              },
+              {
                 name: "Checklist CCTV",
                 key: "smki/pemeriksaan-cctv",
                 icon: Video,
@@ -353,9 +371,21 @@ export default function Sidebar() {
                 iconColor: "text-blue-600 bg-blue-50 border border-blue-200/60",
               },
               {
+                name: "Daftar Aset Virtual",
+                key: "smki/formulir-daftar-aset-virtualisasi",
+                icon: Server,
+                iconColor: "text-cyan-600 bg-cyan-50 border border-cyan-200/60",
+              },
+              {
                 name: "Daftar Removable Media",
                 key: "smki/removable-media",
                 icon: Usb,
+                iconColor: "text-emerald-600 bg-emerald-50 border border-emerald-200/60",
+              },
+              {
+                name: "Capacity Planning",
+                key: "smki/capacity-planning",
+                icon: ServerCog,
                 iconColor: "text-emerald-600 bg-emerald-50 border border-emerald-200/60",
               },
               {

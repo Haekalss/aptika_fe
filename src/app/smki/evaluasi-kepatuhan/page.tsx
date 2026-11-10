@@ -250,15 +250,15 @@ export default function EvaluasiKepatuhanPage() {
               <thead>
                 <tr className="bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800">
                   <th className={th}>No</th><th className={th}>Kode</th><th className={th}>Tanggal Evaluasi</th>
-                  <th className={th}>Ditandatangani di</th><th className={th}>Dokumen</th><th className={th}>Ringkasan Status</th>
+                  <th className={th}>Penandatangan</th><th className={th}>Ditandatangani di</th><th className={th}>Dokumen</th><th className={th}>Ringkasan Status</th>
                   <th className={`${th} text-right`}>Aksi</th>
                 </tr>
               </thead>
               <tbody>
                 {loading ? (
-                  <tr><td colSpan={7} className="px-4 py-12 text-center text-slate-400"><Loader2 size={22} className="animate-spin mx-auto mb-2" />Memuat data evaluasi...</td></tr>
+                  <tr><td colSpan={8} className="px-4 py-12 text-center text-slate-400"><Loader2 size={22} className="animate-spin mx-auto mb-2" />Memuat data evaluasi...</td></tr>
                 ) : items.length === 0 ? (
-                  <tr><td colSpan={7} className="px-4 py-12 text-center text-slate-400"><AlertCircle size={22} className="mx-auto mb-2" />{search || status ? "Data tidak ditemukan." : "Belum ada data evaluasi kepatuhan yang tersedia."}</td></tr>
+                  <tr><td colSpan={8} className="px-4 py-12 text-center text-slate-400"><AlertCircle size={22} className="mx-auto mb-2" />{search || status ? "Data tidak ditemukan." : "Belum ada data evaluasi kepatuhan yang tersedia."}</td></tr>
                 ) : (
                   items.map((item, idx) => (
                     <tr key={item.id} className="border-b border-slate-100 dark:border-slate-800/70 last:border-0 hover:bg-slate-50/60 dark:hover:bg-slate-800/30 transition-colors">
@@ -267,6 +267,10 @@ export default function EvaluasiKepatuhanPage() {
                         <button onClick={() => openDetail(item)} className="text-sm font-bold text-emerald-700 dark:text-emerald-400 hover:underline whitespace-nowrap">{kode(item.id)}</button>
                       </td>
                       <td className="px-4 py-3 align-middle text-sm text-slate-700 dark:text-slate-200 whitespace-nowrap">{formatTanggalIndo(item.tanggal_evaluasi)}</td>
+                      <td className="px-4 py-3 align-middle text-sm text-slate-700 dark:text-slate-200">
+                        <span className="block truncate max-w-[160px]" title={item.nama_penandatangan || undefined}>{item.nama_penandatangan || "-"}</span>
+                        {item.nip_penandatangan && <span className="block text-[11px] text-slate-400">NIP. {item.nip_penandatangan}</span>}
+                      </td>
                       <td className="px-4 py-3 align-middle text-sm text-slate-600 dark:text-slate-300 truncate">{item.ditandatangani_di || "-"}</td>
                       <td className="px-4 py-3 align-middle text-sm text-slate-700 dark:text-slate-200 whitespace-nowrap">{item.total_dokumen ?? 0} dokumen</td>
                       <td className="px-4 py-3 align-middle">

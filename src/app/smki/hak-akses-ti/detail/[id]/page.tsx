@@ -18,9 +18,11 @@ import {
   KeyRound,
   Loader2,
   FileText,
+  PenTool,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import ServiceRouteGuard from "@/components/auth/ServiceRouteGuard";
+import TteSpecimen from "@/components/smki/TteSpecimen";
 import { getHakAksesTiDetail, HakAksesTiItem } from "@/services/api";
 
 function statusStyle(status?: string | null) {
@@ -179,7 +181,6 @@ export default function DetailHakAksesTiPage() {
                   <p className="text-[11px] text-slate-400">Parameter teknis dan lingkup sistem yang akan diakses.</p>
                 </div>
               </div>
-
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <Field label="Nama Sistem / Aplikasi" value={item.sistem_aplikasi?.nama_sistem || item.sistem_lainnya} icon={<FileText size={12} />} />
                 <div>
@@ -213,6 +214,38 @@ export default function DetailHakAksesTiPage() {
                 </div>
               </div>
             </section>
+
+            {(item.nama_atasan || item.nip_atasan || item.penanggung_jawab_nama || item.penanggung_jawab_nip || item.agen_nama || item.agen_nip) && (
+              <section className="rounded-2xl bg-white dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 shadow-sm p-6">
+                <div className="flex items-center gap-3 mb-5 pb-4 border-b border-slate-100 dark:border-slate-800">
+                  <div className="w-9 h-9 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200/60 dark:border-emerald-900/60 flex items-center justify-center text-emerald-600">
+                    <PenTool size={18} />
+                  </div>
+                  <div>
+                    <h2 className="text-sm font-extrabold text-slate-800 dark:text-white">Penanda Tangan Dokumen</h2>
+                    <p className="text-[11px] text-slate-400">Spesimen TTE pada dokumen resmi FR-018.</p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+                  {[
+                    { title: "Atasan Pemohon", nama: item.nama_atasan, nip: item.nip_atasan },
+                    { title: "Penanggung Jawab Perangkat", nama: item.penanggung_jawab_nama, nip: item.penanggung_jawab_nip },
+                    { title: "Agen Pelaksana", nama: item.agen_nama, nip: item.agen_nip },
+                  ].map((s) => (
+                    <div key={s.title}>
+                      <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">
+                        {s.title}
+                      </div>
+                      {(s.nip || s.nama) && (
+                        <TteSpecimen nip={s.nip || undefined} nama={s.nama || undefined} width={170} />
+                      )}
+                      <div className="text-xs font-bold text-slate-800 dark:text-slate-100 mt-1">{s.nama || "-"}</div>
+                      {s.nip && <div className="text-[11px] text-slate-500">NIP. {s.nip}</div>}
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
           </div>
 
           {/* Ketentuan & Syarat */}

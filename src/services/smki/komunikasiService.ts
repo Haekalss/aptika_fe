@@ -23,6 +23,12 @@ export interface HeaderInfoFR010 {
   no_revisi: string;
   tanggal_berlaku: string;
   periode: string;
+  disusun_nama?: string | null;
+  disusun_nip?: string | null;
+  mengetahui_nama?: string | null;
+  mengetahui_nip?: string | null;
+  kota?: string | null;
+  tanggal_ttd?: string | null;
 }
 
 export interface GetKomunikasiParams {

@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { Printer, ChevronLeft, Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
 import { getHakAksesTiDetail, HakAksesTiItem } from "@/services/api";
+import TteSpecimen from "@/components/smki/TteSpecimen";
 
 function Checkbox({ checked }: { checked: boolean }) {
   return (
@@ -245,16 +246,32 @@ export default function PrintHakAksesTiPage() {
                 <td className="w-1/4 py-1">Dilaksanakan Oleh:<br />Agen,</td>
               </tr>
               <tr>
-                <td className="h-20" />
-                <td />
-                <td />
-                <td />
+                {[
+                  { nip: item.nip_id_pegawai, nama: item.nama_pemohon },
+                  { nip: item.nip_atasan, nama: item.nama_atasan },
+                  { nip: item.penanggung_jawab_nip, nama: item.penanggung_jawab_nama },
+                  { nip: item.agen_nip, nama: item.agen_nama },
+                ].map((s, i) => (
+                  <td key={i} className="h-24 align-bottom">
+                    {(s.nip || s.nama) && (
+                      <div className="flex justify-center">
+                        <TteSpecimen nip={s.nip || undefined} nama={s.nama || undefined} width={150} />
+                      </div>
+                    )}
+                  </td>
+                ))}
               </tr>
               <tr className="align-bottom">
                 <td className="py-1">({item.nama_pemohon || "............................"})</td>
-                <td className="py-1">(............................)</td>
-                <td className="py-1">(............................)</td>
-                <td className="py-1">(............................)</td>
+                <td className="py-1">({item.nama_atasan || "............................"})</td>
+                <td className="py-1">({item.penanggung_jawab_nama || "............................"})</td>
+                <td className="py-1">({item.agen_nama || "............................"})</td>
+              </tr>
+              <tr>
+                <td className="py-1 text-[9pt]">{item.nip_id_pegawai ? `NIP. ${item.nip_id_pegawai}` : ""}</td>
+                <td className="py-1 text-[9pt]">{item.nip_atasan ? `NIP. ${item.nip_atasan}` : ""}</td>
+                <td className="py-1 text-[9pt]">{item.penanggung_jawab_nip ? `NIP. ${item.penanggung_jawab_nip}` : ""}</td>
+                <td className="py-1 text-[9pt]">{item.agen_nip ? `NIP. ${item.agen_nip}` : ""}</td>
               </tr>
             </tbody>
           </table>

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import MainLayout from "@/components/layout/MainLayout";
+import { runGuardedNavigation } from "@/utils/guardedNavigation";
 import {
   ShieldCheck,
   ShieldAlert,
@@ -22,6 +23,7 @@ import {
   DatabaseBackup,
   Database,
   CalendarRange,
+  Server,
   ServerCog,
   Users,
   Video,
@@ -63,6 +65,13 @@ const smkiNavItems = [
     icon: KeyRound,
   },
   {
+    label: "Risk Register",
+    title: "Daftar Risiko Keamanan Informasi (FR-002)",
+    desc: "Kelola identifikasi aset, penilaian matriks risiko (Inherent, Current, Residual), kontrol ISO 27001, dan rencana mitigasi risiko keamanan informasi.",
+    path: "/smki/risk-register",
+    icon: ShieldAlert,
+  },
+  {
     label: "Hak Akses TI",
     title: "Formulir Hak Akses TI (FR-018)",
     desc: "Pencatatan, pengajuan, dan verifikasi permohonan hak akses sistem informasi, penetapan level serta jenis akses pengguna sesuai standar keamanan informasi SMKI.",
@@ -96,6 +105,13 @@ const smkiNavItems = [
     desc: "Sistem inventarisasi dan manajemen aset perangkat keras TI, monitoring masa pakai, pemantauan kondisi perangkat, serta ekspor laporan resmi Bidang APTIKA.",
     path: "/daftar-aset-ti",
     icon: Box,
+  },
+  {
+    label: "Daftar Aset Virtualisasi",
+    title: "Daftar Aset Virtualisasi (FR-035)",
+    desc: "Inventarisasi server fisik dan instance virtualisasi, alamat IP/hostname, spesifikasi, pemilik, klasifikasi keamanan, serta ekspor dokumen FR-035.",
+    path: "/smki/formulir-daftar-aset-virtualisasi",
+    icon: Server,
   },
   {
     label: "Penghancuran Media",
@@ -133,6 +149,13 @@ const smkiNavItems = [
     icon: FileText,
   },
   {
+    label: "Review Hak Akses",
+    title: "Formulir Review Hak Akses (FR-034)",
+    desc: "Review pengguna yang terdaftar dalam sistem, tingkat hak akses, status akun, dan tindak lanjut hasil pemeriksaan sesuai formulir FR-034.",
+    path: "/smki/review-hak-akses",
+    icon: ClipboardCheck,
+  },
+  {
     label: "Evaluasi Kepatuhan",
     title: "Formulir Evaluasi Kepatuhan Regulasi (FR-044)",
     desc: "Catat dan evaluasi tingkat kepatuhan terhadap regulasi, kebijakan keamanan informasi, dan standar teknis yang mendukung layanan utama organisasi.",
@@ -165,6 +188,13 @@ const smkiNavItems = [
     title: "Evaluasi Pengujian Disaster Recovery Plan (FR-039)",
     desc: "Laporan evaluasi dan pengujian Disaster Recovery Plan (DRP), pencapaian target waktu pemulihan (RTO), kesiapan tim, dan checklist kelangsungan layanan TI.",
     path: "/smki/evaluasi-drp",
+    icon: DatabaseBackup,
+  },
+  {
+    label: "Berita Acara Backup",
+    title: "Berita Acara Backup dan Restore (FR-030)",
+    desc: "Rekap backup dan restore aset, hasil kegiatan, serta bukti bulanan keamanan informasi.",
+    path: "/smki/backup-restore",
     icon: DatabaseBackup,
   },
   {
@@ -238,6 +268,13 @@ const smkiNavItems = [
     icon: Usb,
   },
   {
+    label: "Capacity Planning",
+    title: "Pemantauan Kapasitas Infrastruktur (FR-026)",
+    desc: "Pantau kapasitas Server dan Network, catat log bulanan Current/Projection, serta ekspor laporan tahunan dalam format PDF atau Excel.",
+    path: "/smki/capacity-planning",
+    icon: ServerCog,
+  },
+  {
     label: "Notulen Management Review",
     title: "Notulen Management Review (FR-011)",
     desc: "Dokumentasi rapat tinjauan manajemen SMKI, pembahasan klausul ISO 27001 Clause 9.3, keputusan tindak lanjut, dan cetak berita acara.",
@@ -250,6 +287,13 @@ const smkiNavItems = [
     desc: "Pendataan formulir resmi FR-028 aset informasi unit kerja, aset intangible, dan evaluasi matriks risiko CIA (Kerahasiaan, Integritas, Ketersediaan).",
     path: "/smki/aset-informasi",
     icon: Layers,
+  },
+  {
+    label: "Matriks Kompetensi",
+    title: "Matriks Kompetensi SMKI (FR-031)",
+    desc: "Kelola standar kompetensi peran (Kordinator/Team Teknis), kompetensi pegawai dari Aset SDM, gap analisis otomatis, dan rencana training.",
+    path: "/smki/matrix-competency",
+    icon: ClipboardCheck,
   },
 ];
 
@@ -343,7 +387,7 @@ export default function SmkiLayout({
                     key={item.path}
                     type="button"
                     suppressHydrationWarning
-                    onClick={() => router.push(item.path)}
+                    onClick={() => runGuardedNavigation(() => router.push(item.path))}
                     className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-left text-[12.5px] transition-all ${
                       isActive
                         ? "bg-violet-50/90 dark:bg-violet-950/60 text-violet-600 dark:text-violet-400 font-bold border border-violet-200/80 dark:border-violet-900/60 shadow-2xs"

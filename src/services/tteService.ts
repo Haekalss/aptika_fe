@@ -68,3 +68,36 @@ export const getTteImageUrl = (
   const qs = unit ? `?unit=${encodeURIComponent(unit)}` : "";
   return `${base}/tte/spesimen/${pegawaiId}${qs}`;
 };
+
+/**
+ * Ambil gambar spesimen TTE sebagai data-URL (base64) untuk disisipkan
+ * ke dokumen yang dibuat di sisi klien (jsPDF / ExcelJS).
+ * Mengembalikan null bila tidak ada spesimen / gagal dimuat.
+ */
+export const fetchTteImageDataUrl = async (
+  nip?: string | null,
+  nama?: string | null
+): Promise<string | null> => {
+  const cleanNip = (nip ?? "").trim();
+  const cleanNama = (nama ?? "").trim();
+  if (!cleanNip && !cleanNama) return null;
+  try {
+    const res = await api.get("/tte/resolve/image", {
+      params: {
+        ...(cleanNip ? { nip: cleanNip } : {}),
+        ...(cleanNama ? { nama: cleanNama } : {}),
+      },
+      responseType: "blob",
+    });
+    const blob = res.data as Blob;
+    if (!blob || blob.size === 0) return null;
+    return await new Promise<string | null>((resolve) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result as string);
+      reader.onerror = () => resolve(null);
+      reader.readAsDataURL(blob);
+    });
+  } catch {
+    return null;
+  }
+};

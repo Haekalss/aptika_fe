@@ -53,6 +53,12 @@ const smkiCards: SmkiServiceCard[] = [
     icon: ShieldAlert,
   },
   {
+    title: "Risk Register (FR-002)",
+    desc: "Kelola identifikasi aset, penilaian matriks risiko (Inherent, Current, Residual), kontrol ISO 27001, dan rencana mitigasi risiko keamanan informasi.",
+    path: "/smki/risk-register",
+    icon: ShieldAlert,
+  },
+  {
     title: "Formulir Daftar Rekaman",
     desc: "Kelola pencatatan dan inventarisasi formulir daftar rekaman dokumen SMKI, klasifikasi tingkat keamanan, masa retensi, dan penetapan pemilik arsip.",
     path: "/smki/daftar-rekaman",
@@ -101,6 +107,12 @@ const smkiCards: SmkiServiceCard[] = [
     icon: FileText,
   },
   {
+    title: "Formulir Review Hak Akses",
+    desc: "Review user ID yang terdaftar, tingkat hak akses, status aktif, dan tindak lanjut pada formulir FR-034.",
+    path: "/smki/review-hak-akses",
+    icon: ClipboardCheck,
+  },
+  {
     title: "Formulir Evaluasi Kepatuhan",
     desc: "Catat dan evaluasi kepatuhan terhadap regulasi dan aturan lain yang mendukung layanan utama, lengkap dengan status dan ekspor dokumen FR-044.",
     path: "/smki/evaluasi-kepatuhan",
@@ -129,6 +141,18 @@ const smkiCards: SmkiServiceCard[] = [
     desc: "Laporkan evaluasi pengujian Disaster Recovery Plan (FR-039): persyaratan waktu (RTO), proses, team, check list BCP, serta cetak formulir resmi.",
     path: "/smki/evaluasi-drp",
     icon: DatabaseBackup,
+  },
+  {
+    title: "Berita Acara Backup",
+    desc: "Rekap backup dan restore aset, hasil kegiatan, serta bukti bulanan dalam formulir FR-030.",
+    path: "/smki/backup-restore",
+    icon: DatabaseBackup,
+  },
+  {
+    title: "Daftar Aset Virtualisasi",
+    desc: "Kelola formulir FR-035: inventaris instance virtualisasi, IP/hostname, spesifikasi, pemilik, klasifikasi keamanan, dan ekspor dokumen.",
+    path: "/smki/formulir-daftar-aset-virtualisasi",
+    icon: ServerCog,
   },
   {
     title: "Aset Sistem Informasi",
@@ -197,6 +221,12 @@ const smkiCards: SmkiServiceCard[] = [
     icon: Usb,
   },
   {
+    title: "Capacity Planning",
+    desc: "Pemantauan kapasitas Server dan Network (FR-026): log bulanan Current/Projection, matriks tahunan, dan ekspor laporan PDF atau Excel.",
+    path: "/smki/capacity-planning",
+    icon: ServerCog,
+  },
+  {
     title: "Notulen Management Review",
     desc: "Dokumentasi rapat tinjauan manajemen SMKI (FR-011), pembahasan klausul ISO 27001:2013 Clause 9.3, keputusan tindak lanjut, dan cetak berita acara.",
     path: "/smki/notulen",
@@ -207,6 +237,12 @@ const smkiCards: SmkiServiceCard[] = [
     desc: "Pendataan formulir resmi FR-028 aset informasi unit kerja, aset intangible, dan evaluasi matriks risiko CIA (Kerahasiaan, Integritas, Ketersediaan).",
     path: "/smki/aset-informasi",
     icon: Layers,
+  },
+  {
+    title: "Matriks Kompetensi SMKI",
+    desc: "Kelola standar kompetensi peran, kompetensi pegawai dari Aset SDM, gap analisis otomatis, dan rencana training sesuai format FR-031.",
+    path: "/smki/matrix-competency",
+    icon: ClipboardCheck,
   },
 ];
 

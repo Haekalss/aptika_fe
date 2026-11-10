@@ -1,0 +1,9 @@
+@media screen and (min-width: 1024px) {
+  /* Keep the long existing SMKI menu from extending a short FR-030 form's scroll range. */
+  main:has(.root) > div > div > aside {
+    max-height: calc(100dvh - 180px);
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+}

@@ -200,9 +200,9 @@ export default function DrpEvaluasiDetailModal({
           <div>
             <H>Pengesahan & Lampiran</H>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              <Field label="Dibuat Oleh" value={[row.dibuat_oleh_nama, row.dibuat_oleh_tanggal && formatTanggalIndo(row.dibuat_oleh_tanggal)].filter(Boolean).join(" — ") || null} />
-              <Field label="Diperiksa Oleh" value={[row.diperiksa_oleh_nama, row.diperiksa_oleh_tanggal && formatTanggalIndo(row.diperiksa_oleh_tanggal)].filter(Boolean).join(" — ") || null} />
-              <Field label="Disetujui Oleh" value={[row.disetujui_oleh_nama, row.disetujui_oleh_tanggal && formatTanggalIndo(row.disetujui_oleh_tanggal)].filter(Boolean).join(" — ") || null} />
+              <Field label="Dibuat Oleh" value={[row.dibuat_oleh_nama, row.dibuat_oleh_nip ? `NIP. ${row.dibuat_oleh_nip}` : null, row.dibuat_oleh_tanggal && formatTanggalIndo(row.dibuat_oleh_tanggal)].filter(Boolean).join(" — ") || null} />
+              <Field label="Diperiksa Oleh" value={[row.diperiksa_oleh_nama, row.diperiksa_oleh_nip ? `NIP. ${row.diperiksa_oleh_nip}` : null, row.diperiksa_oleh_tanggal && formatTanggalIndo(row.diperiksa_oleh_tanggal)].filter(Boolean).join(" — ") || null} />
+              <Field label="Disetujui Oleh" value={[row.disetujui_oleh_nama, row.disetujui_oleh_nip ? `NIP. ${row.disetujui_oleh_nip}` : null, row.disetujui_oleh_tanggal && formatTanggalIndo(row.disetujui_oleh_tanggal)].filter(Boolean).join(" — ") || null} />
             </div>
             <div className="mt-4 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/70 dark:border-slate-700 p-3">
               <p className="text-[10px] font-bold text-slate-500 mb-1">Lampiran Laporan Pengujian DRP</p>

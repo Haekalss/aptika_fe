@@ -57,7 +57,18 @@ export default function PemeriksaanCctvDetailModal({ isOpen, onClose, data }: Pr
             <div>
               <p className="flex items-center gap-1.5 text-[11px] font-bold text-slate-400 uppercase mb-1"><User size={12} /> Pemeriksa CCTV</p>
               <p className="text-sm font-semibold text-slate-700 dark:text-slate-200">{data.nama_pemeriksa || "-"}</p>
+              {data.nip_pemeriksa && (
+                <p className="text-xs text-slate-500">NIP. {data.nip_pemeriksa}</p>
+              )}
             </div>
+            {(data.ditandatangani_di || data.tanggal_ttd) && (
+              <div>
+                <p className="flex items-center gap-1.5 text-[11px] font-bold text-slate-400 uppercase mb-1"><CalendarDays size={12} /> Ditandatangani</p>
+                <p className="text-sm font-semibold text-slate-700 dark:text-slate-200">
+                  {[data.ditandatangani_di, data.tanggal_ttd ? formatTanggalIndo(data.tanggal_ttd) : null].filter(Boolean).join(", ") || "-"}
+                </p>
+              </div>
+            )}
           </div>
 
           <div className="border-t border-slate-100 dark:border-slate-800 pt-5">
