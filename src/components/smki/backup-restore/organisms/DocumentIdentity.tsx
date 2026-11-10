@@ -1,4 +1,4 @@
-import Card from "@/components/ui/Card";
+import Card from "../atoms/Fr030Section";
 import Input from "@/components/ui/Input";
 import type { Fr030FormState } from "@/services/smki/backupRestore.types";
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Card from "@/components/ui/Card";
+import Card from "../atoms/Fr030Section";
 import Button from "@/components/ui/Button";
 import Modal from "@/components/ui/Modal";
 import ConfirmModal from "@/components/ui/ConfirmModal";
@@ -37,7 +37,7 @@ export function AnnualAssetMatrix({ assets, year, onChange, report, dirty, busy,
               const entries = asset.entries.filter(entry => entry.month === m + 1);
               const canonical = filledFr030Entries(asset.entries);
               const invalid = Object.keys(errors).some(key => key.startsWith(`assets.${i}.entries.`) && entries.some(entry => canonical.indexOf(entry) === Number(key.split(".")[3])));
-              return <td key={month} className="p-2 text-center"><button id={`fr030-cell-${asset.client_key}-${m + 1}`} type="button" aria-label={`${asset.nama_aset || `Aset ${i + 1}`} · ${month}`} disabled={busy} onClick={() => setSelected({ key: asset.client_key, month: m + 1 })} className={`w-full rounded-lg border p-2 text-left text-xs leading-6 transition-colors hover:bg-violet-50 focus-visible:ring-2 focus-visible:ring-violet-600 dark:hover:bg-slate-800 ${invalid ? "border-red-500" : "border-slate-200 dark:border-slate-700"}`}>
+              return <td key={month} className="p-2 text-center"><button id={`fr030-cell-${asset.client_key}-${m + 1}`} type="button" aria-label={`${asset.nama_aset || `Aset ${i + 1}`} · ${month}`} disabled={busy} onClick={() => setSelected({ key: asset.client_key, month: m + 1 })} className={`w-full rounded-lg border p-2 text-left text-xs leading-6 transition-colors hover:bg-emerald-50 focus-visible:ring-2 focus-visible:ring-emerald-600 dark:hover:bg-slate-800 ${invalid ? "border-red-500" : "border-slate-200 dark:border-slate-700"}`}>
                 {(["backup", "restore"] as const).map(operation => { const entry = entries.find(item => item.operation === operation); return <span key={operation} className="block">{operation === "backup" ? "B" : "R"}: {fr030EntrySummary(entry)}{entry?.performed_on && <span className="block text-slate-600 dark:text-slate-300">{entry.performed_on}</span>}{entry?.attachments.length ? <span className="block">{entry.attachments.length} bukti</span> : null}</span>; })}
                 {invalid && <span className="block text-red-700 dark:text-red-300">Periksa isian</span>}
               </button></td>;
@@ -51,7 +51,7 @@ export function AnnualAssetMatrix({ assets, year, onChange, report, dirty, busy,
       {active && selected && <div className="grid gap-8 md:grid-cols-2">{(["backup", "restore"] as BackupRestoreOperation[]).map(operation => {
         const entry = active.entries.find(item => item.month === selected.month && item.operation === operation) ?? { month: selected.month, operation, result: null, performed_on: null, notes: null, attachments: [] };
         const entryIndex = filledFr030Entries(active.entries).indexOf(entry);
-        return <div key={operation}><MonthlyResultField entry={entry} year={year} onChange={changeEntry} readOnly={readOnly || busy} errors={errors} prefix={`assets.${index}.entries.${entryIndex}`} /><EvidenceAttachments entry={entry} report={report} dirty={dirty} busy={busy} setBusy={setBusy} onSaved={onSaved} readOnly={readOnly} /></div>;
+        return <div key={operation}><MonthlyResultField entry={entry} year={year} onChange={changeEntry} readOnly={readOnly || busy} errors={errors} prefix={`assets.${index}.entries.${entryIndex}`} idPrefix={`${active.client_key}-${selected.month}-${operation}`} /><EvidenceAttachments entry={entry} report={report} dirty={dirty} busy={busy} setBusy={setBusy} onSaved={onSaved} readOnly={readOnly} /></div>;
       })}</div>}
     </Modal>
     <ConfirmModal isOpen={Boolean(removeKey)} title="Hapus aset dari laporan?" message="Aset beserta catatan dan buktinya akan dihapus dari laporan setelah Anda menyimpan perubahan." onClose={() => setRemoveKey(null)} onConfirm={() => { onChange(assets.filter(asset => asset.client_key !== removeKey)); setRemoveKey(null); }} />

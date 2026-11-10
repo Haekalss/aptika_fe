@@ -1,4 +1,4 @@
-import Card from "@/components/ui/Card";
+import Card from "../atoms/Fr030Section";
 import Button from "@/components/ui/Button";
 import type { BackupRestoreReport, Fr030FormState } from "@/services/smki/backupRestore.types";
 import { SignatoryField } from "../molecules/SignatoryField";
@@ -11,8 +11,10 @@ export function ReportSignatories({ form, change, saved, errors }: { form: Fr030
     {options.isLoading && <p role="status">Memuat master pegawai…</p>}
     {options.isError && <p role="alert">Master pegawai tidak dapat dimuat. <Button variant="outline" type="button" onClick={() => options.refetch()}>Coba lagi</Button></p>}
     <div className="grid gap-6 md:grid-cols-2">
-      <SignatoryField role="pelaksana" value={form.pelaksana_pegawai_id} options={options.data ?? []} onChange={value => change({ pelaksana_pegawai_id: value })} saved={saved} error={errors.pelaksana_pegawai_id?.[0]} />
-      <SignatoryField role="penanggung-jawab" value={form.penanggung_jawab_pegawai_id} options={options.data ?? []} onChange={value => change({ penanggung_jawab_pegawai_id: value })} saved={saved} error={errors.penanggung_jawab_pegawai_id?.[0]} />
+      {(["pelaksana", "penanggung_jawab"] as const).map(role => <SignatoryField key={role} role={role === "pelaksana" ? role : "penanggung-jawab"} value={form[`${role}_pegawai_id`]} options={options.data ?? []} onChange={value => change({ [`${role}_pegawai_id`]: value, refresh_signatories: form.refresh_signatories?.filter(item => item !== role) })} saved={saved} error={errors[`${role}_pegawai_id`]?.[0]} refresh={Boolean(form.refresh_signatories?.includes(role))} refreshing={options.isFetching} onRefresh={async () => {
+        const result = await options.refetch();
+        if (result.isSuccess) change({ refresh_signatories: [...new Set([...(form.refresh_signatories ?? []), role])] });
+      }} />)}
     </div>
   </Card>;
 }

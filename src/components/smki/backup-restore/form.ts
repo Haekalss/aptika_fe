@@ -1,4 +1,13 @@
 import type { BackupRestoreAsset, BackupRestoreEntry, BackupRestoreReport, Fr030FormState, SaveBackupRestorePayload } from "@/services/smki/backupRestore.types";
+import type { TtePegawai } from "@/services/tteService";
+
+export function fr030SignerIdentity(role: "pelaksana" | "penanggung_jawab", id: number | null, options: TtePegawai[], saved?: BackupRestoreReport, refresh = false) {
+  const fields = ["nama", "nip", "jabatan", "pangkat"] as const;
+  const historical = Boolean(!refresh && saved && id === saved[`${role}_pegawai_id`] && (id !== null || fields.some(field => saved[`${role}_${field}`]?.trim())));
+  const master = options.find(option => option.id === id);
+  const values = Object.fromEntries(fields.map(field => [field, historical ? saved?.[`${role}_${field}`] : master?.[field]])) as Record<typeof fields[number], string | null | undefined>;
+  return { ...values, historical, missing: fields.filter(field => !values[field]?.trim()).map(field => field === "nip" ? "NIP" : field) };
+}
 
 export function filledFr030Entries(entries: BackupRestoreEntry[]): BackupRestoreEntry[] {
   return entries.filter(entry => entry.result || entry.performed_on || entry.notes?.trim() || entry.attachments.length);
@@ -30,6 +39,7 @@ export function hydrateFr030Form(report: BackupRestoreReport): Fr030FormState {
 export function buildFr030Payload(state: Fr030FormState, finalize: boolean): SaveBackupRestorePayload {
   return {
     ...(state.version === undefined ? {} : { version: state.version }),
+    ...(state.refresh_signatories?.length ? { refresh_signatories: state.refresh_signatories } : {}),
     tahun: state.tahun, nomor_dokumen: state.nomor_dokumen.trim(), nomor_revisi: state.nomor_revisi.trim(), tanggal_terbit: state.tanggal_terbit || null,
     pelaksana_pegawai_id: state.pelaksana_pegawai_id, penanggung_jawab_pegawai_id: state.penanggung_jawab_pegawai_id, finalize,
     assets: state.assets.map(asset => ({

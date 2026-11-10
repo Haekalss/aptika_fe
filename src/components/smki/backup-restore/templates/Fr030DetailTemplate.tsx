@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Card from "@/components/ui/Card";
+import Card from "../atoms/Fr030Section";
 import Button from "@/components/ui/Button";
 import ConfirmModal from "@/components/ui/ConfirmModal";
 import { backupRestoreService, readFr030Error } from "@/services/smki/backupRestoreService";

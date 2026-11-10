@@ -30,7 +30,7 @@ const original = { id: 7, version: 1, tahun: 2026, status: 'final', bidang_id: 9
       if (!pathname.startsWith('/api/')) return route.continue();
       const json = data => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(data) });
       if (pathname === '/api/me') return json({ success: true, user, bidang, services });
-      if (pathname === '/api/tte/options') return json({ data: [{ id: 1, source: 'pegawai', nama: 'Budi', nip: '001', jabatan: 'Kepala', label: 'Budi · 001' }, { id: 2, source: 'pegawai', nama: 'Budi', nip: '002', jabatan: 'Pranata', label: 'Budi · 002' }] });
+      if (pathname === '/api/tte/pegawai') return json({ data: [{ id: 1, nama: 'Budi', nip: '001', jabatan: 'Kepala', pangkat: 'IV/a', role: 'staff' }, { id: 2, nama: 'Budi', nip: '002', jabatan: 'Pranata', pangkat: 'III/c', role: 'staff' }] });
       if (/specimen|spesimen/.test(pathname)) {
         specimenRequests.push(pathname);
         return route.fulfill({ contentType: 'image/png', body: Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jO1cAAAAASUVORK5CYII=', 'base64') });
@@ -53,7 +53,7 @@ const original = { id: 7, version: 1, tahun: 2026, status: 'final', bidang_id: 9
         report.assets.forEach(asset => asset.entries.forEach(entry => { entry.attachments = []; })); report.version++;
         return json({ data: { version: report.version } });
       }
-      if (pathname.endsWith('/backup-restore/lookup')) return json({ data: { bidang: { id: bidang.id, nama: bidang.name }, assets: { data: [{ id: 100, nama_aset: 'Master Server', kode_aset: 'M1' }], current_page: 1, last_page: 1, total: 1, per_page: 50 } } });
+      if (pathname.endsWith('/backup-restore/lookup')) { const page = Number(url.searchParams.get('page') || 1); return json({ data: { bidang: { id: bidang.id, nama: bidang.name }, assets: { data: [{ id: page === 1 ? 100 : 101, nama_aset: page === 1 ? 'Master Server' : 'Aset halaman kedua', kode_aset: 'M'+page }], current_page: page, last_page: 2, total: 51, per_page: 50 } } }); }
       if (pathname === '/api/smki/backup-restore' && req.method() === 'GET') return json({ data: { data: deleted ? [] : [report], current_page: 1, last_page: 1, total: deleted ? 0 : 1, per_page: 10 } });
       if (pathname === '/api/smki/backup-restore/7' && req.method() === 'GET') return failReads ? route.fulfill({ status: 503, json: { message: 'Background refresh failed' } }) : json({ data: report });
       if (pathname.startsWith('/api/smki/backup-restore') && ['PUT', 'POST', 'DELETE'].includes(req.method())) {
@@ -70,13 +70,22 @@ const original = { id: 7, version: 1, tahun: 2026, status: 'final', bidang_id: 9
     await page.goto(`${base}/smki/backup-restore`);
     await page.getByRole('button', { name: 'Tambah laporan', exact: true }).waitFor({ timeout: 20000 });
     assert.equal(await page.getByRole('button', { name: 'Berita Acara Backup', exact: true }).count(), 1);
-    assert.ok((await page.getByRole('heading', { level: 1 }).allTextContents()).some(text => text.includes('Berita Acara Backup')));
+    await page.getByRole('heading', { level: 1, name: /Berita Acara Backup/ }).waitFor();
+    if (process.env.FR030_SCREENSHOTS) await page.screenshot({ path: `${process.env.FR030_SCREENSHOTS}/list-desktop.png`, fullPage: true });
     assert.equal(await page.getByRole('button', { name: 'Edit laporan 7', exact: true }).count(), 1, 'Final is editable');
     assert.equal(await page.getByRole('button', { name: 'Hapus laporan 7', exact: true }).count(), 1, 'Final is deletable');
     await page.getByRole('button', { name: 'Tambah laporan', exact: true }).click();
     await page.getByLabel('Tahun laporan', { exact: true }).waitFor();
     assert.equal(await page.getByLabel('Tanggal terbit', { exact: true }).inputValue(), '');
     await page.getByRole('button', { name: 'Tambah aset', exact: true }).click();
+    await page.getByLabel('Sumber aset 1', { exact: true }).selectOption('physical');
+    assert.equal(await page.getByLabel('Cari master aset 1', { exact: true }).count(), 0);
+    await page.getByLabel('Pilih master aset 1', { exact: true }).selectOption('100');
+    assert.equal(await page.getByLabel('Nama aset 1', { exact: true }).count(), 0, 'Master identity is a summary, not duplicate read-only input');
+    await page.getByRole('button', { name: 'Berikutnya', exact: true }).click();
+    await page.getByLabel('Pilih master aset 1', { exact: true }).selectOption('101');
+    await page.getByText('Aset halaman kedua', { exact: true }).filter({ visible: true }).first().waitFor();
+    await page.getByLabel('Sumber aset 1', { exact: true }).selectOption('manual');
     await page.getByLabel('Nama aset 1', { exact: true }).fill('Aset baru');
     await page.getByRole('button', { name: 'Aset baru · Oktober', exact: true }).click();
     const modal = page.getByRole('dialog');
@@ -130,7 +139,7 @@ const original = { id: 7, version: 1, tahun: 2026, status: 'final', bidang_id: 9
     await page.getByRole('button', { name: 'Simpan & Finalisasi', exact: true }).click();
     await page.getByRole('link', { name: 'Tanggal Restore wajib diisi', exact: true }).click();
     assert.equal(await page.getByLabel('Tanggal Restore', { exact: true }).getAttribute('aria-invalid'), 'true');
-    await page.waitForFunction(() => document.activeElement?.id === 'fr030-assets.0.entries.0.performed_on');
+    await page.waitForFunction(() => document.activeElement?.getAttribute('data-fr030-error-field') === 'assets.0.entries.0.performed_on');
     await page.getByRole('dialog').getByRole('button', { name: 'Selesai', exact: true }).click();
     await page.getByRole('button', { name: 'Ringkasan SMKI', exact: true }).click();
     const confirm = page.getByRole('alertdialog');
@@ -170,6 +179,7 @@ const original = { id: 7, version: 1, tahun: 2026, status: 'final', bidang_id: 9
       assert.ok(Math.abs(geometry.mainBottom - geometry.actionBottom) < 65, `No bottom void: ${JSON.stringify(geometry)}`);
     }
     await page.setViewportSize({ width: 1920, height: 1080 });
+    if (process.env.FR030_SCREENSHOTS) await page.screenshot({ path: `${process.env.FR030_SCREENSHOTS}/form-desktop.png`, fullPage: true });
     await page.evaluate(() => document.documentElement.classList.add('dark'));
     await page.locator('main').evaluate(main => { main.scrollTop = main.scrollHeight; });
     const darkColors = await page.locator('[data-fr030-actions] button').first().evaluate(el => {
@@ -200,6 +210,26 @@ const original = { id: 7, version: 1, tahun: 2026, status: 'final', bidang_id: 9
     await page.getByText('Belum ada laporan yang sesuai.', { exact: false }).waitFor();
     assert.deepEqual(writes.at(-1), { method: 'DELETE', pathname: '/api/smki/backup-restore/7', data: { version: 1 } });
     assert.deepEqual(unexpectedApi, []);
+    report = { ...structuredClone(original), status: 'draft', pelaksana_jabatan: '', pelaksana_pangkat: '' };
+    deleted = false; saveMode = 'ok';
+    await page.goto(`${base}/smki/backup-restore/7/edit`);
+    await page.getByText('Belum lengkap: jabatan, pangkat.', { exact: false }).waitFor();
+    const signerPanel = page.getByLabel('Pelaksana', { exact: true }).locator('..').locator('..');
+    await signerPanel.getByRole('button', { name: 'Perbarui identitas dari master', exact: true }).click();
+    await page.getByRole('alertdialog').getByRole('button', { name: 'Ambil identitas terbaru', exact: true }).click();
+    await signerPanel.getByText('Identitas lengkap untuk finalisasi.', { exact: true }).waitFor();
+    await page.getByLabel('No. Revisi', { exact: true }).fill('2.0');
+    const refreshedSave = page.waitForResponse(response => response.request().method() === 'PUT' && response.url().endsWith('/backup-restore/7'));
+    await page.getByRole('button', { name: 'Simpan Draf', exact: true }).click();
+    await refreshedSave;
+    assert.deepEqual(writes.at(-1).data.refresh_signatories, ['pelaksana']);
+    assert.equal(writes.at(-1).data.nomor_revisi, '2.0', 'Refreshing identity must not discard other edits');
+    report = { ...structuredClone(original), pelaksana_pegawai_id: null };
+    await page.goto(`${base}/smki/backup-restore/7/edit`);
+    const historicalSigner = page.getByLabel('Pelaksana', { exact: true }).locator('..').locator('..');
+    await historicalSigner.getByText(report.pelaksana_nama, { exact: true }).waitFor();
+    assert.match(await historicalSigner.locator('select option:checked').textContent(), /tersimpan/);
+    await historicalSigner.getByAltText('Spesimen Pelaksana', { exact: true }).waitFor();
     console.log('FR030 browser PASS: Final CRUD, blank metadata, independent activities, Draf roundtrip, clean-only upload, 409 retention, 422 focus, navigation cancel.');
     await context.close();
   } finally { await browser.close(); }

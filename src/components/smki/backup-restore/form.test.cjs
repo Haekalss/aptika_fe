@@ -9,6 +9,28 @@ const loaded = { exports: {} };
 new Function('module', 'exports', 'require', compiled.outputText)(loaded, loaded.exports, require);
 const { createEmptyFr030Form, createFr030Asset, hydrateFr030Form, buildFr030Payload, filledFr030Entries, fr030EntrySummary } = loaded.exports;
 
+test('explicit signer refresh survives save payload but never leaks into hydrated snapshots', () => {
+  const state = { ...createEmptyFr030Form(2026), refresh_signatories: ['penanggung_jawab'] };
+  assert.deepEqual(buildFr030Payload(state, false).refresh_signatories, ['penanggung_jawab']);
+  assert.equal('refresh_signatories' in hydrateFr030Form({ ...state, id: 1, version: 2, assets: [] }), false);
+});
+
+test('signer completeness uses snapshot until explicit refresh and includes missing pangkat', () => {
+  const { fr030SignerIdentity } = loaded.exports;
+  const master = [{ id: 1, nama: 'Nama baru', nip: '123', jabatan: 'Teknisi', pangkat: 'III/a' }];
+  const saved = { pelaksana_pegawai_id: 1, pelaksana_nama: 'Nama historis', pelaksana_nip: '123', pelaksana_jabatan: '', pelaksana_pangkat: null };
+  assert.deepEqual(fr030SignerIdentity('pelaksana', 1, master, saved, false).missing, ['jabatan', 'pangkat']);
+  const refreshed = fr030SignerIdentity('pelaksana', 1, master, saved, true);
+  assert.equal(refreshed.nama, 'Nama baru');
+  assert.deepEqual(refreshed.missing, []);
+  assert.equal(fr030SignerIdentity('pelaksana', 99, master).missing.length, 4);
+  const blankNameSnapshot = { ...saved, pelaksana_nama: '', pelaksana_jabatan: 'Teknisi', pelaksana_pangkat: 'III/a' };
+  assert.deepEqual(fr030SignerIdentity('pelaksana', 1, master, blankNameSnapshot).missing, ['nama']);
+  const deletedMasterSnapshot = { ...saved, pelaksana_pegawai_id: null };
+  assert.equal(fr030SignerIdentity('pelaksana', null, master, deletedMasterSnapshot).nama, 'Nama historis');
+  assert.equal(fr030SignerIdentity('pelaksana', null, master, { pelaksana_pegawai_id: null }).historical, false);
+});
+
 test('blank draft has no invented dates, signers or activities', () => {
   const form = createEmptyFr030Form(2026);
   const payload = buildFr030Payload(form, false);

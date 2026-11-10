@@ -3,7 +3,7 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Button from "@/components/ui/Button";
-import Card from "@/components/ui/Card";
+import Card from "../atoms/Fr030Section";
 import ConfirmModal from "@/components/ui/ConfirmModal";
 import { backupRestoreService, readFr030Error } from "@/services/smki/backupRestoreService";
 import type { BackupRestoreReport } from "@/services/smki/backupRestore.types";
@@ -44,7 +44,7 @@ function Fr030Editor({ record }: { record?: BackupRestoreReport }) {
     const entry = buildFr030Payload(form, false).assets[Number(path[1])]?.entries[Number(path[2])];
     if (!asset || !entry) return;
     document.getElementById(`fr030-cell-${asset.client_key}-${entry.month}`)?.click();
-    requestAnimationFrame(() => requestAnimationFrame(() => document.getElementById(`fr030-${field}`)?.focus()));
+    requestAnimationFrame(() => requestAnimationFrame(() => document.querySelector<HTMLElement>(`[data-fr030-error-field="${CSS.escape(field)}"]`)?.focus()));
   }
   async function save(finalize: boolean) {
     if (busy) return;
@@ -72,7 +72,7 @@ function Fr030Editor({ record }: { record?: BackupRestoreReport }) {
     finally { setBusy(false); }
   }
   return <form className="space-y-6" onSubmit={event => { event.preventDefault(); void save(false); }}>
-    <div className="flex flex-wrap items-center justify-between gap-3"><h2 className="text-xl font-bold text-slate-900 dark:text-white">{saved ? "Edit" : "Tambah"} laporan FR-030</h2><span className="rounded-full bg-violet-50 px-3 py-1 text-sm font-medium text-violet-800 dark:bg-violet-950 dark:text-violet-200">{saved?.status === "final" ? "Final" : "Draf"}{saved && ` · Versi ${saved.version}`}</span></div>
+    <div className="flex flex-wrap items-center justify-between gap-3"><h2 className="text-xl font-bold text-slate-900 dark:text-white">{saved ? "Edit" : "Tambah"} laporan FR-030</h2><span className="rounded-full bg-emerald-50 px-3 py-1 text-sm font-medium text-emerald-800 dark:bg-emerald-950 dark:text-emerald-200">{saved?.status === "final" ? "Final" : "Draf"}{saved && ` · Versi ${saved.version}`}</span></div>
     {message && <div ref={summary} data-fr030-errors tabIndex={-1} role="alert" className="rounded-xl border border-red-300 bg-red-50 p-4 text-sm text-red-900 focus:ring-2 focus:ring-red-600 dark:bg-red-950 dark:text-red-200">
       <p className="font-semibold">{message}</p><ul className="mt-2 list-disc pl-5">{Object.entries(errors).map(([field, values]) => <li key={field}><a className="underline" href={`#fr030-${field}`} onClick={event => { event.preventDefault(); focusError(field); }}>{values[0]}</a></li>)}</ul>
       <p className="mt-2">Isian Anda tetap tersedia. Periksa data sebelum mencoba kembali.</p>

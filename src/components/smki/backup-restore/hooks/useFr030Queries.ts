@@ -3,7 +3,7 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuthStore } from "@/store/useAuthStore";
 import { backupRestoreService } from "@/services/smki/backupRestoreService";
-import { getTteOptions } from "@/services/tteService";
+import { getTtePegawai } from "@/services/tteService";
 import type { BackupRestoreFilters, BackupRestoreLookupParams } from "@/services/smki/backupRestore.types";
 
 export function useFr030Scope() {
@@ -25,7 +25,7 @@ export function useFr030Lookup(params: BackupRestoreLookupParams, enabled = true
 }
 export function useFr030Pegawai() {
   const scope = useFr030Scope();
-  return useQuery({ queryKey: [...scope.key, "pegawai"], queryFn: getTteOptions, enabled: scope.enabled, staleTime: 60_000, retry: false });
+  return useQuery({ queryKey: [...scope.key, "pegawai"], queryFn: getTtePegawai, enabled: scope.enabled, staleTime: 60_000, retry: false });
 }
 export function useRefreshFr030() {
   const client = useQueryClient();

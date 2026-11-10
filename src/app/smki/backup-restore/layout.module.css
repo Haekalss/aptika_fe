@@ -7,3 +7,14 @@
     overscroll-behavior: contain;
   }
 }
+.root :global(label) {
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.root :global(input),
+.root :global(select),
+.root :global(textarea) {
+  border-radius: 0.75rem;
+}

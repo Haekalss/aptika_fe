@@ -27,6 +27,7 @@ export interface BackupRestoreAsset {
   entries: BackupRestoreEntry[];
 }
 export interface Fr030FormState {
+  refresh_signatories?: ("pelaksana" | "penanggung_jawab")[];
   version?: number;
   tahun: number;
   nomor_dokumen: string;
