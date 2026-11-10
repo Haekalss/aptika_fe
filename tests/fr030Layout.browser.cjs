@@ -71,6 +71,19 @@ const original = { id: 7, version: 1, tahun: 2026, status: 'final', bidang_id: 9
     await page.getByRole('button', { name: 'Tambah laporan', exact: true }).waitFor({ timeout: 20000 });
     assert.equal(await page.getByRole('button', { name: 'Berita Acara Backup', exact: true }).count(), 1);
     await page.getByRole('heading', { level: 1, name: /Berita Acara Backup/ }).waitFor();
+    const banner = page.getByRole('heading', { level: 1, name: /Berita Acara Backup/ });
+    assert.equal(await page.getByRole('heading', { level: 1 }).count(), 1, 'Use one shared SMKI banner');
+    assert.ok(await banner.evaluate(el => {
+      for (let node = el.parentElement; node; node = node.parentElement) {
+        if (getComputedStyle(node).backgroundImage.includes('rgb(46, 8, 84)')) return true;
+      }
+      return false;
+    }), 'FR030 must use the same purple banner as the other SMKI modules');
+    const actionButtons = page.locator('tbody tr').first().getByRole('button');
+    const boxes = await actionButtons.evaluateAll(buttons => buttons.map(button => { const box = button.getBoundingClientRect(); return { x: box.x, y: box.y, width: box.width, height: box.height }; }));
+    assert.equal(boxes.length, 4);
+    for (const box of boxes) { assert.equal(box.width, 44); assert.equal(box.height, 44); assert.equal(box.y, boxes[0].y); }
+    for (let i = 1; i < boxes.length; i++) assert.equal(boxes[i].x - boxes[i - 1].x - boxes[i - 1].width, 8);
     if (process.env.FR030_SCREENSHOTS) await page.screenshot({ path: `${process.env.FR030_SCREENSHOTS}/list-desktop.png`, fullPage: true });
     assert.equal(await page.getByRole('button', { name: 'Edit laporan 7', exact: true }).count(), 1, 'Final is editable');
     assert.equal(await page.getByRole('button', { name: 'Hapus laporan 7', exact: true }).count(), 1, 'Final is deletable');
@@ -82,7 +95,8 @@ const original = { id: 7, version: 1, tahun: 2026, status: 'final', bidang_id: 9
     assert.equal(await page.getByLabel('Cari master aset 1', { exact: true }).count(), 0);
     await page.getByLabel('Pilih master aset 1', { exact: true }).selectOption('100');
     assert.equal(await page.getByLabel('Nama aset 1', { exact: true }).count(), 0, 'Master identity is a summary, not duplicate read-only input');
-    await page.getByRole('button', { name: 'Berikutnya', exact: true }).click();
+    await page.getByText('Halaman master aset 1 dari 2', { exact: false }).waitFor({ timeout: 5000 });
+    await page.getByRole('button', { name: 'Aset berikutnya', exact: true }).click();
     await page.getByLabel('Pilih master aset 1', { exact: true }).selectOption('101');
     await page.getByText('Aset halaman kedua', { exact: true }).filter({ visible: true }).first().waitFor();
     await page.getByLabel('Sumber aset 1', { exact: true }).selectOption('manual');

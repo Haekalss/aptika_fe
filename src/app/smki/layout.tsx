@@ -414,7 +414,7 @@ export default function SmkiLayout({
         {/* ── KONTEN UTAMA SMKI ── */}
         <div className="flex-1 min-w-0 w-full flex flex-col gap-5">
           {/* Tampilkan Hero Banner Seragam untuk seluruh sub-fitur dropdown SMKI (Dengan Ornamen Cyber Radar) */}
-          {!isMainOverview && !isPrintPage && !pathname.startsWith("/smki/backup-restore") && (
+          {!isMainOverview && !isPrintPage && (
             <div
               className="relative overflow-hidden rounded-3xl shadow-xl print:hidden"
               style={{
@@ -774,7 +774,7 @@ export default function SmkiLayout({
             </div>
           )}
 
-          <div className={isMainOverview || pathname.startsWith("/smki/backup-restore") ? "" : "smki-subpage-content"}>
+          <div className={isMainOverview ? "" : "smki-subpage-content"}>
             {children}
           </div>
         </div>

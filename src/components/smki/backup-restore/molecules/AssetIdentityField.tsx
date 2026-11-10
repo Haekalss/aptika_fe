@@ -29,7 +29,14 @@ export function AssetIdentityField({ asset, number, onChange, error, readOnly }:
           {lookup.data?.assets.data.map(item => <option key={item.id} value={item.id}>{item.nama_aset} · {item.kode_aset || "Tanpa kode"}</option>)}
         </select>
       </FormField>}
-      {lookup.data && lookup.data.assets.last_page > 1 && <div className="flex items-center gap-2"><Button type="button" variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage(p => p - 1)}>Sebelumnya</Button><span className="text-xs">{page}/{lookup.data.assets.last_page}</span><Button type="button" variant="outline" size="sm" disabled={page >= lookup.data.assets.last_page} onClick={() => setPage(p => p + 1)}>Berikutnya</Button></div>}
+      {lookup.data && lookup.data.assets.last_page > 1 && <div className="space-y-2">
+        <p className="text-xs text-slate-600 dark:text-slate-300">Master aset ditampilkan maksimal 50 per halaman. Tombol ini mengganti pilihan aset, bukan melanjutkan formulir.</p>
+        <div className="flex flex-wrap items-center gap-2">
+          <Button type="button" variant="outline" size="sm" disabled={lookup.isFetching || page <= 1} onClick={() => setPage(p => p - 1)}>Aset sebelumnya</Button>
+          <span role="status" className="text-xs text-slate-600 dark:text-slate-300">Halaman master aset {page} dari {lookup.data.assets.last_page} ({lookup.data.assets.total} aset)</span>
+          <Button type="button" variant="outline" size="sm" disabled={lookup.isFetching || page >= lookup.data.assets.last_page} onClick={() => setPage(p => p + 1)}>Aset berikutnya</Button>
+        </div>
+      </div>}
     </div>}
     {source === "manual" ? <><Input id={`fr030-assets.${number - 1}.nama_aset`} label={`Nama aset ${number}`} value={asset.nama_aset ?? ""} maxLength={255} error={error} onChange={e => onChange({ ...asset, nama_aset: e.target.value })} />
     <Input id={`fr030-assets.${number - 1}.kode_aset`} label={`Kode aset ${number}`} value={asset.kode_aset ?? ""} maxLength={255} onChange={e => onChange({ ...asset, kode_aset: e.target.value })} /></> : <div id={`fr030-assets.${number - 1}.nama_aset`} tabIndex={-1} className="rounded-xl bg-emerald-50 p-3 text-sm text-emerald-950 dark:bg-emerald-950 dark:text-emerald-100"><strong className="block break-words">{asset.nama_aset || "Belum memilih aset"}</strong><span>Kode: {asset.kode_aset || "Tanpa kode"}</span>{error && <p role="alert" className="mt-1 text-red-700">{error}</p>}</div>}
