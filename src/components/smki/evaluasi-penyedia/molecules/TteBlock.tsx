@@ -24,15 +24,22 @@ export default function TteBlock({
         {label}
       </p>
       {status === "sudah" && (nama || tanggal) ? (
-        <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-3">
-          <TteSpecimen nama={nama ?? undefined} nip={nip ?? undefined} width={width} />
+        <div className="flex flex-col items-center rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-3 text-center">
+          <div className="flex w-full justify-center">
+            <TteSpecimen
+              nama={nama ?? undefined}
+              nip={nip ?? undefined}
+              width={width}
+              className="h-auto max-w-full"
+            />
+          </div>
           {tanggal && (
-            <p className="mt-2 text-xs text-slate-600 dark:text-slate-300">
+            <p className="mt-2 w-full text-center text-xs text-slate-600 dark:text-slate-300">
               {tanggal}
             </p>
           )}
           {nama && (
-            <p className="text-xs font-semibold text-slate-800 dark:text-slate-100">
+            <p className="w-full text-center text-xs font-semibold text-slate-800 dark:text-slate-100">
               ({nama})
             </p>
           )}

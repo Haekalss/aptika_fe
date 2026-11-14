@@ -173,7 +173,7 @@ export interface Fr021PenyediaPayload {
 
 /* ───────────────────────── Riwayat ───────────────────────── */
 
-export interface Fr021LogPenilaian {
+interface Fr021LogPenilaian {
   kriteria_id: number;
   skala_id: number;
   skor: number;

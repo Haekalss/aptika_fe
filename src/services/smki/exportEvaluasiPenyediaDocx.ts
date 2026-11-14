@@ -123,14 +123,15 @@ function paragraphText(xml: string): string {
 }
 
 /** Ganti isi satu paragraf dengan satu run teks (pPr & rPr pertama dipertahankan). */
-function setParagraphText(xml: string, text: string, rPrOverride?: string): string {
+function setParagraphText(xml: string, text: string, rPrOverride?: string, center = false): string {
   const open = /^<w:p(?:\s[^>]*)?>/.exec(xml);
   if (!open) return xml;
   const pPr = /<w:pPr>[\s\S]*?<\/w:pPr>/.exec(xml);
   const rPr = /<w:r(?:\s[^>]*)?>\s*(<w:rPr>[\s\S]*?<\/w:rPr>)/.exec(xml);
   const rPrXml = rPrOverride ?? rPr?.[1] ?? "";
+  const pPrXml = center ? ensureCenterPPr(pPr?.[0]) : pPr?.[0] ?? "";
   const run = `<w:r>${rPrXml}${text ? `<w:t xml:space="preserve">${escapeXml(text)}</w:t>` : ""}</w:r>`;
-  return `${open[0]}${pPr ? pPr[0] : ""}${run}</w:p>`;
+  return `${open[0]}${pPrXml}${run}</w:p>`;
 }
 
 /** Ganti teks di dalam satu blok `<w:t>` saja (mempertahankan format run lain). */
@@ -267,7 +268,7 @@ function setCellTextAt(rowXml: string, index: number, text: string): string {
   return mapCells(rowXml, (i, cell) => (i === index ? setCellText(cell, text) : cell));
 }
 
-/* ───────────────────────── Gambar TTE ───────────────────────── */
+/* ───────────────────────── Gambar TTE (sama seperti FR-008) ───────────────────────── */
 
 function drawingXml(rId: string, docPrId: number, cx: number, cy: number): string {
   return (
@@ -291,25 +292,32 @@ function drawingXml(rId: string, docPrId: number, cx: number, cy: number): strin
   );
 }
 
-/** Ganti paragraf placeholder tanda tangan dengan gambar TTE di dalam run (+ nama). */
-function setParagraphImage(xml: string, contentXml: string, caption?: string | null): string {
+/** Kembalikan pPr dengan <w:jc w:val="center"/> pada posisi skema yang benar. */
+function ensureCenterPPr(pPr?: string): string {
+  const inner = (pPr ?? "")
+    .replace(/^<w:pPr>/, "")
+    .replace(/<\/w:pPr>$/, "")
+    .replace(/<w:jc\b[^>]*\/>/g, "");
+  const jc = '<w:jc w:val="center"/>';
+  if (/<w:rPr[\s>]/.test(inner)) {
+    return `<w:pPr>${inner.replace(/<w:rPr[\s>]/, `${jc}$&`)}</w:pPr>`;
+  }
+  return `<w:pPr>${inner}${jc}</w:pPr>`;
+}
+
+/** Ganti paragraf placeholder tanda tangan dengan gambar TTE di dalam run. */
+function setParagraphImage(xml: string, contentXml: string): string {
   const open = /^<w:p(?:\s[^>]*)?>/.exec(xml);
   if (!open) return xml;
   const pPr = /<w:pPr>[\s\S]*?<\/w:pPr>/.exec(xml);
-  const rPr = /<w:r(?:\s[^>]*)?>\s*(<w:rPr>[\s\S]*?<\/w:rPr>)/.exec(xml);
-  const head = `${open[0]}${pPr ? pPr[0] : ""}`;
-  const image = `${head}<w:r>${contentXml}</w:r></w:p>`;
-  if (!caption) return image;
-  const captionXml =
-    `${head}<w:r>${rPr?.[1] ?? ""}<w:t xml:space="preserve">(${escapeXml(caption)})</w:t></w:r></w:p>`;
-  return image + captionXml;
+  return `${open[0]}${ensureCenterPPr(pPr?.[0])}<w:r>${contentXml}</w:r></w:p>`;
 }
 
 async function fetchTteImageBytes(nip?: string | null, nama?: string | null): Promise<Uint8Array | null> {
   if (!nip && !nama) return null;
   try {
     const res = await api.get("/tte/resolve/image", {
-      params: { ...(nip ? { nip } : {}), ...(nama ? { nama } : {}) },
+      params: { qr: "0", ...(nip ? { nip } : {}), ...(nama ? { nama } : {}) },
       responseType: "blob",
     });
     const buf = await (res.data as Blob).arrayBuffer();
@@ -317,6 +325,12 @@ async function fetchTteImageBytes(nip?: string | null, nama?: string | null): Pr
   } catch {
     return null;
   }
+}
+
+function pngDimensions(bytes: Uint8Array): { width: number; height: number } | null {
+  if (bytes.length < 24 || bytes[0] !== 0x89 || bytes[1] !== 0x50) return null;
+  const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+  return { width: view.getUint32(16, false), height: view.getUint32(20, false) };
 }
 
 /* ───────────────────────── Filler dokumen ───────────────────────── */
@@ -542,7 +556,7 @@ export async function fillFr021Template(
 
   xml = xml.slice(0, table.start) + newTable + xml.slice(table.end);
 
-  /* ---- TTE: evaluator & atasan ---- */
+  /* ---- TTE: evaluator & atasan (gambar spesimen seperti FR-008) ---- */
   const imgEval = await fetchTteImageBytes(record.ttd_evaluator_nip, record.ttd_evaluator_nama);
   const imgAdmin = await fetchTteImageBytes(record.ttd_admin_nip, record.ttd_admin_nama);
 
@@ -554,8 +568,7 @@ export async function fillFr021Template(
 
   function nextRId(rels: string): string {
     const ids = [...rels.matchAll(/Id="rId(\d+)"/g)].map((m) => parseInt(m[1], 10));
-    const max = ids.length ? Math.max(...ids) : 0;
-    return `rId${max + 1}`;
+    return `rId${ids.length ? Math.max(...ids) + 1 : 1}`;
   }
 
   if (imgEval) {
@@ -576,8 +589,6 @@ export async function fillFr021Template(
   }
   zip.file(relsPath, relsXml);
 
-  const cx = 280 * 9525;
-  const cy = 107 * 9525;
   const placeholder = "(………………………………..)";
 
   // Blok tanda tangan: Evaluator (kolom kiri) lalu Mengetahui (kolom kanan).
@@ -587,33 +598,41 @@ export async function fillFr021Template(
     const rows = findBlocks(t2.xml, "w:tr");
     const sigRowIndex = rows.length - 1;
 
+    const evaluatorSigner = {
+      nip: record.ttd_evaluator_nip,
+      nama: record.ttd_evaluator_nama,
+    };
+    const adminSigner = {
+      nip: record.ttd_admin_nip,
+      nama: record.ttd_admin_nama,
+    };
+
     const newSig = mapRows(t2.xml, (ri, row) => {
       if (ri !== sigRowIndex) return row;
       return mapCells(row, (ci, cell) => {
         const isEvaluator = ci === 0;
         if (!isEvaluator && ci !== 2) return cell;
 
+        const signerNip = isEvaluator ? evaluatorSigner.nip : adminSigner.nip;
+        const signerNama = isEvaluator ? evaluatorSigner.nama : adminSigner.nama;
+        const rId = isEvaluator ? rIdEval : rIdAdmin;
+        const img = isEvaluator ? imgEval : imgAdmin;
+        const dims = img ? pngDimensions(img) : null;
+
         return transformParagraphs(cell, (para) => {
           if (!paragraphText(para).includes(placeholder)) return null;
-          // Pola FR-008: bila gambar TTE ada, caption nama dilewati
-          // (nama sudah tercantum di dalam kotak spesimen).
-          if (isEvaluator) {
-            if (rIdEval) {
-              return setParagraphImage(
-                para,
-                drawingXml(rIdEval, 10, cx, cy),
-              );
-            }
-            if (record.ttd_evaluator_nama) return setParagraphText(para, `(${record.ttd_evaluator_nama})`);
-            return null;
-          }
-          if (rIdAdmin) {
+          if (rId && dims) {
+            // Maks lebar agar muat sel Evaluator (4335 dxa - margin 2×108 dxa ≈ 275px);
+            // sel Mengetahui lebih lebar, jadi 270px konsisten & tidak terpotong layout fixed.
+            const width = 270;
+            const height = Math.max(1, Math.round((width * dims.height) / dims.width));
             return setParagraphImage(
               para,
-              drawingXml(rIdAdmin, 11, cx, cy),
+              drawingXml(rId, isEvaluator ? 10 : 11, width * 9525, height * 9525),
             );
           }
-          if (record.ttd_admin_nama) return setParagraphText(para, `(${record.ttd_admin_nama})`);
+          if (signerNama) return setParagraphText(para, `(${signerNama})`, undefined, true);
+          if (signerNip) return setParagraphText(para, `(${signerNip})`, undefined, true);
           return null;
         });
       });
