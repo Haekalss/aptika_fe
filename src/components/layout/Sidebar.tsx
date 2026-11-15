@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
@@ -18,33 +18,15 @@ import {
   PanelLeftOpen,
   ChevronDown,
   ChevronRight,
-  ShieldCog,
   ShieldCheck,
-  ShieldAlert,
-  Laptop,
-  Box,
-  Building2,
-  CalendarCheck,
-  FileCheck,
-  MessageSquare,
-  ClipboardCheck,
-  Server,
-  ServerCog,
-  ScrollText,
-  MonitorSmartphone,
-  Cctv,
-  DatabaseBackup,
-  GitPullRequest,
-  Siren,
-  Video,
-  Usb,
-  KeyRound,
 } from "lucide-react";
 import Avatar from "@/components/ui/Avatar";
 import { useSidebarStore } from "@/store/useSidebarStore";
 import { useTaskStore } from "@/store/useTaskStore";
 import { useAuthStore } from "@/store/useAuthStore";
 import { runGuardedNavigation } from "@/utils/guardedNavigation";
+import { SMKI_GROUPS, SMKI_OVERVIEW, modulesByGroup } from "@/components/smki/modules";
+import type { LucideIcon } from "lucide-react";
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -129,6 +111,25 @@ export default function Sidebar() {
   const canAccessTugas = isMounted && hasServicePermission("MANAJEMEN_TUGAS");
   const canAccessMagang = isMounted && hasServicePermission("MAGANG");
   const canAccessSmki = isMounted && hasServicePermission("SMKI");
+
+  type SmkiSubItem =
+    | { kind: "group"; label: string }
+    | { kind: "item"; name: string; key: string; icon: LucideIcon; iconColor: string };
+
+  // Daftar sub-menu SMKI - dari katalog tunggal (grouped + Aâ€“Z per grup)
+  const buildSmkiSubItems = (): SmkiSubItem[] => {
+    const violet = "text-violet-600 bg-violet-50 border border-violet-200/60";
+    const items: SmkiSubItem[] = [
+      { kind: "item", name: SMKI_OVERVIEW.label, key: "smki", icon: ShieldCheck, iconColor: violet },
+    ];
+    for (const group of SMKI_GROUPS) {
+      items.push({ kind: "group", label: group.label });
+      for (const m of modulesByGroup(group.id)) {
+        items.push({ kind: "item", name: m.label, key: m.path.replace(/^\//, ""), icon: m.icon, iconColor: violet });
+      }
+    }
+    return items;
+  };
 
   const dynamicMenuItems = [
     ...(canAccessSurat
@@ -242,225 +243,8 @@ export default function Sidebar() {
             type: "group" as const,
             name: "SMKI",
             icon: ShieldCheck,
-            iconColor: "text-emerald-600 bg-emerald-50 border border-emerald-200/60",
-            subItems: [
-              {
-                name: "Ringkasan SMKI",
-                key: "smki",
-                icon: ShieldCheck,
-                iconColor: "text-emerald-600 bg-emerald-50 border border-emerald-200/60",
-              },
-              {
-                name: "Risk Register (FR-002)",
-                key: "smki/risk-register",
-                icon: ShieldAlert,
-                iconColor: "text-emerald-700 bg-emerald-50 border border-emerald-200/60",
-              },
-              {
-                name: "Software Standar",
-                key: "smki/software-standar",
-                icon: Laptop,
-                iconColor: "text-teal-600 bg-teal-50 border border-teal-200/60",
-              },
-              {
-                name: "Formulir Hardening",
-                key: "smki/formulir-hardening",
-                icon: ShieldAlert,
-                iconColor: "text-amber-600 bg-amber-50 border border-amber-200/60",
-              },
-              {
-                name: "Form Hak Akses Fisik",
-                key: "smki/hak-akses-fisik",
-                icon: KeyRound,
-                iconColor: "text-emerald-600 bg-emerald-50 border border-emerald-200/60",
-              },
-              {
-                name: "Hak Akses TI",
-                key: "smki/hak-akses-ti",
-                icon: ShieldCog,
-                iconColor: "text-cyan-600 bg-cyan-50 border border-cyan-200/60",
-              },
-              {
-                name: "Aset Informasi",
-                key: "smki/aset-informasi",
-                icon: Layers,
-                iconColor: "text-blue-600 bg-blue-50 border border-blue-200/60",
-              },
-              {
-                name: "Daftar Rekaman",
-                key: "smki/daftar-rekaman",
-                icon: FileText,
-                iconColor: "text-purple-600 bg-purple-50 border border-purple-200/60",
-              },
-              {
-                name: "Komunikasi",
-                key: "smki/komunikasi",
-                icon: MessageSquare,
-                iconColor: "text-emerald-600 bg-emerald-50 border border-emerald-200/60",
-              },
-              {
-                name: "Log Perubahan",
-                key: "smki/log-perubahan",
-                icon: FileText,
-                iconColor: "text-emerald-600 bg-emerald-50 border border-emerald-200/60",
-              },
-              {
-                name: "Review Hak Akses",
-                key: "smki/review-hak-akses",
-                icon: ClipboardCheck,
-                iconColor: "text-emerald-600 bg-emerald-50 border border-emerald-200/60",
-              },
-              {
-                name: "Daftar Penyedia",
-                key: "smki/daftar-penyedia",
-                icon: Building2,
-                iconColor: "text-emerald-600 bg-emerald-50 border border-emerald-200/60",
-              },
-              {
-                name: "Evaluasi Penyedia",
-                key: "smki/evaluasi-penyedia",
-                icon: ClipboardCheck,
-                iconColor: "text-emerald-600 bg-emerald-50 border border-emerald-200/60",
-              },
-              {
-                name: "Evaluasi Kepatuhan",
-                key: "smki/evaluasi-kepatuhan",
-                icon: ClipboardCheck,
-                iconColor: "text-sky-600 bg-sky-50 border border-sky-200/60",
-              },
-              {
-                name: "Review Log",
-                key: "smki/review-log",
-                icon: ScrollText,
-                iconColor: "text-orange-600 bg-orange-50 border border-orange-200/60",
-              },
-              {
-                name: "Perangkat Pribadi (BYOD)",
-                key: "smki/perangkat-pribadi",
-                icon: MonitorSmartphone,
-                iconColor: "text-indigo-600 bg-indigo-50 border border-indigo-200/60",
-              },
-              {
-                name: "Review CCTV",
-                key: "smki/reviu-cctv",
-                icon: Cctv,
-                iconColor: "text-rose-600 bg-rose-50 border border-rose-200/60",
-              },
-              {
-                name: "Evaluasi DRP",
-                key: "smki/evaluasi-drp",
-                icon: DatabaseBackup,
-                iconColor: "text-violet-600 bg-violet-50 border border-violet-200/60",
-              },
-              {
-                name: "Berita Acara Backup",
-                key: "smki/backup-restore",
-                icon: DatabaseBackup,
-                iconColor: "text-violet-600 bg-violet-50 border border-violet-200/60",
-              },
-              {
-                name: "Checklist CCTV",
-                key: "smki/pemeriksaan-cctv",
-                icon: Video,
-                iconColor: "text-rose-600 bg-rose-50 border border-rose-200/60",
-              },
-              {
-                name: "Daftar Aset TI",
-                key: "daftar-aset-ti",
-                icon: Box,
-                iconColor: "text-blue-600 bg-blue-50 border border-blue-200/60",
-              },
-              {
-                name: "Daftar Aset Virtual",
-                key: "smki/formulir-daftar-aset-virtualisasi",
-                icon: Server,
-                iconColor: "text-cyan-600 bg-cyan-50 border border-cyan-200/60",
-              },
-              {
-                name: "Daftar Removable Media",
-                key: "smki/removable-media",
-                icon: Usb,
-                iconColor: "text-emerald-600 bg-emerald-50 border border-emerald-200/60",
-              },
-              {
-                name: "Capacity Planning",
-                key: "smki/capacity-planning",
-                icon: ServerCog,
-                iconColor: "text-emerald-600 bg-emerald-50 border border-emerald-200/60",
-              },
-              {
-                name: "Aset Sistem Info",
-                key: "smki/aset-sistem-informasi",
-                icon: Database,
-                iconColor: "text-indigo-600 bg-indigo-50 border border-indigo-200/60",
-              },
-              {
-                name: "Penghancuran Media",
-                key: "smki/berita-acara",
-                icon: FileText,
-                iconColor: "text-emerald-600 bg-emerald-50 border border-emerald-200/60",
-              },
-              {
-                name: "Rencana Audit",
-                key: "smki/rencana-audit",
-                icon: CalendarCheck,
-                iconColor: "text-teal-600 bg-teal-50 border border-teal-200/60",
-              },
-              {
-                name: "Laporan Audit",
-                key: "smki/laporan-audit",
-                icon: FileCheck,
-                iconColor: "text-emerald-600 bg-emerald-50 border border-emerald-200/60",
-              },
-              {
-                name: "Notulen",
-                key: "smki/notulen",
-                icon: FileText,
-                iconColor: "text-emerald-600 bg-emerald-50 border border-emerald-200/60",
-              },
-              {
-                name: "Formulir Tahunan",
-                key: "smki/laporan-audit-tahunan",
-                icon: FileText,
-                iconColor: "text-emerald-600 bg-emerald-50 border border-emerald-200/60",
-              },
-              {
-                name: "Laporan Kerusakan DC",
-                key: "smki/laporan-kerusakan",
-                icon: ServerCog,
-                iconColor: "text-red-600 bg-red-50 border border-red-200/60",
-              },
-              {
-                name: "Screening Karyawan",
-                key: "smki/screening-karyawan",
-                icon: Users,
-                iconColor: "text-emerald-600 bg-emerald-50 border border-emerald-200/60",
-              },
-              {
-                name: "Tindakan Perbaikan & Pencegahan",
-                key: "smki/tindakan-perbaikan",
-                icon: ClipboardCheck,
-                iconColor: "text-emerald-600 bg-emerald-50 border border-emerald-200/60",
-              },
-              {
-                name: "Daftar Aset SDM",
-                key: "smki/daftar-aset-sdm",
-                icon: Users,
-                iconColor: "text-indigo-600 bg-indigo-50 border border-indigo-200/60",
-              },
-              {
-                name: "Perubahan IT",
-                key: "smki/perubahan-it",
-                icon: GitPullRequest,
-                iconColor: "text-orange-600 bg-orange-50 border border-orange-200/60",
-              },
-              {
-                name: "Pelaporan Insiden",
-                key: "smki/pelaporan-insiden",
-                icon: Siren,
-                iconColor: "text-rose-600 bg-rose-50 border border-rose-200/60",
-              },
-            ],
+            iconColor: "text-violet-600 bg-violet-50 border border-violet-200/60",
+            subItems: buildSmkiSubItems(),
           },
         ]
       : []),
@@ -642,7 +426,7 @@ export default function Sidebar() {
                           ${
                             isThisGroupActive
                               ? isSmki
-                                ? "bg-emerald-50/80 text-[#0b2146] font-extrabold shadow-xs border border-emerald-200/70 dark:bg-emerald-800/80 dark:text-white dark:border-emerald-500/50"
+                                ? "bg-violet-50/80 text-violet-950 font-extrabold shadow-xs border border-violet-200/70 dark:bg-violet-800/80 dark:text-white dark:border-violet-500/50"
                                 : "bg-purple-50/80 text-[#0b2146] font-extrabold shadow-xs border border-purple-200/70 dark:bg-[#1d4ed8]/80 dark:text-white dark:border-blue-500/50"
                               : "text-[#0b2146]/90 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/60 hover:text-[#0b2146] dark:hover:text-white font-bold"
                           }
@@ -670,7 +454,7 @@ export default function Sidebar() {
                           </>
                         )}
                         {isCollapsed && isThisGroupActive && (
-                          <span className={`w-2 h-2 rounded-full ${isSmki ? "bg-emerald-600" : "bg-purple-600"} dark:bg-sky-400 shadow-[0_0_6px_rgba(147,51,234,0.6)] absolute right-2`} />
+                          <span className={`w-2 h-2 rounded-full ${isSmki ? "bg-violet-600" : "bg-purple-600"} dark:bg-sky-400 shadow-[0_0_6px_rgba(147,51,234,0.6)] absolute right-2`} />
                         )}
                       </button>
 
@@ -678,6 +462,19 @@ export default function Sidebar() {
                       {!isCollapsed && isThisGroupOpen && (
                         <div className="ml-3 pl-3 border-l-2 border-slate-100 dark:border-slate-800 space-y-1 pt-1 animate-in fade-in duration-200">
                           {item.subItems.map((sub) => {
+                            if ("kind" in sub && sub.kind === "group") {
+                              return (
+                                <div
+                                  key={`group-${sub.label}`}
+                                  className="flex items-center gap-2 px-2.5 pt-3 pb-1.5 mt-1 border-t border-slate-100 dark:border-slate-800 first:border-0 first:mt-0 first:pt-1.5"
+                                >
+                                  <span className="text-[9px] font-extrabold uppercase tracking-[0.14em] text-violet-500/80 dark:text-violet-400/80">
+                                    {sub.label}
+                                  </span>
+                                  <span className="flex-1 h-px bg-gradient-to-r from-violet-200/80 to-transparent dark:from-violet-800/60" />
+                                </div>
+                              );
+                            }
                             const SubIcon = sub.icon;
                             const isSubActive =
                               sub.key === "smki"
@@ -695,7 +492,7 @@ export default function Sidebar() {
                                   transition-all duration-150 select-none outline-none group
                                   ${
                                     isSubActive
-                                      ? "bg-blue-50/90 text-blue-700 font-extrabold shadow-xs border border-blue-200/70 dark:bg-[#1d4ed8] dark:text-white dark:border-blue-500/50"
+                                      ? "bg-violet-50/90 text-violet-800 font-extrabold shadow-xs border border-violet-200/70 dark:bg-violet-800 dark:text-white dark:border-violet-500/50"
                                       : "text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-[#0b2146] dark:hover:text-white"
                                   }
                                 `}
@@ -708,7 +505,7 @@ export default function Sidebar() {
                                 </div>
                                 <span className="flex-1 truncate text-[12px]">{sub.name}</span>
                                 {isSubActive && (
-                                  <span className="w-1.5 h-1.5 rounded-full bg-blue-600 dark:bg-sky-400 shadow-[0_0_5px_rgba(37,99,235,0.6)]" />
+                                  <span className="w-1.5 h-1.5 rounded-full bg-violet-600 dark:bg-violet-400 shadow-[0_0_5px_rgba(124,58,237,0.6)]" />
                                 )}
                               </button>
                             );
