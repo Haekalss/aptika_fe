@@ -30,9 +30,7 @@ export default function TinjauanAtasanSection({
       <TteBlock
         label="Evaluator"
         status={evaluatorSigned ? "sudah" : "belum"}
-        nama={record?.ttd_evaluator_nama ?? null}
         nip={record?.ttd_evaluator_nip ?? null}
-        tanggal={record?.tanggal_ttd_evaluator ?? null}
       />
 
       {canAct && !adminSigned && (
@@ -46,9 +44,7 @@ export default function TinjauanAtasanSection({
       <TteBlock
         label="Mengetahui (Atasan)"
         status={adminSigned ? "sudah" : "belum"}
-        nama={record?.ttd_admin_nama ?? (adminSigned ? null : undefined)}
         nip={record?.ttd_admin_nip ?? null}
-        tanggal={record?.tanggal_ttd_admin ?? null}
       />
 
       {canAct && !adminSigned && (

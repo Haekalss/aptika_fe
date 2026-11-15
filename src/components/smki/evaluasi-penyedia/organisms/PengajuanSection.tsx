@@ -63,9 +63,7 @@ export default function PengajuanSection({
       <TteBlock
         label="Evaluator"
         status={evaluatorSigned ? "sudah" : "belum"}
-        nama={record?.ttd_evaluator_nama ?? vendorKontak}
         nip={evaluatorSigned ? record?.ttd_evaluator_nip : null}
-        tanggal={evaluatorSigned ? record?.tanggal_ttd_evaluator : null}
       />
 
       {/* Pilih Atasan */}
@@ -109,13 +107,7 @@ export default function PengajuanSection({
       <TteBlock
         label="Mengetahui (Atasan)"
         status={adminSigned ? "sudah" : "belum"}
-        nama={
-          adminSigned
-            ? record?.ttd_admin_nama
-            : (admins.find((a) => a.id === form.admin_id)?.name ?? null)
-        }
         nip={adminSigned ? record?.ttd_admin_nip : null}
-        tanggal={adminSigned ? record?.tanggal_ttd_admin : null}
       />
 
       {!locked && mode === "ajukan" && (
