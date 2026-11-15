@@ -59,13 +59,6 @@ export default function PengajuanSection({
         </p>
       </div>
 
-      {/* TTE Evaluator */}
-      <TteBlock
-        label="Evaluator"
-        status={evaluatorSigned ? "sudah" : "belum"}
-        nip={evaluatorSigned ? record?.ttd_evaluator_nip : null}
-      />
-
       {/* Pilih Atasan */}
       <div>
         <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1 uppercase tracking-wide">
@@ -103,12 +96,27 @@ export default function PengajuanSection({
         )}
       </div>
 
-      {/* TTE Mengetahui (pratinjau sebelum diajukan, status nyata sesudahnya) */}
-      <TteBlock
-        label="Mengetahui (Atasan)"
-        status={adminSigned ? "sudah" : "belum"}
-        nip={adminSigned ? record?.ttd_admin_nip : null}
-      />
+      {/* Dua kartu TTE berdampingan (Evaluator & Mengetahui) */}
+      <div className="grid grid-cols-1 items-start gap-4 md:grid-cols-2 md:gap-6">
+        <TteBlock
+          label="Evaluator"
+          status={evaluatorSigned ? "sudah" : "belum"}
+          nama={record?.ttd_evaluator_nama ?? vendorKontak}
+          nip={evaluatorSigned ? record?.ttd_evaluator_nip : null}
+        />
+
+        {/* TTE Mengetahui (status nyata sesudah ditandatangani) */}
+        <TteBlock
+          label="Mengetahui (Atasan)"
+          status={adminSigned ? "sudah" : "belum"}
+          nama={
+            adminSigned
+              ? record?.ttd_admin_nama
+              : (admins.find((a) => a.id === form.admin_id)?.name ?? null)
+          }
+          nip={adminSigned ? record?.ttd_admin_nip : null}
+        />
+      </div>
 
       {!locked && mode === "ajukan" && (
         <div className="flex flex-wrap items-center justify-between gap-2 pt-2">
