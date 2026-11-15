@@ -17,6 +17,7 @@ import { FR021_STEPS, FR021_STEP_INDEX } from "../constants";
 import type { Fr021Step } from "../constants";
 import EvaluasiStepper from "../molecules/EvaluasiStepper";
 import IdentifikasiSection from "../organisms/IdentifikasiSection";
+import IdentitasDokumenSection from "../organisms/IdentitasDokumenSection";
 import PenilaianSection from "../organisms/PenilaianSection";
 import RevisiBanner from "../organisms/RevisiBanner";
 import RiwayatPanel from "../organisms/RiwayatPanel";
@@ -250,22 +251,33 @@ export default function EvaluasiPenyediaWizardTemplate() {
         )}
 
         {masterQuery.data && step === "identifikasi" && (
-          <section className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 space-y-4">
-            <h2 className="font-bold text-slate-800 dark:text-slate-100">
-              Identifikasi Evaluasi
-            </h2>
-            {isRevisi && (
-              <div className="rounded-xl bg-amber-50 p-3 text-xs text-amber-800">
-                Mode revisi: identifikasi terkunci, hanya penilaian yang dapat diubah.
-              </div>
-            )}
-            <IdentifikasiSection
+          <div className="space-y-4">
+            <IdentitasDokumenSection
               form={form}
               master={masterQuery.data}
               errors={errors}
               onChange={onChange}
               disabled={isLocked || isRevisi || !canUpdate}
             />
+
+            <section className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 space-y-4">
+              <h2 className="font-bold text-slate-800 dark:text-slate-100">
+                Identifikasi Evaluasi
+              </h2>
+              {isRevisi && (
+                <div className="rounded-xl bg-amber-50 p-3 text-xs text-amber-800">
+                  Mode revisi: identifikasi terkunci, hanya penilaian yang dapat diubah.
+                </div>
+              )}
+              <IdentifikasiSection
+                form={form}
+                master={masterQuery.data}
+                errors={errors}
+                onChange={onChange}
+                disabled={isLocked || isRevisi || !canUpdate}
+              />
+            </section>
+
             {!isLocked && !isRevisi && canUpdate && (
               <div className="flex justify-end gap-2 pt-2">
                 <Button
@@ -277,7 +289,7 @@ export default function EvaluasiPenyediaWizardTemplate() {
                 </Button>
               </div>
             )}
-          </section>
+          </div>
         )}
 
         {step === "penilaian" && masterQuery.data && (
