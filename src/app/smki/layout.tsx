@@ -1,300 +1,16 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import MainLayout from "@/components/layout/MainLayout";
 import { runGuardedNavigation } from "@/utils/guardedNavigation";
-import {
-  ShieldCheck,
-  ShieldAlert,
-  Laptop,
-  Lock,
-  FileText,
-  Building2,
-  Box,
-  CalendarCheck,
-  FileCheck,
-  ChevronUp,
-  ChevronDown,
-  ClipboardCheck,
-  ScrollText,
-  MonitorSmartphone,
-  Cctv,
-  DatabaseBackup,
-  Database,
-  CalendarRange,
-  Server,
-  ServerCog,
-  Users,
-  Video,
-  GitPullRequest,
-  MessageSquare,
-  Usb,
-  KeyRound,
-  Layers,
-} from "lucide-react";
+import { ShieldCheck, ChevronUp, ChevronDown } from "lucide-react";
+import { SMKI_GROUPS, SMKI_OVERVIEW, SMKI_MODULES, modulesByGroup } from "@/components/smki/modules";
 
-const smkiNavItems = [
-  {
-    label: "Ringkasan SMKI",
-    title: "SMKI Diskominfo Jawa Barat",
-    desc: "Pusat tata kelola, inventarisasi software resmi, kepatuhan lisensi, hardening aset, dan penerbitan dokumen standardisasi keamanan informasi di lingkungan Pemerintah Provinsi Jawa Barat.",
-    path: "/smki",
-    icon: ShieldCheck,
-    exact: true,
-  },
-  {
-    label: "Software Standar",
-    title: "Manajemen Daftar Software Standar (FR-017)",
-    desc: "Inventarisasi dan verifikasi perangkat lunak resmi organisasi untuk menjamin keamanan informasi, kepatuhan lisensi, dan standarisasi operasional di lingkungan Diskominfo Jawa Barat.",
-    path: "/smki/software-standar",
-    icon: Laptop,
-  },
-  {
-    label: "Formulir Hardening",
-    title: "Formulir Hardening Pengecekan Aset (FR-047)",
-    desc: "Pemeriksaan kepatuhan hardening keamanan perangkat teknologi informasi (Laptop/PC/Server) verifikasi auditor, dan ekspor dokumen resmi FR-047.",
-    path: "/smki/formulir-hardening",
-    icon: ShieldAlert,
-  },
-  {
-    label: "Form Hak Akses Fisik",
-    title: "Formulir Hak Akses Fisik (FR-019)",
-    desc: "Kelola data pengajuan dan izin hak akses fisik ruangan terbatas sesuai formulir FR-019 SMKI dengan mudah dan terstruktur.",
-    path: "/smki/hak-akses-fisik",
-    icon: KeyRound,
-  },
-  {
-    label: "Risk Register",
-    title: "Daftar Risiko Keamanan Informasi (FR-002)",
-    desc: "Kelola identifikasi aset, penilaian matriks risiko (Inherent, Current, Residual), kontrol ISO 27001, dan rencana mitigasi risiko keamanan informasi.",
-    path: "/smki/risk-register",
-    icon: ShieldAlert,
-  },
-  {
-    label: "Hak Akses TI",
-    title: "Formulir Hak Akses TI (FR-018)",
-    desc: "Pencatatan, pengajuan, dan verifikasi permohonan hak akses sistem informasi, penetapan level serta jenis akses pengguna sesuai standar keamanan informasi SMKI.",
-    path: "/smki/hak-akses-ti",
-    icon: Lock,
-  },
-  {
-    label: "Daftar Rekaman",
-    title: "Formulir Daftar Rekaman Dokumen SMKI",
-    desc: "Kelola pencatatan dan inventarisasi daftar rekaman dokumen SMKI, klasifikasi tingkat keamanan, masa retensi, dan penetapan pemilik arsip secara terpadu.",
-    path: "/smki/daftar-rekaman",
-    icon: FileText,
-  },
-  {
-    label: "Daftar Penyedia",
-    title: "Formulir Daftar Penyedia Barang/Jasa (FR-020)",
-    desc: "Inventarisasi dan verifikasi rekanan penyedia barang/jasa TI, ruang lingkup pekerjaan, kontak vendor, serta status berita acara sesuai standar FR-020.",
-    path: "/smki/daftar-penyedia",
-    icon: Building2,
-  },
-  {
-    label: "Evaluasi Penyedia",
-    title: "Formulir Evaluasi Kinerja Penyedia Barang/Jasa (FR-021)",
-    desc: "Penilaian kinerja penyedia barang/jasa, perhitungan nilai otomatis, rekomendasi, dan pengesahan digital (TTE) oleh Evaluator dan Atasan.",
-    path: "/smki/evaluasi-penyedia",
-    icon: ClipboardCheck,
-  },
-  {
-    label: "Daftar Aset TI",
-    title: "Daftar Aset Teknologi Informasi",
-    desc: "Sistem inventarisasi dan manajemen aset perangkat keras TI, monitoring masa pakai, pemantauan kondisi perangkat, serta ekspor laporan resmi Bidang APTIKA.",
-    path: "/daftar-aset-ti",
-    icon: Box,
-  },
-  {
-    label: "Daftar Aset Virtualisasi",
-    title: "Daftar Aset Virtualisasi (FR-035)",
-    desc: "Inventarisasi server fisik dan instance virtualisasi, alamat IP/hostname, spesifikasi, pemilik, klasifikasi keamanan, serta ekspor dokumen FR-035.",
-    path: "/smki/formulir-daftar-aset-virtualisasi",
-    icon: Server,
-  },
-  {
-    label: "Penghancuran Media",
-    title: "Berita Acara Penghancuran Media (FR-014)",
-    desc: "Kelola data berita acara penghancuran media penyimpanan sesuai formulir FR014-SMKI, rincian perangkat, metode pemusnahan, serta ekspor dokumen resmi Word (.docx).",
-    path: "/smki/berita-acara",
-    icon: FileText,
-  },
-  {
-    label: "Rencana Audit",
-    title: "Formulir Rencana Audit Internal SMKI (F05-SMKI)",
-    desc: "Jadwalkan dan kelola rencana audit internal SMKI, kontrol kepatuhan keamanan informasi, penetapan auditee dan auditor, serta ekspor dokumen resmi PDF.",
-    path: "/smki/rencana-audit",
-    icon: CalendarCheck,
-  },
-  {
-    label: "Laporan Audit",
-    title: "Laporan Audit Internal SMKI (FR-006)",
-    desc: "Catat temuan audit internal SMKI, klasifikasi kategori temuan (Major/Minor/OFI), analisis akar penyebab, rekomendasi perbaikan, serta ekspor dokumen resmi Word.",
-    path: "/smki/laporan-audit",
-    icon: FileCheck,
-  },
-  {
-    label: "Program Audit Tahunan",
-    title: "Program Audit Tahunan SMKI",
-    desc: "Kelola perencanaan program tahunan, cakupan objek audit, dan jadwal pelaksanaan kegiatan audit internal Sistem Manajemen Keamanan Informasi.",
-    path: "/smki/laporan-audit-tahunan",
-    icon: CalendarRange,
-  },
-  {
-    label: "Log Perubahan",
-    title: "Formulir Log Perubahan TI (FR-032)",
-    desc: "Pencatatan pelaksanaan perubahan teknologi informasi, kondisi sebelum dan sesudah perubahan, hasil pengujian sistem, serta tindak lanjut operasional.",
-    path: "/smki/log-perubahan",
-    icon: FileText,
-  },
-  {
-    label: "Review Hak Akses",
-    title: "Formulir Review Hak Akses (FR-034)",
-    desc: "Review pengguna yang terdaftar dalam sistem, tingkat hak akses, status akun, dan tindak lanjut hasil pemeriksaan sesuai formulir FR-034.",
-    path: "/smki/review-hak-akses",
-    icon: ClipboardCheck,
-  },
-  {
-    label: "Evaluasi Kepatuhan",
-    title: "Formulir Evaluasi Kepatuhan Regulasi (FR-044)",
-    desc: "Catat dan evaluasi tingkat kepatuhan terhadap regulasi, kebijakan keamanan informasi, dan standar teknis yang mendukung layanan utama organisasi.",
-    path: "/smki/evaluasi-kepatuhan",
-    icon: ClipboardCheck,
-  },
-  {
-    label: "Review Log",
-    title: "Daftar Review Log Aktivitas Sistem (FR-040)",
-    desc: "Formulir reviu berkala log akses dan aktivitas sistem informasi, analisis anomali keamanan, serta pencatatan tindak lanjut di lingkungan Diskominfo Jawa Barat.",
-    path: "/smki/review-log",
-    icon: ScrollText,
-  },
-  {
-    label: "Perangkat Pribadi",
-    title: "Formulir Penggunaan Perangkat Pribadi / BYOD (FR-045)",
-    desc: "Kelola surat pernyataan dan registrasi kepatuhan keamanan penggunaan perangkat pribadi (Bring Your Own Device) di lingkungan Diskominfo Jawa Barat.",
-    path: "/smki/perangkat-pribadi",
-    icon: MonitorSmartphone,
-  },
-  {
-    label: "Review CCTV",
-    title: "Daftar Review Monitoring CCTV (FR-038)",
-    desc: "Formulir reviu berkala monitoring dan pemeliharaan perangkat keamanan fisik CCTV, pemeriksaan rekaman, serta tindak lanjut operasional.",
-    path: "/smki/reviu-cctv",
-    icon: Cctv,
-  },
-  {
-    label: "Evaluasi DRP",
-    title: "Evaluasi Pengujian Disaster Recovery Plan (FR-039)",
-    desc: "Laporan evaluasi dan pengujian Disaster Recovery Plan (DRP), pencapaian target waktu pemulihan (RTO), kesiapan tim, dan checklist kelangsungan layanan TI.",
-    path: "/smki/evaluasi-drp",
-    icon: DatabaseBackup,
-  },
-  {
-    label: "Berita Acara Backup",
-    title: "Berita Acara Backup dan Restore (FR-030)",
-    desc: "Rekap backup dan restore aset, hasil kegiatan, serta bukti bulanan keamanan informasi.",
-    path: "/smki/backup-restore",
-    icon: DatabaseBackup,
-  },
-  {
-    label: "Aset Sistem Informasi",
-    title: "Daftar Aset Sistem Informasi (FR-036)",
-    desc: "Modul pendataan katalog aplikasi, spesifikasi teknis, arsitektur infrastruktur, dan inventarisasi Sistem Elektronik (Aplikasi/Server) sesuai standar FR-036.",
-    path: "/smki/aset-sistem-informasi",
-    icon: Database,
-  },
-  {
-    label: "Laporan Kerusakan",
-    title: "Laporan Kerusakan Fasilitas Data Center (FR-024)",
-    desc: "Pantau, tangani, dan validasi rekaman insiden kerusakan perangkat keras serta fasilitas pendukung infrastruktur Data Center Diskominfo Jawa Barat.",
-    path: "/smki/laporan-kerusakan",
-    icon: ServerCog,
-  },
-  {
-    label: "Pelaporan Insiden",
-    title: "Formulir Pelaporan Insiden Keamanan (FR-016)",
-    desc: "Kelola pencatatan insiden keamanan informasi, kronologi kejadian, analisis dampak, dan status penanganan insiden secara terstruktur.",
-    path: "/smki/pelaporan-insiden",
-    icon: ShieldAlert,
-  },
-  {
-    label: "Screening Karyawan",
-    title: "Screening Karyawan Outsourcing (FR-012)",
-    desc: "Kelola berita acara verifikasi administrasi keamanan tenaga alih daya, checklist kepatuhan NDA & latar belakang, serta cetak dokumen resmi FR-012.",
-    path: "/smki/screening-karyawan",
-    icon: Users,
-  },
-  {
-    label: "Pemeriksaan CCTV",
-    title: "Formulir Pemeriksaan CCTV (FR-037)",
-    desc: "Pemeriksaan berkala perangkat & rekaman CCTV ruang server, checklist kondisi fisik, dan ekspor formulir FR-037.",
-    path: "/smki/pemeriksaan-cctv",
-    icon: Video,
-  },
-  {
-    label: "Daftar Aset SDM",
-    title: "Daftar Aset Sumber Daya Manusia",
-    desc: "Inventarisasi aset SDM SMKI, klasifikasi peran & tanggung jawab, riwayat pelatihan, serta ekspor dokumen resmi.",
-    path: "/smki/daftar-aset-sdm",
-    icon: Users,
-  },
-  {
-    label: "Perubahan IT",
-    title: "Formulir Perubahan IT SMKI (FR-031)",
-    desc: "Pengajuan Request for Change (RFC), analisis dampak risiko, persetujuan CAB, dan dokumentasi perubahan IT sesuai SMKI.",
-    path: "/smki/perubahan-it",
-    icon: GitPullRequest,
-  },
-  {
-    label: "Komunikasi SMKI",
-    title: "Formulir Komunikasi SMKI (FR-010)",
-    desc: "Pencatatan dan pemantauan agenda komunikasi internal dan eksternal SMKI: pesan kunci, media rilis, target audiens, dan evaluasi hasil.",
-    path: "/smki/komunikasi",
-    icon: MessageSquare,
-  },
-  {
-    label: "Tindakan Perbaikan",
-    title: "Tindakan Perbaikan & Pencegahan (FR-009)",
-    desc: "Pencatatan temuan ketidaksesuaian, analisis akar masalah (root cause), serta monitoring rencana tindakan korektif & preventif format FR-009.",
-    path: "/smki/tindakan-perbaikan",
-    icon: ClipboardCheck,
-  },
-  {
-    label: "Removable Media",
-    title: "Daftar Removable Media (FR-025)",
-    desc: "Inventarisasi media penyimpanan lepas pasang (Flashdisk, HDD Eksternal), hak akses otorisasi, penanggung jawab, dan formulir FR-025.",
-    path: "/smki/removable-media",
-    icon: Usb,
-  },
-  {
-    label: "Capacity Planning",
-    title: "Pemantauan Kapasitas Infrastruktur (FR-026)",
-    desc: "Pantau kapasitas Server dan Network, catat log bulanan Current/Projection, serta ekspor laporan tahunan dalam format PDF atau Excel.",
-    path: "/smki/capacity-planning",
-    icon: ServerCog,
-  },
-  {
-    label: "Notulen Management Review",
-    title: "Notulen Management Review (FR-011)",
-    desc: "Dokumentasi rapat tinjauan manajemen SMKI, pembahasan klausul ISO 27001 Clause 9.3, keputusan tindak lanjut, dan cetak berita acara.",
-    path: "/smki/notulen",
-    icon: FileCheck,
-  },
-  {
-    label: "Aset Informasi",
-    title: "Formulir Aset Informasi (FR-028)",
-    desc: "Pendataan formulir resmi FR-028 aset informasi unit kerja, aset intangible, dan evaluasi matriks risiko CIA (Kerahasiaan, Integritas, Ketersediaan).",
-    path: "/smki/aset-informasi",
-    icon: Layers,
-  },
-  {
-    label: "Matriks Kompetensi",
-    title: "Matriks Kompetensi SMKI (FR-031)",
-    desc: "Kelola standar kompetensi peran (Kordinator/Team Teknis), kompetensi pegawai dari Aset SDM, gap analisis otomatis, dan rencana training.",
-    path: "/smki/matrix-competency",
-    icon: ClipboardCheck,
-  },
+const allSmkiItems = [SMKI_OVERVIEW, ...SMKI_MODULES];
+const smkiSections: { id: string; label: string | null; items: typeof allSmkiItems }[] = [
+  { id: "overview", label: null, items: [SMKI_OVERVIEW] },
+  ...SMKI_GROUPS.map((g) => ({ id: g.id, label: g.label as string | null, items: modulesByGroup(g.id) })),
 ];
 
 export default function SmkiLayout({
@@ -308,13 +24,13 @@ export default function SmkiLayout({
 
   const isDaftarAsetAlias = pathname.startsWith("/smki/daftar-aset-ti");
   const activeItem =
-    smkiNavItems.find((item) =>
-      item.exact
+    allSmkiItems.find((item) =>
+      item.path === "/smki"
         ? pathname === item.path
         : pathname === item.path ||
           pathname.startsWith(item.path + "/") ||
           (item.path === "/daftar-aset-ti" && isDaftarAsetAlias)
-    ) || smkiNavItems[0];
+    ) || allSmkiItems[0];
 
   const ActiveIcon = activeItem.icon || ShieldCheck;
   const isMainOverview = pathname === "/smki";
@@ -349,7 +65,7 @@ export default function SmkiLayout({
       `}</style>
 
       <div className="flex flex-col lg:flex-row gap-5 items-start font-sans">
-        {/* ── SIDEBAR DROPDOWN SMKI ── */}
+        {/* -- SIDEBAR DROPDOWN SMKI -- */}
         <aside className="w-full lg:w-[240px] flex-shrink-0 bg-white/90 dark:bg-[#071733]/90 backdrop-blur-md rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm p-3 lg:sticky lg:top-2 lg:min-h-[calc(100vh-130px)] print:hidden">
           {/* Header Tombol Dropdown SMKI */}
           <button
@@ -371,47 +87,60 @@ export default function SmkiLayout({
             )}
           </button>
 
-          {/* Daftar Sub-Menu Dropdown SMKI */}
+          {/* Daftar Sub-Menu Dropdown SMKI — digroup + A–Z per grup */}
           {isDropdownOpen && (
             <div className="mt-2 pt-2 border-t border-slate-100 dark:border-slate-800/80 flex flex-col gap-1">
-              {smkiNavItems.map((item) => {
-                const Icon = item.icon;
-                const isActive = item.exact
-                  ? pathname === item.path
-                  : pathname === item.path ||
-                    pathname.startsWith(item.path + "/") ||
-                    (item.path === "/daftar-aset-ti" && isDaftarAsetAlias);
+              {smkiSections.map((section) => (
+                <div key={section.id} className="flex flex-col gap-1">
+                  {section.label && (
+                    <div className="flex items-center gap-2 px-3 pt-3 pb-1 border-t border-slate-100 dark:border-slate-800/70 first:border-0 first:pt-1.5">
+                      <span className="text-[9px] font-extrabold uppercase tracking-[0.14em] text-violet-500/80 dark:text-violet-400/80">
+                        {section.label}
+                      </span>
+                      <span className="flex-1 h-px bg-gradient-to-r from-violet-200/70 to-transparent dark:from-violet-800/60" />
+                    </div>
+                  )}
+                  {section.items.map((item) => {
+                    const Icon = item.icon;
+                    const isActive =
+                      item.path === "/smki"
+                        ? pathname === item.path
+                        : pathname === item.path ||
+                          pathname.startsWith(item.path + "/") ||
+                          (item.path === "/daftar-aset-ti" && isDaftarAsetAlias);
 
-                return (
-                  <button
-                    key={item.path}
-                    type="button"
-                    suppressHydrationWarning
-                    onClick={() => runGuardedNavigation(() => router.push(item.path))}
-                    className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-left text-[12.5px] transition-all ${
-                      isActive
-                        ? "bg-violet-50/90 dark:bg-violet-950/60 text-violet-600 dark:text-violet-400 font-bold border border-violet-200/80 dark:border-violet-900/60 shadow-2xs"
-                        : "text-slate-600 dark:text-slate-300 font-medium hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white"
-                    }`}
-                  >
-                    <span
-                      className={`w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                        isActive
-                          ? "bg-violet-100/90 dark:bg-violet-900/60 text-violet-600 dark:text-violet-300"
-                          : "bg-slate-100/80 dark:bg-slate-800 text-violet-600 dark:text-violet-400"
-                      }`}
-                    >
-                      <Icon size={14} />
-                    </span>
-                    <span className="truncate">{item.label}</span>
-                  </button>
-                );
-              })}
+                    return (
+                      <button
+                        key={item.path}
+                        type="button"
+                        suppressHydrationWarning
+                        onClick={() => runGuardedNavigation(() => router.push(item.path))}
+                        className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-left text-[12.5px] transition-all ${
+                          isActive
+                            ? "bg-violet-50/90 dark:bg-violet-950/60 text-violet-600 dark:text-violet-400 font-bold border border-violet-200/80 dark:border-violet-900/60 shadow-2xs"
+                            : "text-slate-600 dark:text-slate-300 font-medium hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white"
+                        }`}
+                      >
+                        <span
+                          className={`w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                            isActive
+                              ? "bg-violet-100/90 dark:bg-violet-900/60 text-violet-600 dark:text-violet-300"
+                              : "bg-slate-100/80 dark:bg-slate-800 text-violet-600 dark:text-violet-400"
+                          }`}
+                        >
+                          <Icon size={14} />
+                        </span>
+                        <span className="truncate">{item.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              ))}
             </div>
           )}
         </aside>
 
-        {/* ── KONTEN UTAMA SMKI ── */}
+        {/* -- KONTEN UTAMA SMKI -- */}
         <div className="flex-1 min-w-0 w-full flex flex-col gap-5">
           {/* Tampilkan Hero Banner Seragam untuk seluruh sub-fitur dropdown SMKI (Dengan Ornamen Cyber Radar) */}
           {!isMainOverview && !isPrintPage && (

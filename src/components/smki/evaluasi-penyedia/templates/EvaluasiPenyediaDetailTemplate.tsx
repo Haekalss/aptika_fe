@@ -11,6 +11,7 @@ import { useFr021Detail, useFr021Master } from "../hooks/useFr021Queries";
 
 import EvaluasiStepper from "../molecules/EvaluasiStepper";
 import IdentifikasiSection from "../organisms/IdentifikasiSection";
+import IdentitasDokumenSection from "../organisms/IdentitasDokumenSection";
 import PenilaianSection from "../organisms/PenilaianSection";
 import HasilSection from "../organisms/HasilSection";
 import PengajuanSection from "../organisms/PengajuanSection";
@@ -120,6 +121,19 @@ export default function EvaluasiPenyediaDetailTemplate() {
             onSelect={() => {}}
           />
         </div>
+
+        <section className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 space-y-4">
+          <h2 className="font-bold text-slate-800 dark:text-slate-100">
+            Identitas Dokumen
+          </h2>
+          <IdentitasDokumenSection
+            form={form}
+            master={masterQuery.data!}
+            errors={{}}
+            onChange={() => {}}
+            disabled
+          />
+        </section>
 
         <section className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 space-y-4">
           <h2 className="font-bold text-slate-800 dark:text-slate-100">

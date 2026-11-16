@@ -27,13 +27,22 @@ export default function TinjauanAtasanSection({
 
   return (
     <div className="space-y-4">
-      <TteBlock
-        label="Evaluator"
-        status={evaluatorSigned ? "sudah" : "belum"}
-        nama={record?.ttd_evaluator_nama ?? null}
-        nip={record?.ttd_evaluator_nip ?? null}
-        tanggal={record?.tanggal_ttd_evaluator ?? null}
-      />
+      {/* Dua kartu TTE berdampingan (Evaluator & Mengetahui) */}
+      <div className="grid grid-cols-1 items-start gap-4 md:grid-cols-2 md:gap-6">
+        <TteBlock
+          label="Evaluator"
+          status={evaluatorSigned ? "sudah" : "belum"}
+          nama={record?.ttd_evaluator_nama ?? null}
+          nip={record?.ttd_evaluator_nip ?? null}
+        />
+
+        <TteBlock
+          label="Mengetahui (Atasan)"
+          status={adminSigned ? "sudah" : "belum"}
+          nama={record?.ttd_admin_nama ?? null}
+          nip={record?.ttd_admin_nip ?? null}
+        />
+      </div>
 
       {canAct && !adminSigned && (
         <CatatanTinjauan
@@ -42,14 +51,6 @@ export default function TinjauanAtasanSection({
           disabled={busy}
         />
       )}
-
-      <TteBlock
-        label="Mengetahui (Atasan)"
-        status={adminSigned ? "sudah" : "belum"}
-        nama={record?.ttd_admin_nama ?? (adminSigned ? null : undefined)}
-        nip={record?.ttd_admin_nip ?? null}
-        tanggal={record?.tanggal_ttd_admin ?? null}
-      />
 
       {canAct && !adminSigned && (
         <div className="flex flex-wrap items-center justify-end gap-2 pt-2">
