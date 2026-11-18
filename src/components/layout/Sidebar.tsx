@@ -21,6 +21,7 @@ import {
   ShieldCog,
   ShieldCheck,
   ShieldAlert,
+  KeyRound,
   Laptop,
   Box,
   Building2,
@@ -38,7 +39,6 @@ import {
   Siren,
   Video,
   Usb,
-  KeyRound,
 } from "lucide-react";
 import Avatar from "@/components/ui/Avatar";
 import { useSidebarStore } from "@/store/useSidebarStore";
@@ -273,6 +273,12 @@ export default function Sidebar() {
                 key: "smki/hak-akses-ti",
                 icon: ShieldCog,
                 iconColor: "text-cyan-600 bg-cyan-50 border border-cyan-200/60",
+              },
+              {
+                name: "User Access Matrix",
+                key: "smki/user-access-matrix",
+                icon: KeyRound,
+                iconColor: "text-violet-600 bg-violet-50 border border-violet-200/60",
               },
               {
                 name: "Aset Informasi",

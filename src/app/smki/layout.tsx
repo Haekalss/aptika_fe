@@ -148,6 +148,13 @@ const smkiNavItems = [
     icon: ClipboardCheck,
   },
   {
+    label: "User Access Matrix",
+    title: "User Access Matrix",
+    desc: "Kelola daftar role, ruang lingkup akses pada sistem, dan penanda tangan formulir FR-033 untuk setiap unit kerja.",
+    path: "/smki/user-access-matrix",
+    icon: KeyRound,
+  },
+  {
     label: "Evaluasi Kepatuhan",
     title: "Formulir Evaluasi Kepatuhan Regulasi (FR-044)",
     desc: "Catat dan evaluasi tingkat kepatuhan terhadap regulasi, kebijakan keamanan informasi, dan standar teknis yang mendukung layanan utama organisasi.",

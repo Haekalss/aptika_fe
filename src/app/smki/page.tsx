@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
+import type { LucideIcon } from "lucide-react";
 import {
   ShieldCheck,
   ShieldAlert,
@@ -29,6 +30,7 @@ import {
   GitPullRequest,
   Usb,
   Layers,
+  KeyRound,
 } from "lucide-react";
 import ServiceRouteGuard from "@/components/auth/ServiceRouteGuard";
 
@@ -36,10 +38,16 @@ interface SmkiServiceCard {
   title: string;
   desc: string;
   path: string;
-  icon: any;
+  icon: LucideIcon;
 }
 
 const smkiCards: SmkiServiceCard[] = [
+  {
+    title: "User Access Matrix (FR-033)",
+    desc: "Kelola daftar role dan ruang lingkup hak akses sistem pada setiap unit kerja dalam formulir FR-033.",
+    path: "/smki/user-access-matrix",
+    icon: KeyRound,
+  },
   {
     title: "Manajemen Software Standar",
     desc: "Kelola inventarisasi perangkat lunak resmi, audit lisensi, serta otomatis ekspor formulir input ke dalam template dokumen resmi FR-017.",
