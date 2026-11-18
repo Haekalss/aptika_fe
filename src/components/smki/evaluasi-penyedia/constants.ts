@@ -4,8 +4,7 @@ import type {
   Fr021Status,
 } from "@/services/smki/evaluasiPenyedia.types";
 
-/** Label status sesuai PRD §4 (DB → UI). */
-export const FR021_STATUS_LABEL: Record<Fr021Status, string> = {
+const FR021_STATUS_LABEL: Record<Fr021Status, string> = {
   draft: "Draft",
   diajukan: "Menunggu Persetujuan",
   revisi: "Perlu Revisi",
@@ -49,7 +48,7 @@ export const FR021_STEPS: {
   label: string;
   hint: string;
 }[] = [
-  { id: "identifikasi", label: "Identifikasi", hint: "Data penyedia & pekerjaan" },
+  { id: "identifikasi", label: "Identifikasi", hint: "Identitas dokumen & penyedia" },
   { id: "penilaian", label: "Penilaian", hint: "4 kriteria kinerja" },
   { id: "hasil", label: "Hasil & Pengajuan", hint: "Nilai, rekomendasi & tanda tangan" },
   { id: "tinjauan", label: "Persetujuan", hint: "Tinjauan Atasan" },

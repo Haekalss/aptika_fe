@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { User, Sun, Moon, ShieldCog, FolderKanban, FileText, TrendingUp, Users, ShieldCheck, Database, Home } from "lucide-react";
+import { User, Sun, Moon, ShieldCog, FolderKanban, FileText, TrendingUp, Users, ShieldCheck, Database, Home, MessageSquare } from "lucide-react";
 import Avatar from "@/components/ui/Avatar";
 import Dropdown from "@/components/ui/Dropdown";
 import { useRouter, usePathname } from "next/navigation";
@@ -54,12 +54,13 @@ export default function Header({ title, subtitle, showBrand = false }: HeaderPro
                       pathname.startsWith("/perubahan-it");
 
   const isModulePage = pathname.startsWith("/manajementugasdigital") || 
-                       isSuratPage || 
-                       pathname.startsWith("/magang") || 
-                       pathname.startsWith("/smki") || 
-                       pathname.startsWith("/daftar-aset-ti") ||
-                       pathname.startsWith("/master") ||
-                       isIkiPage;
+                      isSuratPage || 
+                      pathname.startsWith("/magang") || 
+                      pathname.startsWith("/smki") || 
+                      pathname.startsWith("/daftar-aset-ti") ||
+                      pathname.startsWith("/master") ||
+                      pathname.startsWith("/wa-bot") || // <-- Tambahan untuk WA Bot
+                      isIkiPage;
 
   const moduleNavItems = [
     { label: "Administrasi Surat", path: "/administrasisurat", icon: <FileText size={15} /> },
@@ -68,6 +69,7 @@ export default function Header({ title, subtitle, showBrand = false }: HeaderPro
     { label: "IKI Report", path: "/integrasiinteroperabilitas/dashboard", icon: <TrendingUp size={15} /> },
     { label: "SMKI", path: "/smki", icon: <ShieldCheck size={15} /> },
     { label: "Data Master", path: "/master", icon: <Database size={15} /> },
+    { label: "WA Bot", path: "/wa-bot", icon: <MessageSquare size={15} className="text-emerald-500" /> }, // <-- Tambahan menu WA Bot
   ];
 
   const profileMenuItems = [

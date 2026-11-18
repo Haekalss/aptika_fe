@@ -52,34 +52,6 @@ export default function IdentifikasiSection({
         required
       />
 
-      <div className="grid gap-4 sm:grid-cols-3">
-        <Input
-          label="No. Dokumen"
-          placeholder="FR-021/KOM.03.05/SANDIKAMI"
-          value={form.nomor_dokumen}
-          onChange={(event) => onChange({ nomor_dokumen: event.target.value })}
-          error={errors.nomor_dokumen?.[0]}
-          disabled={disabled}
-        />
-        <Input
-          label="No. Revisi"
-          placeholder="1.1"
-          value={form.nomor_revisi}
-          onChange={(event) => onChange({ nomor_revisi: event.target.value })}
-          error={errors.nomor_revisi?.[0]}
-          disabled={disabled}
-        />
-        <Input
-          label="Tanggal Berlaku"
-          type="date"
-          value={form.tanggal_berlaku}
-          onChange={(event) => onChange({ tanggal_berlaku: event.target.value })}
-          error={errors.tanggal_berlaku?.[0]}
-          disabled={disabled}
-          required
-        />
-      </div>
-
       <SifatPekerjaanField
         form={form}
         errors={errors}

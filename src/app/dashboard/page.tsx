@@ -18,8 +18,8 @@ import {
   AlertTriangle,
   Database,
   RefreshCw,
-  ChevronRight,
   Pin,
+  MessageSquare,
 } from "lucide-react";
 
 import { useAuthStore } from "@/store/useAuthStore";
@@ -218,12 +218,23 @@ const moduleAccents: Record<
     iconShadow: "shadow-cyan-500/30",
     Icon: Database,
   },
+  "whatsapp-bot": {
+    strip: "from-emerald-500 to-teal-600",
+    glow: "hover:shadow-emerald-500/20",
+    border: "hover:border-emerald-200",
+    text: "text-emerald-600",
+    soft: "bg-emerald-50 text-emerald-700 border-emerald-100",
+    dot: "bg-emerald-500",
+    iconShadow: "shadow-emerald-500/30",
+    Icon: MessageSquare,
+  },
 };
 
 const moduleDefaultStats: Record<string, string> = {
   "iki-report": "6 tim",
   smki: "20 formulir",
   "data-master": "4 referensi",
+  "whatsapp-bot": "Online",
 };
 
 function getActivityBadge(id: string): { label: string; cls: string } {
@@ -331,7 +342,6 @@ function IsometricIllustration() {
 export default function Homepage() {
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
-  const [userName, setUserName] = useState("User");
 
   const { user, bidang, isAdminAptika, hasServicePermission, fetchProfile } = useAuthStore();
 
@@ -376,7 +386,6 @@ export default function Homepage() {
           status: string;
         }[] = [];
 
-        // 1. Notifikasi Sistem
         if (notifRes.status === "fulfilled" && Array.isArray(notifRes.value)) {
           notifRes.value.slice(0, 4).forEach((n: any, idx: number) => {
             const ts = new Date(n.created_at || n.timestamp || Date.now()).getTime() || Date.now() - idx * 60000;
@@ -393,7 +402,6 @@ export default function Homepage() {
           });
         }
 
-        // 2. Nota Dinas Terbaru
         let ndCount = 0;
         if (ndRes.status === "fulfilled" && ndRes.value) {
           const list = Array.isArray(ndRes.value?.data) ? ndRes.value.data : [];
@@ -414,7 +422,6 @@ export default function Homepage() {
           });
         }
 
-        // 3. Hasil Pentest Terbaru
         if (ptRes.status === "fulfilled" && ptRes.value) {
           const list = Array.isArray(ptRes.value?.data) ? ptRes.value.data : [];
           list.slice(0, 2).forEach((item: any, idx: number) => {
@@ -433,7 +440,6 @@ export default function Homepage() {
           });
         }
 
-        // 4. Peringatan Kerentanan Terbaru
         if (krRes.status === "fulfilled" && krRes.value) {
           const list = Array.isArray(krRes.value?.data) ? krRes.value.data : [];
           list.slice(0, 2).forEach((item: any, idx: number) => {
@@ -452,7 +458,6 @@ export default function Homepage() {
           });
         }
 
-        // 5. Data Magang Terbaru
         let activeMagangCount = 0;
         let totalMagangCount = 0;
         if (mgRes.status === "fulfilled" && mgRes.value) {
@@ -479,7 +484,6 @@ export default function Homepage() {
           });
         }
 
-        // 6. Manajemen Tugas Digital Terbaru
         let totalTaskCount = 0;
         if (taskRes.status === "fulfilled" && taskRes.value) {
           const list = Array.isArray(taskRes.value?.data)
@@ -504,7 +508,6 @@ export default function Homepage() {
           });
         }
 
-        // 7. Permohonan TI Terbaru
         let tiCount = 0;
         if (tiRes.status === "fulfilled" && tiRes.value) {
           const list = Array.isArray(tiRes.value)
@@ -534,7 +537,6 @@ export default function Homepage() {
           setLiveActivities(feed.slice(0, 10));
         }
 
-        // Update Pengumuman secara dinamis mengikuti status data hari ini
         const todayStr = new Date().toLocaleDateString("id-ID", {
           day: "numeric",
           month: "long",
@@ -546,6 +548,7 @@ export default function Homepage() {
             "administrasi-surat": `${ndCount + tiCount} dokumen`,
             magang: `${activeMagangCount} aktif`,
             "manajemen-tugas-digital": `${totalTaskCount} proyek`,
+            "whatsapp-bot": "Online",
           });
         }
 
@@ -594,17 +597,6 @@ export default function Homepage() {
   useEffect(() => {
     setMounted(true);
     fetchProfile();
-    if (typeof window !== "undefined") {
-      try {
-        const uStr = localStorage.getItem("user");
-        if (uStr) {
-          const uObj = JSON.parse(uStr);
-          if (uObj?.name) setUserName(uObj.name);
-        }
-      } catch (e) {
-        console.error(e);
-      }
-    }
   }, [fetchProfile]);
 
   const fetchMatrix = useCallback(async () => {
@@ -695,6 +687,17 @@ export default function Homepage() {
       arrowBg: "bg-cyan-500 hover:bg-cyan-600",
       path: "/master",
     },
+    {
+      id: "whatsapp-bot",
+      code: "WHATSAPP_BOT",
+      title: "WhatsApp Bot & Asisten",
+      desc: "Monitoring koneksi Baileys WhatsApp, broadcast agenda otomatis, dan asisten data interaktif.",
+      icon: <MessageSquare size={22} className="text-white" />,
+      iconBg: "bg-emerald-600",
+      cardBorder: "border-slate-100 hover:border-emerald-300 dark:border-slate-800",
+      arrowBg: "bg-emerald-600 hover:bg-emerald-700",
+      path: "/wa-bot",
+    },
   ];
 
   const getFilteredCards = () => {
@@ -704,30 +707,23 @@ export default function Homepage() {
       const targetBidang = bidangMatrixList.find((b) => String(b.bidang_id) === selectedBidangId);
       if (!targetBidang) return allCards;
       return allCards.filter((card) => {
-        if (card.code === "DATA_MASTER") return true;
+        if (card.code === "DATA_MASTER" || card.code === "WHATSAPP_BOT") return true;
         const svc = targetBidang.services.find((s) => s.code === card.code);
         return svc ? svc.is_enabled : true;
       });
     }
-    return allCards.filter((c) => c.code === "DATA_MASTER" || hasServicePermission(c.code));
+    return allCards.filter((c) => c.code === "DATA_MASTER" || c.code === "WHATSAPP_BOT" || hasServicePermission(c.code));
   };
 
   const cards = getFilteredCards();
-
-  const selectedBidangObj = bidangMatrixList.find(
-    (b) => String(b.bidang_id) === selectedBidangId
-  );
 
   const visibleActivities = showAllActivities ? liveActivities : liveActivities.slice(0, 5);
 
   return (
     <div className="flex flex-col gap-6 pb-6 font-sans">
-      {/* ── Hero Welcome Banner (Dengan Ornamen Dot Matrix, Orbital Rings & Shimmer Beam) ── */}
+      {/* Hero Welcome Banner */}
       <div className="relative overflow-hidden bg-gradient-to-r from-[#071733] via-[#0f2e60] to-[#1d4ed8] rounded-3xl text-white shadow-xl min-h-[195px]">
-        {/* Top Shimmer Beam */}
         <div className="absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-cyan-300/60 to-transparent pointer-events-none z-20" />
-
-        {/* Dot Matrix Pattern Overlay */}
         <div
           className="absolute inset-0 opacity-[0.16] pointer-events-none"
           style={{
@@ -735,21 +731,8 @@ export default function Homepage() {
             backgroundSize: "18px 18px",
           }}
         />
-
-        {/* Ambient Glow Orbs */}
         <div className="absolute -right-20 -bottom-20 w-80 h-80 rounded-full bg-blue-400/25 blur-3xl pointer-events-none" />
         <div className="absolute left-1/3 -top-10 w-64 h-64 rounded-full bg-cyan-400/20 blur-2xl pointer-events-none" />
-
-        {/* Orbital Geometric Circles */}
-        <div className="absolute right-1/4 top-1/2 -translate-y-1/2 w-80 h-80 rounded-full border border-white/10 pointer-events-none" />
-        <div className="absolute right-1/4 top-1/2 -translate-y-1/2 w-56 h-56 rounded-full border border-cyan-300/15 pointer-events-none" />
-
-        {/* Sparkle Star Decorative */}
-        <div className="absolute left-1/2 top-4 pointer-events-none opacity-80 animate-pulse">
-          <svg className="w-3.5 h-3.5 text-cyan-200" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z" />
-          </svg>
-        </div>
 
         <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6 px-6 py-6 sm:px-8">
           <div className="flex-1 min-w-0 max-w-lg">
@@ -796,7 +779,7 @@ export default function Homepage() {
         </div>
       </div>
 
-      {/* ── Super Admin Bidang Selector ── */}
+      {/* Super Admin Bidang Selector */}
       {isSuperAdmin && (
         <div className="bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-amber-500/10 border border-amber-500/30 dark:border-amber-500/20 rounded-2xl p-5 shadow-sm space-y-3">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-amber-500/20 pb-3">
@@ -834,7 +817,7 @@ export default function Homepage() {
         </div>
       )}
 
-      {/* ── Modul Service Section: Logo Vertikal Seimbang & Panah Tidak Mepet ── */}
+      {/* Modul Service Section */}
       <div className="bg-white/60 dark:bg-[#071733]/80 backdrop-blur-md rounded-3xl p-6 shadow-sm border border-white/70 dark:border-slate-800">
         <div className="flex items-center justify-between mb-5">
           <div className="flex items-center gap-3.5">
@@ -852,22 +835,18 @@ export default function Homepage() {
           </div>
         </div>
 
-        {/* Module Cards: aksen warna modul, angka live, dan hover interaktif */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4.5">
           {cards.map((card) => {
             const accent = moduleAccents[card.id] || moduleAccents["administrasi-surat"];
             const WatermarkIcon = accent.Icon;
-            const stat = moduleStats[card.id] || moduleDefaultStats[card.id];
             return (
               <div
                 key={card.id}
                 onClick={() => router.push(card.path)}
                 className={`relative overflow-hidden bg-white dark:bg-[#0b1e3d] rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm cursor-pointer hover:-translate-y-1.5 hover:shadow-xl ${accent.glow} ${accent.border} transition-all duration-300 group flex flex-col min-h-[200px]`}
               >
-                {/* Strip warna modul */}
                 <div className={`h-1.5 w-full bg-gradient-to-r ${accent.strip}`} />
 
-                {/* Ikon watermark */}
                 <div
                   className={`absolute -right-5 -bottom-5 opacity-[0.07] group-hover:opacity-[0.14] group-hover:scale-110 group-hover:-rotate-6 transition-all duration-500 pointer-events-none ${accent.text}`}
                 >
@@ -881,7 +860,6 @@ export default function Homepage() {
                     >
                       {card.icon}
                     </div>
-
                   </div>
 
                   <h3 className="mt-4 text-[15px] font-extrabold text-slate-900 dark:text-white leading-snug">
@@ -908,9 +886,8 @@ export default function Homepage() {
         </div>
       </div>
 
-      {/* ── Bottom Section: Aktivitas Terbaru & Pengumuman ── */}
+      {/* Bottom Section: Aktivitas Terbaru & Pengumuman */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Aktivitas Terbaru */}
         <div className="relative overflow-hidden bg-white/70 dark:bg-[#071733]/80 backdrop-blur-md rounded-3xl shadow-sm border border-white/70 dark:border-slate-800 flex flex-col">
           <div className="h-1.5 w-full bg-gradient-to-r from-blue-600 via-cyan-500 to-emerald-400" />
           <div className="p-6 flex flex-col flex-1">
@@ -920,12 +897,9 @@ export default function Homepage() {
                   <Clock size={20} />
                 </div>
                 <div>
-                  <div className="flex items-center gap-2">
-                    <h3 className="text-base font-extrabold text-slate-900 dark:text-white">
-                      Aktivitas Terbaru
-                    </h3>
-
-                  </div>
+                  <h3 className="text-base font-extrabold text-slate-900 dark:text-white">
+                    Aktivitas Terbaru
+                  </h3>
                   <p className="text-xs text-slate-500 dark:text-slate-400">
                     Pembaruan sistem & log pekerjaan pengguna
                   </p>
@@ -940,7 +914,6 @@ export default function Homepage() {
               </button>
             </div>
 
-            {/* Timeline */}
             <div className="relative flex flex-col">
               <div className="absolute left-[21px] top-4 bottom-4 w-px bg-gradient-to-b from-blue-300 via-slate-200 to-transparent" />
               {visibleActivities.map((item, idx) => {
@@ -1000,7 +973,6 @@ export default function Homepage() {
           </div>
         </div>
 
-        {/* Pengumuman */}
         <div className="relative overflow-hidden bg-white/70 dark:bg-[#071733]/80 backdrop-blur-md rounded-3xl shadow-sm border border-white/70 dark:border-slate-800 flex flex-col">
           <div className="h-1.5 w-full bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500" />
           <div className="p-6 flex flex-col flex-1">
@@ -1084,7 +1056,6 @@ export default function Homepage() {
                         {item.desc}
                       </p>
                     </div>
-
                   </div>
                 );
               })}

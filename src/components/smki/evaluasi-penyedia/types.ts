@@ -5,7 +5,7 @@ import type {
 } from "@/services/smki/evaluasiPenyedia.types";
 
 /** Satu baris penilaian saat masih diedit (skala boleh belum dipilih). */
-export interface Fr021PenilaianDraft {
+interface Fr021PenilaianDraft {
   kriteria_id: number;
   skala_id: number | null;
 }

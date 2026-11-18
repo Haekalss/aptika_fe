@@ -9,7 +9,7 @@ import type {
 import type { Fr021FormState } from "./types";
 
 /** Tanggal hari ini (zona WIB) dalam format `yyyy-mm-dd`. */
-export function todayJakarta(): string {
+function todayJakarta(): string {
   return new Date().toLocaleDateString("en-CA", {
     timeZone: "Asia/Jakarta",
     year: "numeric",
@@ -23,7 +23,7 @@ export function todayJakarta(): string {
  * Nilai lama non-ISO (mis. "07 Juli 2022") dikembalikan ke hari ini (WIB)
  * agar input tanggal selalu valid; pengguna dapat memilih ulang.
  */
-export function toTanggalBerlakuInput(value?: string | null): string {
+function toTanggalBerlakuInput(value?: string | null): string {
   const text = (value ?? "").trim();
   if (/^\d{4}-\d{2}-\d{2}/.test(text)) return text.slice(0, 10);
   return todayJakarta();
