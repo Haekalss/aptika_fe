@@ -137,7 +137,16 @@ export default function Home() {
         router.push("/dashboard");
       }
     } catch (err: any) {
-      setLoginError(err.response?.data?.message || "Username/email atau password salah.");
+      const serverMessage = err?.response?.data?.message;
+      if (serverMessage) {
+        setLoginError(serverMessage);
+      } else if (err?.code === "ERR_NETWORK" || !err?.response) {
+        setLoginError(
+          "Backend tidak dapat dihubungi. Pastikan server API berjalan, lalu coba lagi."
+        );
+      } else {
+        setLoginError("Username/email atau password salah.");
+      }
     } finally {
       setLoginLoading(false);
     }
